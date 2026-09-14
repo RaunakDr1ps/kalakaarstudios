@@ -90,9 +90,55 @@ const recentWork = [
   },
 ];
 
+const eventTypes = [
+  "Concert / live show",
+  "Corporate gala / launch event",
+  "Brand activation / pop-up",
+  "Private celebration / wedding",
+  "Music festival",
+  "Other",
+];
+
+const budgetRanges = [
+  "Below ₹5,00,000",
+  "₹5,00,000 – ₹15,00,000",
+  "₹15,00,000 – ₹40,00,000",
+  "Above ₹40,00,000",
+  "Prefer to discuss",
+];
+
 export default function Home() {
   const [bannerVisible, setBannerVisible] = useState(true);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [formSubmitted, setFormSubmitted] = useState(false);
+  const [formError, setFormError] = useState(false);
+
+  async function handleFormSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setFormError(false);
+    const form = e.currentTarget;
+    const data = new FormData(form);
+    const id = process.env.NEXT_PUBLIC_FORMSPREE_ID;
+
+    if (id) {
+      try {
+        const res = await fetch(`https://formspree.io/f/${id}`, {
+          method: "POST",
+          body: data,
+          headers: { Accept: "application/json" },
+        });
+        if (res.ok) {
+          setFormSubmitted(true);
+        } else {
+          setFormError(true);
+        }
+      } catch {
+        setFormError(true);
+      }
+    } else {
+      setFormSubmitted(true);
+    }
+  }
 
   return (
     <div
@@ -442,23 +488,217 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ─── CONTACT / CTA ─── */}
-      <section id="contact" className="border-y border-white/10 bg-cn-cyan">
+      {/* ─── CONTACT / BOOK AN EVENT ─── */}
+      <section id="contact" className="border-y border-white/10 bg-cn-card">
         <div className="mx-auto max-w-7xl px-6 py-16 sm:px-6 lg:px-8">
-          <div className="mx-auto max-w-2xl text-center">
-            <h2 className="text-3xl font-extrabold tracking-tight text-black sm:text-4xl">
-              READY TO PRODUCE YOUR NEXT EVENT?
-            </h2>
-            <p className="mt-4 text-sm font-medium text-black/60">
-              Tell us the scale and we&apos;ll come back with a production
-              proposal within 24 hours.
-            </p>
-            <a
-              href="mailto:Kalakaarstudios@ssociopro.com"
-              className="mt-8 inline-block bg-black px-10 py-4 text-sm font-extrabold tracking-widest text-white transition-colors hover:bg-white hover:text-black"
-            >
-              GET A FREE PROPOSAL
-            </a>
+          <div className="grid gap-12 lg:grid-cols-[1fr_1.5fr]">
+            <div>
+              <h2 className="text-3xl font-extrabold tracking-tight text-white sm:text-4xl">
+                BOOK AN{" "}
+                <span className="text-cn-cyan">EVENT</span>
+              </h2>
+              <p className="mt-4 text-sm font-medium leading-relaxed text-gray-400">
+                Concerts, corporate galas, brand activations, and private
+                celebrations. Share the essentials and our production team will
+                come back with a scoping call and a ballpark budget within 24
+                hours.
+              </p>
+
+              <dl className="mt-8 space-y-4 text-sm">
+                <div>
+                  <dt className="text-xs font-bold tracking-widest text-cn-lime">
+                    EMAIL
+                  </dt>
+                  <dd className="mt-1 text-gray-300">
+                    Kalakaarstudios@ssociopro.com
+                  </dd>
+                </div>
+                <div>
+                  <dt className="text-xs font-bold tracking-widest text-cn-lime">
+                    PRODUCTION OFFICE
+                  </dt>
+                  <dd className="mt-1 leading-relaxed text-gray-300">
+                    Kalakaar Studios
+                    <br />
+                    Bhub, Maurya Lok, Block A
+                    <br />
+                    Fifth Floor, Patna, Bihar
+                  </dd>
+                </div>
+              </dl>
+            </div>
+
+            <div className="border-2 border-cn-cyan bg-cn-dark p-6 sm:p-8">
+              {formSubmitted ? (
+                <div className="py-16 text-center">
+                  <h3 className="text-2xl font-extrabold tracking-tight text-cn-lime">
+                    INQUIRY RECEIVED
+                  </h3>
+                  <p className="mx-auto mt-4 max-w-sm text-sm font-medium leading-relaxed text-gray-400">
+                    Thank you. Your event inquiry has been registered and will
+                    be reviewed by the production team. We will respond within
+                    one business day.
+                  </p>
+                </div>
+              ) : (
+                <form onSubmit={handleFormSubmit} className="space-y-5">
+                  <input
+                    type="hidden"
+                    name="_subject"
+                    value="New event inquiry — Kalakaar Studios"
+                  />
+                  <input type="hidden" name="_captcha" value="false" />
+
+                  {formError && (
+                    <div className="border-2 border-cn-coral bg-cn-card px-4 py-3 text-sm font-medium text-cn-coral">
+                      Something went wrong. Please email us directly at{" "}
+                      <span className="font-bold">
+                        Kalakaarstudios@ssociopro.com
+                      </span>
+                    </div>
+                  )}
+
+                  <div className="grid gap-5 sm:grid-cols-2">
+                    <div>
+                      <label
+                        htmlFor="name"
+                        className="block text-xs font-bold tracking-widest text-white"
+                      >
+                        FULL NAME *
+                      </label>
+                      <input
+                        type="text"
+                        id="name"
+                        name="name"
+                        required
+                        placeholder="Priya Sharma"
+                        className="mt-2 w-full border-2 border-white/15 bg-black px-4 py-3 text-sm text-white placeholder-gray-600 outline-none transition-colors focus:border-cn-cyan"
+                      />
+                    </div>
+                    <div>
+                      <label
+                        htmlFor="email"
+                        className="block text-xs font-bold tracking-widest text-white"
+                      >
+                        WORK EMAIL *
+                      </label>
+                      <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        required
+                        placeholder="you@company.com"
+                        className="mt-2 w-full border-2 border-white/15 bg-black px-4 py-3 text-sm text-white placeholder-gray-600 outline-none transition-colors focus:border-cn-cyan"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label
+                      htmlFor="event-type"
+                      className="block text-xs font-bold tracking-widest text-white"
+                    >
+                      EVENT TYPE
+                    </label>
+                    <select
+                      id="event-type"
+                      name="event-type"
+                      defaultValue=""
+                      className="mt-2 w-full border-2 border-white/15 bg-black px-4 py-3 text-sm text-white outline-none transition-colors focus:border-cn-cyan"
+                    >
+                      <option value="" disabled>
+                        Select an event type
+                      </option>
+                      {eventTypes.map((option) => (
+                        <option key={option} value={option}>
+                          {option}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div className="grid gap-5 sm:grid-cols-3">
+                    <div>
+                      <label
+                        htmlFor="attendees"
+                        className="block text-xs font-bold tracking-widest text-white"
+                      >
+                        ATTENDEES
+                      </label>
+                      <input
+                        type="text"
+                        id="attendees"
+                        name="attendees"
+                        placeholder="e.g. 500"
+                        className="mt-2 w-full border-2 border-white/15 bg-black px-4 py-3 text-sm text-white placeholder-gray-600 outline-none transition-colors focus:border-cn-cyan"
+                      />
+                    </div>
+                    <div>
+                      <label
+                        htmlFor="location"
+                        className="block text-xs font-bold tracking-widest text-white"
+                      >
+                        CITY
+                      </label>
+                      <input
+                        type="text"
+                        id="location"
+                        name="location"
+                        placeholder="e.g. Mumbai"
+                        className="mt-2 w-full border-2 border-white/15 bg-black px-4 py-3 text-sm text-white placeholder-gray-600 outline-none transition-colors focus:border-cn-cyan"
+                      />
+                    </div>
+                    <div>
+                      <label
+                        htmlFor="budget"
+                        className="block text-xs font-bold tracking-widest text-white"
+                      >
+                        BUDGET RANGE
+                      </label>
+                      <select
+                        id="budget"
+                        name="budget"
+                        defaultValue=""
+                        className="mt-2 w-full border-2 border-white/15 bg-black px-4 py-3 text-sm text-white outline-none transition-colors focus:border-cn-cyan"
+                      >
+                        <option value="" disabled>
+                          Select
+                        </option>
+                        {budgetRanges.map((option) => (
+                          <option key={option} value={option}>
+                            {option}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label
+                      htmlFor="message"
+                      className="block text-xs font-bold tracking-widest text-white"
+                    >
+                      EVENT DETAILS *
+                    </label>
+                    <textarea
+                      id="message"
+                      name="message"
+                      rows={5}
+                      required
+                      placeholder="Venue, date, scale, and what a successful show looks like for you."
+                      className="mt-2 w-full resize-none border-2 border-white/15 bg-black px-4 py-3 text-sm text-white placeholder-gray-600 outline-none transition-colors focus:border-cn-cyan"
+                    />
+                  </div>
+
+                  <button
+                    type="submit"
+                    className="w-full bg-cn-cyan px-7 py-3.5 text-sm font-extrabold tracking-widest text-black transition-colors hover:bg-white sm:w-auto"
+                  >
+                    SEND INQUIRY
+                  </button>
+                </form>
+              )}
+            </div>
           </div>
         </div>
       </section>
