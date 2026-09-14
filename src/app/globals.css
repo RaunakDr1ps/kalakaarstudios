@@ -1,0 +1,101 @@
+@import "tailwindcss";
+
+@theme inline {
+  --color-ivory: #f7f5f0;
+  --color-paper: #fbf9f4;
+  --color-sand: #efe9de;
+  --color-line: #e0d9c9;
+  --color-graphite: #23201a;
+  --color-graphite-soft: #3b362c;
+  --color-smoke: #6e675a;
+  --color-brass: #a9814f;
+  --color-brass-deep: #7c5a1e;
+
+  --color-cn-dark: #1a1a1a;
+  --color-cn-card: #242424;
+  --color-cn-cyan: #02a6d6;
+  --color-cn-coral: #ff6254;
+  --color-cn-lime: #36d123;
+
+  --font-serif: var(--font-playfair);
+  --font-blocky: var(--font-oswald);
+  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+    Helvetica, Arial, sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: #f7f5f0;
+  color: #23201a;
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  font-feature-settings: "kern" 1;
+}
+
+/* ------------------------------------------------------------------ */
+/* Embossed metallic numerals — brass and silver treatments            */
+/* ------------------------------------------------------------------ */
+
+.metal-brass {
+  font-family: var(--font-serif);
+  background-image: linear-gradient(
+    180deg,
+    #f7e8cc 0%,
+    #d6ad6b 38%,
+    #7c5a1e 52%,
+    #e8c892 66%,
+    #a67e3e 82%,
+    #f3e2bf 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 1px 0 rgba(255, 255, 255, 0.45))
+    drop-shadow(0 -1px 1px rgba(110, 84, 28, 0.35))
+    drop-shadow(0 3px 4px rgba(60, 45, 15, 0.28));
+}
+
+.metal-silver {
+  font-family: var(--font-serif);
+  background-image: linear-gradient(
+    180deg,
+    #f2f2ee 0%,
+    #bcbcb4 38%,
+    #63635b 52%,
+    #dcdcd3 68%,
+    #8b8b81 84%,
+    #efefe9 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 1px 0 rgba(255, 255, 255, 0.5))
+    drop-shadow(0 -1px 1px rgba(70, 70, 62, 0.3))
+    drop-shadow(0 3px 4px rgba(40, 40, 34, 0.26));
+}
+
+.suffix {
+  font-family: var(--font-sans);
+  background-image: linear-gradient(
+    180deg,
+    #a9814f 0%,
+    #7c5a1e 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* ------------------------------------------------------------------ */
+/* Editorial small-caps kicker                                         */
+/* ------------------------------------------------------------------ */
+
+.kicker {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
