@@ -814,6 +814,36 @@ export default function Home() {
       <section className="border-t-2 border-ink bg-sun">
         <div className="mx-auto flex max-w-7xl flex-col items-center gap-5 px-5 py-14 text-center sm:px-8">
           <Sparkles className="h-8 w-8 rotate-6" strokeWidth={2} />
+          <div className="mt-2 flex flex-col items-center" aria-label="Kalakaar Studios">
+            <div className="flex">
+              {"KALAKAAR".split("").map((ch, i) => (
+                <span
+                  key={`k-${i}`}
+                  className={`flex h-9 w-9 items-center justify-center border border-slate-900 font-blocky text-sm font-black uppercase tracking-tighter sm:h-12 sm:w-12 sm:text-lg ${
+                    i % 2 === 0
+                      ? "translate-y-0.5 bg-ink text-cream"
+                      : "-translate-y-0.5 bg-cream text-ink"
+                  }`}
+                >
+                  {ch}
+                </span>
+              ))}
+            </div>
+            <div className="flex">
+              {"STUDIOS".split("").map((ch, i) => (
+                <span
+                  key={`s-${i}`}
+                  className={`flex h-9 w-9 items-center justify-center border border-slate-900 font-blocky text-sm font-black uppercase tracking-tighter sm:h-12 sm:w-12 sm:text-lg ${
+                    i % 2 === 0
+                      ? "-translate-y-0.5 bg-cream text-ink"
+                      : "translate-y-0.5 bg-ink text-cream"
+                  }`}
+                >
+                  {ch}
+                </span>
+              ))}
+            </div>
+          </div>
           <h2 className="font-blocky text-4xl font-bold uppercase leading-[0.95] tracking-tight sm:text-6xl">
             Let&apos;s make some
             <br />
