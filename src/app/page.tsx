@@ -1,9 +1,34 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
 import { Oswald } from "next/font/google";
 import { useState } from "react";
+import {
+  ArrowRight,
+  ArrowUpRight,
+  AtSign,
+  AudioLines,
+  Boxes,
+  CalendarPlus,
+  Clapperboard,
+  Globe,
+  HardHat,
+  Lightbulb,
+  Mail,
+  MapPin,
+  Menu,
+  Mic,
+  Music4,
+  PartyPopper,
+  PenTool,
+  Play,
+  Send,
+  Sparkles,
+  Speaker,
+  Spotlight,
+  Star,
+  X,
+} from "lucide-react";
 
 const oswald = Oswald({
   variable: "--font-oswald",
@@ -11,82 +36,77 @@ const oswald = Oswald({
   weight: ["400", "500", "600", "700"],
 });
 
+const pillBase =
+  "inline-flex items-center justify-center gap-2 rounded-full border-2 border-ink shadow-[4px_4px_0px_0px_var(--color-ink)] font-bold uppercase tracking-wide transition-all hover:-translate-y-1 hover:shadow-[6px_6px_0px_0px_var(--color-ink)]";
+
 const navLinks = [
-  { label: "SERVICES", href: "#services" },
-  { label: "PORTFOLIO / SHOWREEL", href: "#portfolio" },
-  { label: "EVENT PRODUCTION", href: "#production" },
-  { label: "CONTACT", href: "#contact" },
+  { label: "What We Do", href: "#what-we-do" },
+  { label: "Services", href: "#services" },
+  { label: "Showreel", href: "#showreel" },
+  { label: "FAQ", href: "#faq" },
 ];
 
 const services = [
   {
-    title: "Corporate Galas & Launch Events",
-    desc: "High-stakes corporate galas, product launches, and brand unveilings — staged with precision and executive polish.",
-    accent: "bg-cn-cyan",
+    icon: PartyPopper,
+    bg: "bg-sun",
+    title: "Live Concerts & Festivals",
+    desc: "Multi-stage festival builds, headline concerts, and open-air gigs — booked, designed, and run from one accountable team.",
   },
   {
-    title: "Live Concerts & Music Festivals",
-    desc: "Multi-stage festival builds, headline concerts, and large-scale live music production across venues and open-air sites.",
-    accent: "bg-cn-coral",
+    icon: Boxes,
+    bg: "bg-sky",
+    title: "Corporate Galas & Brand Activations",
+    desc: "Product launches, awards nights, and immersive pop-ups that turn brand budgets into crowds, buzz, and measurable ROI.",
   },
   {
-    title: "Staging, Lighting & Audio Engineering",
-    desc: "Custom stage architecture, concert-grade lighting rigs, and broadcast-quality audio — designed, rigged, and operated end to end.",
-    accent: "bg-cn-lime",
-  },
-  {
-    title: "Brand Activations & Pop-ups",
-    desc: "Immersive brand experiences, interactive pop-ups, and guerrilla campaigns built to convert footfall into measurable engagement.",
-    accent: "bg-cn-cyan",
-  },
-  {
-    title: "Private Celebrations & Weddings",
-    desc: "Luxury weddings, milestone celebrations, and intimate private events — curated with white-glove attention to every detail.",
-    accent: "bg-cn-coral",
-  },
-  {
-    title: "Talent & Artist Management",
-    desc: "Booking, rider fulfilment, stage coordination, and day-of artist liaison — keeping talent comfortable and shows on time.",
-    accent: "bg-cn-lime",
+    icon: AudioLines,
+    bg: "bg-mint",
+    title: "Staging, Lighting & Audio Systems",
+    desc: "Custom stage architecture, concert-grade lighting rigs, and broadcast-clear sound — engineered, rigged, and operated end to end.",
   },
 ];
 
-const recentWork = [
+const steps = [
   {
-    title: "TechForward Annual Summit",
-    category: "Corporate Gala",
-    detail: "1,200 attendees · Bengaluru",
-    tagColor: "bg-cn-cyan",
+    step: "01",
+    icon: PenTool,
+    chip: "bg-sun",
+    title: "Plan",
+    desc: "Kickoff call, site visit, and a written production scope with a locked budget.",
   },
   {
-    title: "Monsoon Bass Festival",
-    category: "Concert Production",
-    detail: "8,600 attendees · Mumbai",
-    tagColor: "bg-cn-coral",
+    step: "02",
+    icon: HardHat,
+    chip: "bg-mint",
+    title: "Build",
+    desc: "Stage construction, AV load-in, lighting focus, sound checks, and full rehearsal.",
   },
   {
-    title: "Luxeweave Brand Unveiling",
-    category: "Brand Activation",
-    detail: "3,400 visitors · Hyderabad",
-    tagColor: "bg-cn-lime",
+    step: "03",
+    icon: PartyPopper,
+    chip: "bg-sky",
+    title: "Run",
+    desc: "Live show-call, on-ground ops, real-time troubleshooting, and a spotless load-out.",
+  },
+];
+
+const faqs = [
+  {
+    q: "Can you actually pull off a last-minute event?",
+    a: "Chaos is kind of our thing. We keep an emergency crew bench and a hot AV inventory, so a two-week runway is workable and a 48-hour one is painstaking but possible.",
   },
   {
-    title: "Mehta Family Wedding",
-    category: "Private Celebration",
-    detail: "650 guests · Jaipur",
-    tagColor: "bg-cn-cyan",
+    q: "Are you based only in Bihar?",
+    a: "Rooted in Patna, wired pan-India. Our production network stretches across 12+ cities, so we can stage in your hometown or fly a crew to yours.",
   },
   {
-    title: "Groove Nation Open Air",
-    category: "Music Festival",
-    detail: "12,000 attendees · Pune",
-    tagColor: "bg-cn-coral",
+    q: "Where does the budget conversation start?",
+    a: "With a scoping call, not a guess. We map your venue, guest count, and ambition to a realistic range — then put it in writing before you spend a rupee.",
   },
   {
-    title: "Vertex Product Launch",
-    category: "Corporate Launch",
-    detail: "800 attendees · New Delhi",
-    tagColor: "bg-cn-lime",
+    q: "Do we need to bring our own gear and crew?",
+    a: "Nope. Stage, sound, lights, crew, and talent coordination all come under one roof. You get one accountable team and one invoice.",
   },
 ];
 
@@ -108,7 +128,6 @@ const budgetRanges = [
 ];
 
 export default function Home() {
-  const [bannerVisible, setBannerVisible] = useState(true);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [formSubmitted, setFormSubmitted] = useState(false);
   const [formError, setFormError] = useState(false);
@@ -142,345 +161,292 @@ export default function Home() {
 
   return (
     <div
-      className={`${oswald.variable} min-h-screen bg-cn-dark font-blocky text-white`}
+      className={`${oswald.variable} min-h-screen bg-cream font-sans text-ink antialiased`}
     >
-      {/* ─── BOOKING BANNER ─── */}
-      {bannerVisible && (
-        <div className="relative bg-cn-cyan px-6 py-3 text-center text-xs font-bold tracking-widest text-black sm:text-sm">
-          <span>
-            NOW BOOKING FOR SEASON 2026–2027 &nbsp;|&nbsp; GET A FREE EVENT
-            PROPOSAL
-          </span>
-          <button
-            type="button"
-            onClick={() => setBannerVisible(false)}
-            aria-label="Close banner"
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-black/50 transition-colors hover:text-black"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 20 20"
-              fill="currentColor"
-              className="h-4 w-4"
-            >
-              <path d="M6.28 5.22a.75.75 0 0 0-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 1 0 1.06 1.06L10 11.06l3.72 3.72a.75.75 0 1 0 1.06-1.06L11.06 10l3.72-3.72a.75.75 0 0 0-1.06-1.06L10 8.94 6.28 5.22Z" />
-            </svg>
-          </button>
-        </div>
-      )}
-
-      {/* ─── STICKY HEADER ─── */}
-      <header className="sticky top-0 z-50 border-b-2 border-cn-cyan bg-black">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6">
-          <Link
-            href="/"
-            className="inline-flex items-center bg-white px-3 py-1.5 font-extrabold tracking-tight text-black sm:px-4 sm:py-2 sm:text-xl"
-          >
-            KALAKAAR STUDIOS
-          </Link>
-
-          <nav className="hidden items-center gap-8 lg:flex">
-            {navLinks.map((link) => (
-              <a
-                key={link.label}
-                href={link.href}
-                className="text-sm font-bold tracking-widest text-white transition-colors hover:text-cn-cyan"
-              >
-                {link.label}
-              </a>
-            ))}
-          </nav>
-
-          <a
-            href="#contact"
-            className="hidden bg-cn-cyan px-5 py-2 text-sm font-extrabold tracking-wider text-black transition-colors hover:bg-white lg:inline-block"
-          >
-            GET A QUOTE
+      {/* ─── HEADER ─── */}
+      <header className="sticky top-0 z-50 border-b-2 border-ink bg-cream/95 backdrop-blur">
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-5 py-4 sm:px-8">
+          <a href="#" className="group inline-flex items-center gap-2.5">
+            <span className="flex h-10 w-10 rotate-[-4deg] items-center justify-center border-2 border-ink bg-sun shadow-[3px_3px_0px_0px_var(--color-ink)]">
+              <Sparkles className="h-5 w-5" strokeWidth={2.5} />
+            </span>
+            <span className="font-blocky text-lg font-bold uppercase tracking-tight sm:text-xl">
+              Kalakaar Studios
+            </span>
           </a>
 
-          <button
-            type="button"
-            className="flex flex-col gap-[5px] lg:hidden"
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            aria-label="Toggle menu"
-            aria-expanded={mobileMenuOpen}
-          >
-            <span
-              className={`block h-[3px] w-6 bg-white transition-transform ${
-                mobileMenuOpen ? "translate-y-[8px] rotate-45" : ""
-              }`}
-            />
-            <span
-              className={`block h-[3px] w-6 bg-cn-cyan transition-opacity ${
-                mobileMenuOpen ? "opacity-0" : ""
-              }`}
-            />
-            <span
-              className={`block h-[3px] w-6 bg-white transition-transform ${
-                mobileMenuOpen ? "-translate-y-[8px] -rotate-45" : ""
-              }`}
-            />
-          </button>
-        </div>
-
-        {mobileMenuOpen && (
-          <nav className="border-t border-white/10 bg-black px-6 pb-5 pt-3 lg:hidden">
+          <nav className="hidden items-center gap-7 lg:flex">
             {navLinks.map((link) => (
               <a
                 key={link.label}
                 href={link.href}
-                onClick={() => setMobileMenuOpen(false)}
-                className="block border-b border-white/10 py-3.5 text-sm font-bold tracking-widest text-white transition-colors hover:text-cn-cyan"
+                className="group relative text-sm font-bold uppercase tracking-wide transition-colors hover:text-ink"
               >
                 {link.label}
+                <span className="absolute -bottom-1 left-0 h-[3px] w-0 bg-sky transition-all group-hover:w-full" />
               </a>
             ))}
             <a
               href="#contact"
-              onClick={() => setMobileMenuOpen(false)}
-              className="mt-4 block bg-cn-cyan py-3.5 text-center text-sm font-extrabold tracking-wider text-black"
+              className={`${pillBase} bg-sky px-5 py-2.5 text-sm`}
             >
-              GET A QUOTE
+              <CalendarPlus className="h-4 w-4" strokeWidth={2.5} />
+              Book a Call
             </a>
+          </nav>
+
+          <button
+            type="button"
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            aria-label="Toggle menu"
+            aria-expanded={mobileMenuOpen}
+            className="flex h-10 w-10 items-center justify-center border-2 border-ink bg-cream shadow-[3px_3px_0px_0px_var(--color-ink)] lg:hidden"
+          >
+            {mobileMenuOpen ? (
+              <X className="h-5 w-5" strokeWidth={2.5} />
+            ) : (
+              <Menu className="h-5 w-5" strokeWidth={2.5} />
+            )}
+          </button>
+        </div>
+
+        {mobileMenuOpen && (
+          <nav className="border-t-2 border-ink bg-cream px-5 pb-6 pt-2 lg:hidden">
+            <div className="flex flex-col">
+              {navLinks.map((link) => (
+                <a
+                  key={link.label}
+                  href={link.href}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="border-b border-ink/10 py-3.5 text-sm font-bold uppercase tracking-wide"
+                >
+                  {link.label}
+                </a>
+              ))}
+              <a
+                href="#contact"
+                onClick={() => setMobileMenuOpen(false)}
+                className={`${pillBase} mt-5 bg-sky px-6 py-3 text-sm`}
+              >
+                <CalendarPlus className="h-4 w-4" strokeWidth={2.5} />
+                Book a Call
+              </a>
+            </div>
           </nav>
         )}
       </header>
 
       {/* ─── HERO ─── */}
-      <section className="bg-cn-cyan">
-        <div className="mx-auto grid max-w-7xl items-center gap-8 px-6 py-16 sm:px-6 md:grid-cols-2 md:py-24 lg:px-8">
-          <div className="order-2 md:order-1">
-            <span className="inline-block bg-black px-3 py-1 text-xs font-bold tracking-widest text-cn-cyan">
-              EVENT PRODUCTION &amp; MANAGEMENT
-            </span>
-            <h1 className="mt-5 text-4xl font-extrabold leading-[1.05] tracking-tight text-black sm:text-5xl lg:text-6xl">
-              UNFORGETTABLE
-              <br />
-              EVENTS.
-              <br />
-              <span className="text-white">HIGH-OCTANE</span>
-              <br />
-              PRODUCTION.
-            </h1>
-            <p className="mt-5 max-w-md text-base font-medium leading-relaxed text-black/70">
-              From concerts and corporate galas to luxury weddings and brand
-              activations — Kalakaar Studios builds and runs events that leave
-              audiences talking.
-            </p>
-            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <a
-                href="#contact"
-                className="inline-block bg-black px-8 py-3.5 text-center text-sm font-extrabold tracking-widest text-white transition-colors hover:bg-white hover:text-black"
-              >
-                BOOK AN EVENT
-              </a>
-              <a
-                href="#portfolio"
-                className="inline-block border-2 border-black px-8 py-3.5 text-center text-sm font-extrabold tracking-widest text-black transition-colors hover:bg-black hover:text-white"
-              >
-                WATCH SHOWREEL
-              </a>
-            </div>
-          </div>
+      <section className="mx-auto grid max-w-7xl items-center gap-12 px-5 py-14 sm:px-8 lg:grid-cols-2 lg:py-20">
+        <div>
+          <span className="inline-flex -rotate-1 items-center gap-2 border-2 border-ink bg-mint px-3 py-1.5 text-xs font-bold uppercase tracking-widest shadow-[3px_3px_0px_0px_var(--color-ink)]">
+            <Star className="h-3.5 w-3.5 fill-current" strokeWidth={2.5} />
+            Event Production &amp; Management
+          </span>
 
-          <div className="order-1 flex items-center justify-center md:order-2">
-            <div className="flex aspect-video w-full flex-col items-center justify-center border-4 border-black bg-black p-8">
+          <h1 className="mt-6 font-blocky text-4xl font-bold uppercase leading-[1.02] tracking-tight sm:text-5xl lg:text-6xl">
+            Turn Event{" "}
+            <span className="relative z-0 inline-block whitespace-nowrap">
               <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                fill="currentColor"
-                className="h-16 w-16 text-cn-cyan"
+                viewBox="0 0 150 34"
+                preserveAspectRatio="none"
+                aria-hidden="true"
+                className="absolute -left-[2px] top-[12%] -z-10 h-[105%] w-[calc(100%+4px)]"
               >
                 <path
-                  fillRule="evenodd"
-                  d="M4.5 5.653c0-1.427 1.529-2.33 2.779-1.643l11.54 6.347c1.295.712 1.295 2.573 0 3.286L7.28 19.99c-1.25.687-2.779-.217-2.779-1.643V5.653Z"
-                  clipRule="evenodd"
+                  d="M3 27 C 32 8, 58 12, 74 21 C 90 31, 118 8, 147 17"
+                  stroke="#FEF08A"
+                  strokeWidth="15"
+                  strokeLinecap="round"
+                  fill="none"
+                />
+                <path
+                  d="M3 27 C 32 8, 58 12, 74 21 C 90 31, 118 8, 147 17"
+                  stroke="none"
+                  fill="#FEF08A"
+                  opacity="0"
                 />
               </svg>
-              <span className="mt-4 text-xs font-bold tracking-widest text-white/40">
-                EVENT HIGHLIGHT REEL
+              Chaos
+            </span>{" "}
+            Into Unforgettable
+            <br className="hidden sm:block" /> Live Experiences.
+            <svg
+              viewBox="0 0 220 14"
+              preserveAspectRatio="none"
+              aria-hidden="true"
+              className="mt-1 h-[0.16em] w-[76%] max-w-sm"
+            >
+              <path
+                d="M4 10 C 50 3, 120 3, 216 8"
+                stroke="#86EFAC"
+                strokeWidth="7"
+                strokeLinecap="round"
+                fill="none"
+              />
+              <path
+                d="M4 10 C 50 3, 120 3, 216 8"
+                stroke="#111827"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                fill="none"
+                strokeDasharray="3 5"
+                opacity="0.4"
+              />
+            </svg>
+          </h1>
+
+          <p className="mt-6 max-w-xl text-base font-medium leading-relaxed text-ink/70 sm:text-lg">
+            Kalakaar Studios manages the mess so the magic survives — live event
+            management, custom stage design, AV engineering, and talent booking
+            under one roof. We plan it, build it, and run it like it&apos;s the
+            only show in town.
+          </p>
+
+          <div className="mt-9 flex flex-col gap-4 sm:flex-row sm:flex-wrap">
+            <a href="#contact" className={`${pillBase} bg-sun px-7 py-3.5 text-sm`}>
+              <Send className="h-4 w-4" strokeWidth={2.5} />
+              Get Started with a Proposal
+            </a>
+            <a
+              href="#showreel"
+              className={`${pillBase} bg-cream px-7 py-3.5 text-sm`}
+            >
+              <Play className="h-4 w-4 fill-current" strokeWidth={2.5} />
+              View Production Reel
+            </a>
+            <a
+              href="#contact"
+              className={`${pillBase} bg-mint px-7 py-3.5 text-sm`}
+            >
+              <Mail className="h-4 w-4" strokeWidth={2.5} />
+              Contact Us
+            </a>
+          </div>
+
+          <div className="mt-10 flex flex-wrap items-center gap-3 text-xs font-bold uppercase tracking-widest text-ink/50">
+            <MaybeStar />
+            <span>Concerts</span>
+            <Dot />
+            <span>Galas</span>
+            <Dot />
+            <span>Activations</span>
+            <Dot />
+            <span>Weddings</span>
+            <Dot />
+            <span>Festivals</span>
+          </div>
+        </div>
+
+        {/* Hero visual placeholder */}
+        <div className="relative">
+          <div
+            className="relative flex aspect-[4/3] items-center justify-center overflow-hidden border-2 border-dashed border-ink bg-slate-100 shadow-[8px_8px_0px_0px_var(--color-ink)]"
+            style={{
+              backgroundImage:
+                "radial-gradient(circle, rgba(17,24,39,0.1) 1.5px, transparent 1.5px)",
+              backgroundSize: "20px 20px",
+            }}
+          >
+            <Sparkles className="absolute left-6 top-6 h-6 w-6 rotate-12 text-ink/30" />
+            <Music4 className="absolute right-8 top-8 h-7 w-7 -rotate-6 text-ink/25" />
+            <Star className="absolute bottom-24 right-5 h-4 w-4 fill-sun text-ink/40" />
+
+            <Spotlight
+              className="absolute -left-2 top-8 h-16 w-16 text-sky"
+              strokeWidth={1.5}
+            />
+            <Spotlight
+              className="absolute -right-2 top-8 h-16 w-16 scale-x-[-1] text-mint"
+              strokeWidth={1.5}
+            />
+
+            <div className="relative z-10 flex flex-col items-center gap-3">
+              <span className="flex h-16 w-16 items-center justify-center border-2 border-ink bg-cream shadow-[4px_4px_0px_0px_var(--color-ink)]">
+                <Mic className="h-8 w-8" strokeWidth={2} />
+              </span>
+              <span className="border-2 border-ink bg-sun px-3 py-1 text-[10px] font-bold uppercase tracking-[0.2em] text-ink">
+                Your Event Art Here
               </span>
             </div>
+
+            <Speaker
+              className="absolute bottom-16 left-8 h-9 w-9 rotate-6 text-ink/50"
+              strokeWidth={1.75}
+            />
+            <AudioLines
+              className="absolute bottom-10 right-10 h-8 w-8 -rotate-3 text-ink/45"
+              strokeWidth={1.75}
+            />
+
+            <div className="absolute inset-x-0 bottom-0 h-8 bg-ink" />
+            <span className="absolute bottom-2 left-1/2 -translate-x-1/2 text-[10px] font-bold uppercase tracking-[0.25em] text-cream">
+              Stage / Build / Run
+            </span>
           </div>
+
+          <span className="absolute -right-2 -top-4 flex h-14 w-14 rotate-12 items-center justify-center rounded-full border-2 border-ink bg-sky text-xs font-bold uppercase leading-tight shadow-[4px_4px_0px_0px_var(--color-ink)] lg:right-4">
+            Since
+            <br />
+            2025
+          </span>
         </div>
       </section>
 
-      {/* ─── COMPANY PROFILE ─── */}
-      <section className="border-y border-white/10 bg-cn-card">
-        <div className="mx-auto flex max-w-7xl flex-col items-center gap-8 px-6 py-14 sm:flex-row sm:items-start sm:px-6 lg:px-8">
-          <div className="flex shrink-0 items-center justify-center bg-white p-6">
-            <Image
-              src="/logo.png"
-              alt="Kalakaar Studios logo"
-              width={1024}
-              height={1024}
-              className="h-24 w-auto sm:h-28"
-            />
-          </div>
-          <div className="text-center sm:text-left">
-            <h2 className="text-2xl font-extrabold tracking-tight text-white sm:text-3xl">
-              THE COMPANY
-            </h2>
-            <p className="mt-4 max-w-2xl text-sm font-medium leading-relaxed text-gray-400 sm:text-base">
-              Kalakaar Studios is a full-service event production and
-              management company operating across India. We design and build
-              custom stage architecture, rig concert-grade lighting and audio
-              systems, coordinate multi-vendor logistics, and manage
-              end-to-end event operations — from the first production meeting
-              to the final load-out. Our talent desk handles artist booking,
-              rider fulfilment, and day-of stage coordination so every show
-              lands on time and on brief.
+      {/* ─── WHAT WE DO ─── */}
+      <section id="what-we-do" className="border-y-2 border-ink bg-cream">
+        <div className="mx-auto max-w-7xl px-5 py-16 sm:px-8">
+          <div className="flex flex-wrap items-end justify-between gap-4">
+            <div>
+              <p className="text-xs font-bold uppercase tracking-[0.25em] text-ink/50">
+                How it works
+              </p>
+              <h2 className="mt-2 font-blocky text-3xl font-bold uppercase tracking-tight sm:text-4xl">
+                One team.{" "}
+                <span className="relative z-0 inline-block whitespace-nowrap">
+                  <svg
+                    viewBox="0 0 120 26"
+                    preserveAspectRatio="none"
+                    aria-hidden="true"
+                    className="absolute left-0 top-[30%] -z-10 h-[115%] w-full"
+                  >
+                    <path
+                      d="M3 20 C 30 5, 90 5, 117 14"
+                      stroke="#BAE6FD"
+                      strokeWidth="12"
+                      strokeLinecap="round"
+                      fill="none"
+                    />
+                  </svg>
+                  Three phases.
+                </span>
+              </h2>
+            </div>
+            <p className="max-w-sm text-sm font-medium leading-relaxed text-ink/60">
+              No hand-offs, no finger-pointing. The same crew that plans your
+              show is on site the night it matters.
             </p>
           </div>
-        </div>
-      </section>
 
-      {/* ─── SERVICES / WHAT WE PRODUCE ─── */}
-      <section id="services" className="bg-cn-dark">
-        <div className="mx-auto max-w-7xl px-6 py-16 sm:px-6 lg:px-8">
-          <h2 className="text-3xl font-extrabold tracking-tight text-white sm:text-4xl">
-            WHAT WE{" "}
-            <span className="text-cn-cyan">PRODUCE</span>
-          </h2>
-          <p className="mt-3 max-w-lg text-sm font-medium text-gray-400">
-            Six production disciplines, one accountable company — from concept
-            to curtain call.
-          </p>
-
-          <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {services.map((service) => (
+          <div className="mt-10 grid gap-6 md:grid-cols-3">
+            {steps.map((step) => (
               <div
-                key={service.title}
-                className="group border border-white/10 bg-cn-card transition-colors hover:border-cn-cyan"
+                key={step.step}
+                className="relative border-2 border-ink bg-cream p-6 shadow-[5px_5px_0px_0px_var(--color-ink)]"
               >
-                <div className={`h-1.5 w-full ${service.accent}`} />
-                <div className="p-6">
-                  <h3 className="flex items-center gap-2 text-lg font-bold text-white">
-                    {service.title}
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 20 20"
-                      fill="currentColor"
-                      className="h-4 w-4 text-cn-cyan"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M7.21 14.77a.75.75 0 0 1 .02-1.06L11.168 10 7.23 6.29a.75.75 0 1 1 1.04-1.08l4.5 4.25a.75.75 0 0 1 0 1.08l-4.5 4.25a.75.75 0 0 1-1.06-.02Z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
-                  </h3>
-                  <p className="mt-3 text-sm leading-relaxed text-gray-400">
-                    {service.desc}
-                  </p>
-                  <a
-                    href="#contact"
-                    className="mt-5 inline-block text-sm font-bold text-cn-cyan transition-colors hover:text-white"
-                  >
-                    LEARN MORE
-                  </a>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ─── RECENT WORK / PORTFOLIO ─── */}
-      <section id="portfolio" className="border-y border-white/10 bg-cn-card">
-        <div className="mx-auto max-w-7xl px-6 py-16 sm:px-6 lg:px-8">
-          <h2 className="text-3xl font-extrabold tracking-tight text-white sm:text-4xl">
-            RECENT{" "}
-            <span className="text-cn-coral">WORK</span>
-          </h2>
-          <p className="mt-3 max-w-lg text-sm font-medium text-gray-400">
-            A selection of the events we&apos;ve staged, produced, and run.
-          </p>
-
-          <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {recentWork.map((project) => (
-              <article
-                key={project.title}
-                className="group border border-white/10 bg-black transition-colors hover:border-cn-cyan"
-              >
-                <div className="flex aspect-video items-center justify-center bg-cn-dark">
-                  <span className="text-4xl font-extrabold text-white/10 transition-colors group-hover:text-cn-cyan/30">
-                    KS
-                  </span>
-                </div>
-                <div className="p-5">
-                  <div className="flex items-center gap-3">
-                    <span
-                      className={`inline-block px-2 py-0.5 text-[10px] font-bold tracking-widest text-black ${project.tagColor}`}
-                    >
-                      {project.category.toUpperCase()}
-                    </span>
-                  </div>
-                  <h3 className="mt-3 text-lg font-bold text-white">
-                    {project.title}
-                  </h3>
-                  <p className="mt-1 text-xs font-medium text-gray-500">
-                    {project.detail}
-                  </p>
-                </div>
-              </article>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ─── PRODUCTION PROCESS ─── */}
-      <section id="production" className="bg-cn-dark">
-        <div className="mx-auto max-w-7xl px-6 py-16 sm:px-6 lg:px-8">
-          <h2 className="text-3xl font-extrabold tracking-tight text-white sm:text-4xl">
-            EVENT{" "}
-            <span className="text-cn-lime">PRODUCTION</span>
-          </h2>
-          <p className="mt-3 max-w-lg text-sm font-medium text-gray-400">
-            From first brief to final bow — how we run every event.
-          </p>
-
-          <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {[
-              {
-                step: "01",
-                title: "BRIEF & SCOPING",
-                desc: "Kickoff call, site visit, budget alignment, and a written production scope — no ambiguity.",
-                color: "text-cn-cyan",
-              },
-              {
-                step: "02",
-                title: "DESIGN & PLANNING",
-                desc: "Stage CAD, lighting plots, audio maps, vendor shortlists, and the master production schedule.",
-                color: "text-cn-coral",
-              },
-              {
-                step: "03",
-                title: "BUILD & RIG",
-                desc: "Stage construction, AV load-in, lighting focus, sound checks, and full technical rehearsal.",
-                color: "text-cn-lime",
-              },
-              {
-                step: "04",
-                title: "SHOW & LOAD-OUT",
-                desc: "Live show-call, on-ground ops, real-time troubleshooting, crew coordination, and demob.",
-                color: "text-cn-cyan",
-              },
-            ].map((item) => (
-              <div
-                key={item.step}
-                className="border border-white/10 bg-cn-card p-6 transition-colors hover:border-cn-cyan"
-              >
-                <span className="font-blocky text-3xl font-extrabold text-white/15">
-                  {item.step}
+                <span className="absolute -top-4 -right-2 rotate-3 bg-cream px-2 text-2xl font-bold text-ink/20">
+                  {step.step}
                 </span>
-                <h3
-                  className={`mt-3 text-sm font-bold tracking-widest ${item.color}`}
+                <span
+                  className={`flex h-12 w-12 -rotate-3 items-center justify-center border-2 border-ink ${step.chip}`}
                 >
-                  {item.title}
+                  <step.icon className="h-6 w-6" strokeWidth={2.25} />
+                </span>
+                <h3 className="mt-5 font-blocky text-xl font-bold uppercase tracking-tight">
+                  {step.title}
                 </h3>
-                <p className="mt-2 text-sm leading-relaxed text-gray-400">
-                  {item.desc}
+                <p className="mt-2 text-sm font-medium leading-relaxed text-ink/65">
+                  {step.desc}
                 </p>
               </div>
             ))}
@@ -488,318 +454,516 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ─── CONTACT / BOOK AN EVENT ─── */}
-      <section id="contact" className="border-y border-white/10 bg-cn-card">
-        <div className="mx-auto max-w-7xl px-6 py-16 sm:px-6 lg:px-8">
-          <div className="grid gap-12 lg:grid-cols-[1fr_1.5fr]">
+      {/* ─── SERVICES ─── */}
+      <section id="services" className="bg-ink">
+        <div className="mx-auto max-w-7xl px-5 py-16 sm:px-8">
+          <div className="flex flex-wrap items-end justify-between gap-4">
             <div>
-              <h2 className="text-3xl font-extrabold tracking-tight text-white sm:text-4xl">
-                BOOK AN{" "}
-                <span className="text-cn-cyan">EVENT</span>
-              </h2>
-              <p className="mt-4 text-sm font-medium leading-relaxed text-gray-400">
-                Concerts, corporate galas, brand activations, and private
-                celebrations. Share the essentials and our production team will
-                come back with a scoping call and a ballpark budget within 24
-                hours.
+              <p className="text-xs font-bold uppercase tracking-[0.25em] text-cream/50">
+                What we produce
               </p>
-
-              <dl className="mt-8 space-y-4 text-sm">
-                <div>
-                  <dt className="text-xs font-bold tracking-widest text-cn-lime">
-                    EMAIL
-                  </dt>
-                  <dd className="mt-1 text-gray-300">
-                    Kalakaarstudios@ssociopro.com
-                  </dd>
-                </div>
-                <div>
-                  <dt className="text-xs font-bold tracking-widest text-cn-lime">
-                    PRODUCTION OFFICE
-                  </dt>
-                  <dd className="mt-1 leading-relaxed text-gray-300">
-                    Kalakaar Studios
-                    <br />
-                    Bhub, Maurya Lok, Block A
-                    <br />
-                    Fifth Floor, Patna, Bihar
-                  </dd>
-                </div>
-              </dl>
+              <h2 className="mt-2 font-blocky text-3xl font-bold uppercase tracking-tight text-cream sm:text-4xl">
+                Services &
+                <br className="sm:hidden" /> Productions
+              </h2>
             </div>
+            <a
+              href="#contact"
+              className={`${pillBase} bg-sky px-6 py-3 text-sm`}
+            >
+              Start a Project <ArrowUpRight className="h-4 w-4" strokeWidth={2.5} />
+            </a>
+          </div>
 
-            <div className="border-2 border-cn-cyan bg-cn-dark p-6 sm:p-8">
-              {formSubmitted ? (
-                <div className="py-16 text-center">
-                  <h3 className="text-2xl font-extrabold tracking-tight text-cn-lime">
-                    INQUIRY RECEIVED
-                  </h3>
-                  <p className="mx-auto mt-4 max-w-sm text-sm font-medium leading-relaxed text-gray-400">
-                    Thank you. Your event inquiry has been registered and will
-                    be reviewed by the production team. We will respond within
-                    one business day.
-                  </p>
-                </div>
-              ) : (
-                <form onSubmit={handleFormSubmit} className="space-y-5">
-                  <input
-                    type="hidden"
-                    name="_subject"
-                    value="New event inquiry — Kalakaar Studios"
+          <div className="mt-10 grid gap-7 md:grid-cols-2 lg:grid-cols-3">
+            {services.map((service) => (
+              <div
+                key={service.title}
+                className={`relative flex flex-col border-2 border-ink p-6 shadow-[6px_6px_0px_0px_var(--color-ink)] ${service.bg}`}
+              >
+                <span className="flex h-12 w-12 items-center justify-center border-2 border-ink bg-cream">
+                  <service.icon className="h-6 w-6" strokeWidth={2.25} />
+                </span>
+                <h3 className="mt-6 font-blocky text-xl font-bold uppercase leading-snug tracking-tight">
+                  {service.title}
+                </h3>
+                <p className="mt-3 flex-1 text-sm font-medium leading-relaxed text-ink/70">
+                  {service.desc}
+                </p>
+                <a
+                  href="#contact"
+                  className="group mt-6 inline-flex items-center gap-1.5 text-sm font-bold uppercase tracking-wide"
+                >
+                  Learn More
+                  <ArrowRight
+                    className="h-4 w-4 transition-transform group-hover:translate-x-1"
+                    strokeWidth={2.5}
                   />
-                  <input type="hidden" name="_captcha" value="false" />
+                </a>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
 
-                  {formError && (
-                    <div className="border-2 border-cn-coral bg-cn-card px-4 py-3 text-sm font-medium text-cn-coral">
-                      Something went wrong. Please email us directly at{" "}
-                      <span className="font-bold">
-                        Kalakaarstudios@ssociopro.com
-                      </span>
-                    </div>
-                  )}
+      {/* ─── SHOWREEL PLACEHOLDER ─── */}
+      <section id="showreel" className="mx-auto max-w-7xl px-5 py-16 sm:px-8">
+        <p className="text-xs font-bold uppercase tracking-[0.25em] text-ink/50">
+          Reel · 2026
+        </p>
+        <h2 className="mt-2 font-blocky text-3xl font-bold uppercase tracking-tight sm:text-4xl">
+          See the show, <span className="text-ink/60">not just the photos.</span>
+        </h2>
 
-                  <div className="grid gap-5 sm:grid-cols-2">
-                    <div>
-                      <label
-                        htmlFor="name"
-                        className="block text-xs font-bold tracking-widest text-white"
-                      >
-                        FULL NAME *
-                      </label>
-                      <input
-                        type="text"
-                        id="name"
-                        name="name"
-                        required
-                        placeholder="Priya Sharma"
-                        className="mt-2 w-full border-2 border-white/15 bg-black px-4 py-3 text-sm text-white placeholder-gray-600 outline-none transition-colors focus:border-cn-cyan"
-                      />
-                    </div>
-                    <div>
-                      <label
-                        htmlFor="email"
-                        className="block text-xs font-bold tracking-widest text-white"
-                      >
-                        WORK EMAIL *
-                      </label>
-                      <input
-                        type="email"
-                        id="email"
-                        name="email"
-                        required
-                        placeholder="you@company.com"
-                        className="mt-2 w-full border-2 border-white/15 bg-black px-4 py-3 text-sm text-white placeholder-gray-600 outline-none transition-colors focus:border-cn-cyan"
-                      />
-                    </div>
+        <div className="group relative mt-8 aspect-video overflow-hidden border-2 border-ink bg-ink shadow-[8px_8px_0px_0px_var(--color-ink)]">
+          <div
+            className="absolute inset-0 opacity-20"
+            style={{
+              backgroundImage:
+                "linear-gradient(rgba(251,249,245,0.14) 1px, transparent 1px), linear-gradient(90deg, rgba(251,249,245,0.14) 1px, transparent 1px)",
+              backgroundSize: "44px 44px",
+            }}
+          />
+          <Spotlight
+            className="absolute -left-10 -top-10 h-44 w-44 text-sky opacity-60"
+            strokeWidth={1}
+          />
+          <Spotlight
+            className="absolute -bottom-12 -right-10 h-44 w-44 scale-y-[-1] text-mint opacity-60"
+            strokeWidth={1}
+          />
+
+          <div className="absolute inset-0 flex flex-col items-center justify-center gap-5">
+            <span className="flex h-20 w-20 rotate-[-4deg] items-center justify-center rounded-full border-2 border-cream bg-sun shadow-[5px_5px_0px_0px_rgba(251,249,245,0.9)] transition-transform group-hover:scale-110">
+              <Play className="ml-1 h-9 w-9 fill-ink text-ink" strokeWidth={2.5} />
+            </span>
+            <span className="border-2 border-cream bg-ink px-4 py-2 text-sm font-bold uppercase tracking-[0.15em] text-cream">
+              [ Production Showreel Video Placeholder — MP4 ]
+            </span>
+          </div>
+        </div>
+      </section>
+
+      {/* ─── FAQ ─── */}
+      <section
+        id="faq"
+        className="border-t-2 border-ink bg-gradient-to-b from-cream to-mint/40"
+      >
+        <div className="mx-auto max-w-4xl px-5 py-16 sm:px-8">
+          <p className="text-xs font-bold uppercase tracking-[0.25em] text-ink/50">
+            Straight answers
+          </p>
+          <h2 className="mt-2 font-blocky text-3xl font-bold uppercase tracking-tight sm:text-4xl">
+            FAQ
+          </h2>
+
+          <div className="mt-8 space-y-5">
+            {faqs.map((faq, i) => (
+              <details
+                key={faq.q}
+                open={i === 0}
+                className="group border-2 border-ink bg-cream shadow-[4px_4px_0px_0px_var(--color-ink)]"
+              >
+                <summary className="flex cursor-pointer items-center justify-between gap-4 px-5 py-4 text-sm font-bold uppercase tracking-wide sm:text-base">
+                  {faq.q}
+                  <span className="flex h-7 w-7 shrink-0 items-center justify-center border-2 border-ink bg-sun text-sm transition-transform group-open:rotate-45">
+                    +
+                  </span>
+                </summary>
+                <p className="border-t-2 border-ink px-5 py-4 text-sm font-medium leading-relaxed text-ink/70">
+                  {faq.a}
+                </p>
+              </details>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ─── CONTACT FORM ─── */}
+      <section id="contact" className="bg-sky/60 border-t-2 border-ink">
+        <div className="mx-auto grid max-w-7xl gap-12 px-5 py-16 sm:px-8 lg:grid-cols-[1fr_1.4fr]">
+          <div>
+            <span className="inline-flex -rotate-1 items-center gap-2 border-2 border-ink bg-ink px-3 py-1.5 text-xs font-bold uppercase tracking-widest text-cream shadow-[3px_3px_0px_0px_var(--color-ink)]">
+              <Lightbulb className="h-3.5 w-3.5" strokeWidth={2.5} />
+              Let&apos;s talk shop
+            </span>
+            <h2 className="mt-5 font-blocky text-4xl font-bold uppercase leading-[1.02] tracking-tight sm:text-5xl">
+              Got an event
+              <br />
+              <span className="relative z-0 inline-block whitespace-nowrap">
+                <svg
+                  viewBox="0 0 130 26"
+                  preserveAspectRatio="none"
+                  aria-hidden="true"
+                  className="absolute left-0 top-[35%] -z-10 h-[110%] w-full"
+                >
+                  <path
+                    d="M3 19 C 30 6, 80 6, 127 13"
+                    stroke="#FEF08A"
+                    strokeWidth="13"
+                    strokeLinecap="round"
+                    fill="none"
+                  />
+                </svg>
+                brewing?
+              </span>
+            </h2>
+            <p className="mt-5 max-w-md text-sm font-medium leading-relaxed text-ink/70">
+              Send the essentials — scale, city, dates, vibe — and our
+              production desk replies within 24 hours with a scoping call and a
+              ballpark budget.
+            </p>
+
+            <dl className="mt-8 space-y-4 text-sm font-bold">
+              <div className="flex items-center gap-3">
+                <span className="flex h-9 w-9 items-center justify-center border-2 border-ink bg-cream">
+                  <Mail className="h-4.5 w-4.5" strokeWidth={2.5} />
+                </span>
+                <a
+                  href="mailto:Kalakaarstudios@ssociopro.com"
+                  className="hover:text-ink/70"
+                >
+                  Kalakaarstudios@ssociopro.com
+                </a>
+              </div>
+              <div className="flex items-start gap-3">
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center border-2 border-ink bg-cream">
+                  <MapPin className="h-4.5 w-4.5" strokeWidth={2.5} />
+                </span>
+                <span>
+                  Bhub, Maurya Lok, Block A
+                  <br />
+                  Fifth Floor, Patna, Bihar
+                </span>
+              </div>
+            </dl>
+          </div>
+
+          <div className="border-2 border-ink bg-cream p-6 shadow-[8px_8px_0px_0px_var(--color-ink)] sm:p-8">
+            {formSubmitted ? (
+              <div className="flex flex-col items-center justify-center gap-4 py-16 text-center">
+                <span className="flex h-16 w-16 items-center justify-center rounded-full border-2 border-ink bg-mint shadow-[4px_4px_0px_0px_var(--color-ink)]">
+                  <Star className="h-8 w-8 fill-current" strokeWidth={2.5} />
+                </span>
+                <h3 className="font-blocky text-2xl font-bold uppercase tracking-tight">
+                  Inquiry received!
+                </h3>
+                <p className="max-w-sm text-sm font-medium leading-relaxed text-ink/70">
+                  Thanks — your event brief is on the production desk. Expect a
+                  response within one business day.
+                </p>
+              </div>
+            ) : (
+              <form onSubmit={handleFormSubmit} className="space-y-5">
+                <input
+                  type="hidden"
+                  name="_subject"
+                  value="New event inquiry — Kalakaar Studios"
+                />
+                <input type="hidden" name="_captcha" value="false" />
+
+                {formError && (
+                  <div className="border-2 border-ink bg-[#fecaca] px-4 py-3 text-sm font-bold text-ink">
+                    Oops — that didn&apos;t go through. Email us directly at
+                    Kalakaarstudios@ssociopro.com
                   </div>
+                )}
 
+                <div className="grid gap-5 sm:grid-cols-2">
                   <div>
                     <label
-                      htmlFor="event-type"
-                      className="block text-xs font-bold tracking-widest text-white"
+                      htmlFor="name"
+                      className="block text-xs font-bold uppercase tracking-widest"
                     >
-                      EVENT TYPE
+                      Full name *
+                    </label>
+                    <input
+                      type="text"
+                      id="name"
+                      name="name"
+                      required
+                      placeholder="Priya Sharma"
+                      className="mt-2 w-full border-2 border-ink bg-cream px-4 py-3 text-sm font-medium outline-none transition-shadow focus:shadow-[3px_3px_0px_0px_var(--color-ink)]"
+                    />
+                  </div>
+                  <div>
+                    <label
+                      htmlFor="email"
+                      className="block text-xs font-bold uppercase tracking-widest"
+                    >
+                      Work email *
+                    </label>
+                    <input
+                      type="email"
+                      id="email"
+                      name="email"
+                      required
+                      placeholder="you@company.com"
+                      className="mt-2 w-full border-2 border-ink bg-cream px-4 py-3 text-sm font-medium outline-none transition-shadow focus:shadow-[3px_3px_0px_0px_var(--color-ink)]"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label
+                    htmlFor="event-type"
+                    className="block text-xs font-bold uppercase tracking-widest"
+                  >
+                    Event type
+                  </label>
+                  <select
+                    id="event-type"
+                    name="event-type"
+                    defaultValue=""
+                    className="mt-2 w-full border-2 border-ink bg-cream px-4 py-3 text-sm font-medium outline-none transition-shadow focus:shadow-[3px_3px_0px_0px_var(--color-ink)]"
+                  >
+                    <option value="" disabled>
+                      Select an event type
+                    </option>
+                    {eventTypes.map((option) => (
+                      <option key={option} value={option}>
+                        {option}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="grid gap-5 sm:grid-cols-3">
+                  <div>
+                    <label
+                      htmlFor="attendees"
+                      className="block text-xs font-bold uppercase tracking-widest"
+                    >
+                      Attendees
+                    </label>
+                    <input
+                      type="text"
+                      id="attendees"
+                      name="attendees"
+                      placeholder="e.g. 500"
+                      className="mt-2 w-full border-2 border-ink bg-cream px-4 py-3 text-sm font-medium outline-none transition-shadow focus:shadow-[3px_3px_0px_0px_var(--color-ink)]"
+                    />
+                  </div>
+                  <div>
+                    <label
+                      htmlFor="location"
+                      className="block text-xs font-bold uppercase tracking-widest"
+                    >
+                      City
+                    </label>
+                    <input
+                      type="text"
+                      id="location"
+                      name="location"
+                      placeholder="e.g. Mumbai"
+                      className="mt-2 w-full border-2 border-ink bg-cream px-4 py-3 text-sm font-medium outline-none transition-shadow focus:shadow-[3px_3px_0px_0px_var(--color-ink)]"
+                    />
+                  </div>
+                  <div>
+                    <label
+                      htmlFor="budget"
+                      className="block text-xs font-bold uppercase tracking-widest"
+                    >
+                      Budget range
                     </label>
                     <select
-                      id="event-type"
-                      name="event-type"
+                      id="budget"
+                      name="budget"
                       defaultValue=""
-                      className="mt-2 w-full border-2 border-white/15 bg-black px-4 py-3 text-sm text-white outline-none transition-colors focus:border-cn-cyan"
+                      className="mt-2 w-full border-2 border-ink bg-cream px-4 py-3 text-sm font-medium outline-none transition-shadow focus:shadow-[3px_3px_0px_0px_var(--color-ink)]"
                     >
                       <option value="" disabled>
-                        Select an event type
+                        Select
                       </option>
-                      {eventTypes.map((option) => (
+                      {budgetRanges.map((option) => (
                         <option key={option} value={option}>
                           {option}
                         </option>
                       ))}
                     </select>
                   </div>
+                </div>
 
-                  <div className="grid gap-5 sm:grid-cols-3">
-                    <div>
-                      <label
-                        htmlFor="attendees"
-                        className="block text-xs font-bold tracking-widest text-white"
-                      >
-                        ATTENDEES
-                      </label>
-                      <input
-                        type="text"
-                        id="attendees"
-                        name="attendees"
-                        placeholder="e.g. 500"
-                        className="mt-2 w-full border-2 border-white/15 bg-black px-4 py-3 text-sm text-white placeholder-gray-600 outline-none transition-colors focus:border-cn-cyan"
-                      />
-                    </div>
-                    <div>
-                      <label
-                        htmlFor="location"
-                        className="block text-xs font-bold tracking-widest text-white"
-                      >
-                        CITY
-                      </label>
-                      <input
-                        type="text"
-                        id="location"
-                        name="location"
-                        placeholder="e.g. Mumbai"
-                        className="mt-2 w-full border-2 border-white/15 bg-black px-4 py-3 text-sm text-white placeholder-gray-600 outline-none transition-colors focus:border-cn-cyan"
-                      />
-                    </div>
-                    <div>
-                      <label
-                        htmlFor="budget"
-                        className="block text-xs font-bold tracking-widest text-white"
-                      >
-                        BUDGET RANGE
-                      </label>
-                      <select
-                        id="budget"
-                        name="budget"
-                        defaultValue=""
-                        className="mt-2 w-full border-2 border-white/15 bg-black px-4 py-3 text-sm text-white outline-none transition-colors focus:border-cn-cyan"
-                      >
-                        <option value="" disabled>
-                          Select
-                        </option>
-                        {budgetRanges.map((option) => (
-                          <option key={option} value={option}>
-                            {option}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                  </div>
-
-                  <div>
-                    <label
-                      htmlFor="message"
-                      className="block text-xs font-bold tracking-widest text-white"
-                    >
-                      EVENT DETAILS *
-                    </label>
-                    <textarea
-                      id="message"
-                      name="message"
-                      rows={5}
-                      required
-                      placeholder="Venue, date, scale, and what a successful show looks like for you."
-                      className="mt-2 w-full resize-none border-2 border-white/15 bg-black px-4 py-3 text-sm text-white placeholder-gray-600 outline-none transition-colors focus:border-cn-cyan"
-                    />
-                  </div>
-
-                  <button
-                    type="submit"
-                    className="w-full bg-cn-cyan px-7 py-3.5 text-sm font-extrabold tracking-widest text-black transition-colors hover:bg-white sm:w-auto"
+                <div>
+                  <label
+                    htmlFor="message"
+                    className="block text-xs font-bold uppercase tracking-widest"
                   >
-                    SEND INQUIRY
-                  </button>
-                </form>
-              )}
-            </div>
+                    Event details *
+                  </label>
+                  <textarea
+                    id="message"
+                    name="message"
+                    rows={5}
+                    required
+                    placeholder="Venue, date, scale, and what a successful night looks like for you."
+                    className="mt-2 w-full resize-none border-2 border-ink bg-cream px-4 py-3 text-sm font-medium outline-none transition-shadow focus:shadow-[3px_3px_0px_0px_var(--color-ink)]"
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  className={`${pillBase} w-full bg-sun px-7 py-3.5 text-sm sm:w-auto`}
+                >
+                  <Send className="h-4 w-4" strokeWidth={2.5} />
+                  Send the Brief
+                </button>
+              </form>
+            )}
+          </div>
+        </div>
+      </section>
+
+      {/* ─── CTA BAND ─── */}
+      <section className="border-t-2 border-ink bg-sun">
+        <div className="mx-auto flex max-w-7xl flex-col items-center gap-5 px-5 py-14 text-center sm:px-8">
+          <Sparkles className="h-8 w-8 rotate-6" strokeWidth={2} />
+          <h2 className="font-blocky text-4xl font-bold uppercase leading-[0.95] tracking-tight sm:text-6xl">
+            Let&apos;s make some
+            <br />
+            <span className="relative z-0 inline-block whitespace-nowrap">
+              <svg
+                viewBox="0 0 180 26"
+                preserveAspectRatio="none"
+                aria-hidden="true"
+                className="absolute left-0 top-[45%] -z-10 h-[90%] w-full"
+              >
+                <path
+                  d="M4 13 C 40 5, 90 20, 176 10"
+                  stroke="#86EFAC"
+                  strokeWidth="14"
+                  strokeLinecap="round"
+                  fill="none"
+                />
+              </svg>
+              noise.
+            </span>
+          </h2>
+          <div className="mt-3 flex flex-col gap-4 sm:flex-row">
+            <a href="#contact" className={`${pillBase} bg-ink px-7 py-3.5 text-sm text-cream`}>
+              <CalendarPlus className="h-4 w-4" strokeWidth={2.5} />
+              Book a Call
+            </a>
+            <a
+              href="mailto:Kalakaarstudios@ssociopro.com"
+              className={`${pillBase} bg-cream px-7 py-3.5 text-sm`}
+            >
+              <Mail className="h-4 w-4" strokeWidth={2.5} />
+              Email the Studio
+            </a>
           </div>
         </div>
       </section>
 
       {/* ─── FOOTER ─── */}
-      <footer className="bg-black">
-        <div className="mx-auto max-w-7xl px-6 py-12 sm:px-6 lg:px-8">
-          <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
-            <div>
-              <p className="text-lg font-extrabold tracking-tight text-white">
-                KALAKAAR STUDIOS
-              </p>
-              <p className="mt-3 text-sm leading-relaxed text-gray-500">
-                Event production &amp; management company — concerts, galas,
-                brand activations, and private celebrations across 12 cities in
-                India.
-              </p>
-            </div>
-
-            <div>
-              <p className="text-xs font-bold tracking-widest text-cn-cyan">
-                NAVIGATION
-              </p>
-              <nav className="mt-3 flex flex-col gap-2">
-                {navLinks.map((link) => (
-                  <a
-                    key={link.label}
-                    href={link.href}
-                    className="text-sm font-medium text-gray-400 transition-colors hover:text-white"
-                  >
-                    {link.label}
-                  </a>
-                ))}
-              </nav>
-            </div>
-
-            <div>
-              <p className="text-xs font-bold tracking-widest text-cn-cyan">
-                LEGAL
-              </p>
-              <nav className="mt-3 flex flex-col gap-2">
-                <Link
-                  href="/terms"
-                  className="text-sm font-medium text-gray-400 transition-colors hover:text-white"
-                >
-                  Terms of Service
-                </Link>
-                <Link
-                  href="/privacy"
-                  className="text-sm font-medium text-gray-400 transition-colors hover:text-white"
-                >
-                  Privacy Policy
-                </Link>
-              </nav>
-            </div>
-
-            <div>
-              <p className="text-xs font-bold tracking-widest text-cn-cyan">
-                CONNECT
-              </p>
-              <div className="mt-3 flex flex-col gap-2">
-                <a
-                  href="mailto:Kalakaarstudios@ssociopro.com"
-                  className="text-sm font-medium text-gray-400 transition-colors hover:text-white"
-                >
-                  Email Us
-                </a>
-                <a
-                  href="https://www.instagram.com/kalakaar_studios1/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-sm font-medium text-gray-400 transition-colors hover:text-cn-coral"
-                >
-                  Instagram
-                </a>
-                <a
-                  href="https://youtube.com/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-sm font-medium text-gray-400 transition-colors hover:text-cn-coral"
-                >
-                  YouTube
-                </a>
-                <a
-                  href="https://www.linkedin.com/company/kalakaar-studios01/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-sm font-medium text-gray-400 transition-colors hover:text-cn-cyan"
-                >
-                  LinkedIn
-                </a>
-              </div>
+      <footer className="bg-ink text-cream">
+        <div className="mx-auto grid max-w-7xl gap-10 px-5 py-14 sm:px-8 md:grid-cols-[1.4fr_1fr_1fr]">
+          <div>
+            <a href="#" className="inline-flex items-center gap-2.5">
+              <span className="flex h-9 w-9 rotate-[-4deg] items-center justify-center border-2 border-cream bg-sun text-ink">
+                <Sparkles className="h-5 w-5" strokeWidth={2.5} />
+              </span>
+              <span className="font-blocky text-lg font-bold uppercase tracking-tight">
+                Kalakaar Studios
+              </span>
+            </a>
+            <p className="mt-4 max-w-sm text-sm font-medium leading-relaxed text-cream/60">
+              A full-service event production and management studio in Patna,
+              making chaos look effortless since 2025. Plan it, build it, run
+              it — loudly.
+            </p>
+            <div className="mt-6 flex flex-wrap gap-2.5 text-xs font-bold uppercase tracking-wide">
+              <a
+                href="https://www.instagram.com/kalakaar_studios1/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 border-2 border-cream px-3 py-1.5 transition-colors hover:bg-sun hover:text-ink"
+              >
+                <AtSign className="h-3.5 w-3.5" strokeWidth={2.5} />
+                @kalakaar_studios1
+              </a>
+              <a
+                href="https://www.linkedin.com/company/kalakaar-studios01/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 border-2 border-cream px-3 py-1.5 transition-colors hover:bg-sun hover:text-ink"
+              >
+                <Globe className="h-3.5 w-3.5" strokeWidth={2.5} />
+                LinkedIn
+              </a>
+              <span className="inline-flex items-center gap-1.5 border-2 border-cream px-3 py-1.5">
+                <Clapperboard className="h-3.5 w-3.5" strokeWidth={2.5} />
+                YouTube — soon
+              </span>
             </div>
           </div>
 
-          <div className="mt-10 border-t border-white/10 pt-6 text-center text-xs font-medium text-gray-600">
-            &copy; {new Date().getFullYear()} Kalakaar Studios. All rights
-            reserved.
+          <nav className="flex flex-col gap-3">
+            <p className="text-xs font-bold uppercase tracking-[0.25em] text-sun">
+              Explore
+            </p>
+            {navLinks.map((link) => (
+              <a
+                key={link.label}
+                href={link.href}
+                className="text-sm font-medium text-cream/60 transition-colors hover:text-cream"
+              >
+                {link.label}
+              </a>
+            ))}
+            <a
+              href="#contact"
+              className="text-sm font-medium text-cream/60 transition-colors hover:text-cream"
+            >
+              Contact
+            </a>
+          </nav>
+
+          <nav className="flex flex-col gap-3">
+            <p className="text-xs font-bold uppercase tracking-[0.25em] text-mint">
+              Legal
+            </p>
+            <Link
+              href="/terms"
+              className="text-sm font-medium text-cream/60 transition-colors hover:text-cream"
+            >
+              Terms of Service
+            </Link>
+            <Link
+              href="/privacy"
+              className="text-sm font-medium text-cream/60 transition-colors hover:text-cream"
+            >
+              Privacy Policy
+            </Link>
+            <p className="mt-2 text-sm text-cream/40">
+              Bhub, Maurya Lok, Block A
+              <br />
+              Fifth Floor, Patna, Bihar
+            </p>
+          </nav>
+        </div>
+
+        <div className="border-t border-cream/15">
+          <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-3 px-5 py-5 text-xs font-medium text-cream/50 sm:px-8">
+            <p>
+              &copy; {new Date().getFullYear()} Kalakaar Studios. All rights
+              reserved.
+            </p>
+            <p className="inline-flex items-center gap-1.5">
+              Made with <Sparkles className="h-3.5 w-3.5 text-sun" strokeWidth={2.5} /> and
+              full-volume monitors
+            </p>
           </div>
         </div>
       </footer>
     </div>
   );
+}
+
+function Dot() {
+  return <span className="flex h-1.5 w-1.5 rotate-45 bg-ink/40" />;
+}
+
+function MaybeStar() {
+  return <span className="text-ink/60">★</span>;
 }

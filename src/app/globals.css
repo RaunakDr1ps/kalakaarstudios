@@ -17,6 +17,12 @@
   --color-cn-coral: #ff6254;
   --color-cn-lime: #36d123;
 
+  --color-cream: #fbf9f5;
+  --color-ink: #111827;
+  --color-sun: #fef08a;
+  --color-mint: #86efac;
+  --color-sky: #bae6fd;
+
   --font-serif: var(--font-playfair);
   --font-blocky: var(--font-oswald);
   --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
