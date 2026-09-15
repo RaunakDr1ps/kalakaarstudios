@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { Oswald } from "next/font/google";
 import { useState } from "react";
 import {
@@ -17,7 +18,6 @@ import {
   Mail,
   MapPin,
   Menu,
-  Mic,
   Music4,
   PartyPopper,
   PenTool,
@@ -167,8 +167,14 @@ export default function Home() {
       <header className="sticky top-0 z-50 border-b-2 border-ink bg-cream/95 backdrop-blur">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-5 py-4 sm:px-8">
           <a href="#" className="group inline-flex items-center gap-2.5">
-            <span className="flex h-10 w-10 rotate-[-4deg] items-center justify-center border-2 border-ink bg-sun shadow-[3px_3px_0px_0px_var(--color-ink)]">
-              <Sparkles className="h-5 w-5" strokeWidth={2.5} />
+            <span className="flex h-10 w-10 rotate-[-4deg] items-center justify-center overflow-hidden border-2 border-ink bg-cream shadow-[3px_3px_0px_0px_var(--color-ink)]">
+              <Image
+                src="/logo.png"
+                alt="Kalakaar Studios logo"
+                width={1024}
+                height={1024}
+                className="h-full w-full object-cover"
+              />
             </span>
             <span className="font-blocky text-lg font-bold uppercase tracking-tight sm:text-xl">
               Kalakaar Studios
@@ -362,8 +368,14 @@ export default function Home() {
             />
 
             <div className="relative z-10 flex flex-col items-center gap-3">
-              <span className="flex h-16 w-16 items-center justify-center border-2 border-ink bg-cream shadow-[4px_4px_0px_0px_var(--color-ink)]">
-                <Mic className="h-8 w-8" strokeWidth={2} />
+              <span className="flex h-20 w-20 items-center justify-center overflow-hidden border-2 border-ink bg-cream shadow-[4px_4px_0px_0px_var(--color-ink)]">
+                <Image
+                  src="/logo.png"
+                  alt="Kalakaar Studios logo"
+                  width={1024}
+                  height={1024}
+                  className="h-full w-full object-cover"
+                />
               </span>
               <span className="border-2 border-ink bg-sun px-3 py-1 text-[10px] font-bold uppercase tracking-[0.2em] text-ink">
                 Your Event Art Here
@@ -860,8 +872,14 @@ export default function Home() {
         <div className="mx-auto grid max-w-7xl gap-10 px-5 py-14 sm:px-8 md:grid-cols-[1.4fr_1fr_1fr]">
           <div>
             <a href="#" className="inline-flex items-center gap-2.5">
-              <span className="flex h-9 w-9 rotate-[-4deg] items-center justify-center border-2 border-cream bg-sun text-ink">
-                <Sparkles className="h-5 w-5" strokeWidth={2.5} />
+              <span className="flex h-9 w-9 rotate-[-4deg] items-center justify-center overflow-hidden border-2 border-cream bg-cream">
+                <Image
+                  src="/logo.png"
+                  alt="Kalakaar Studios logo"
+                  width={1024}
+                  height={1024}
+                  className="h-full w-full object-cover"
+                />
               </span>
               <span className="font-blocky text-lg font-bold uppercase tracking-tight">
                 Kalakaar Studios
