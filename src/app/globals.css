@@ -29,67 +29,87 @@
     Helvetica, Arial, sans-serif;
 }
 
-@keyframes splash-emblem {
+@keyframes splash-grid-zoom {
   0% {
     opacity: 0;
-    transform: translateX(-140%);
+    transform: scale(0.5);
   }
-  50% {
+  25% {
     opacity: 1;
-    transform: translateX(4%);
+    transform: scale(1.5);
   }
-  62% {
-    transform: translateX(-2%);
-  }
-  74% {
-    transform: translateX(1%);
-  }
-  100% {
+  40% {
     opacity: 1;
-    transform: translateX(0);
+    transform: scale(1.5);
   }
-}
-
-@keyframes splash-grid {
-  0% {
-    opacity: 0;
-    transform: translateX(140%);
-  }
-  50% {
+  44% {
     opacity: 1;
-    transform: translateX(-4%);
+    transform: scale(1.12);
   }
-  62% {
-    transform: translateX(2%);
-  }
-  74% {
-    transform: translateX(-1%);
-  }
-  100% {
+  48% {
     opacity: 1;
-    transform: translateX(0);
+    transform: scale(1.05);
   }
-}
-
-@keyframes splash-pulse {
-  0%,
   100% {
     opacity: 1;
     transform: scale(1);
   }
-  50% {
-    opacity: 0.75;
-    transform: scale(1.04);
+}
+
+@keyframes splash-stamp {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -65%) translateY(-180%) scale(1.8);
+  }
+  70% {
+    opacity: 1;
+    transform: translate(-50%, -65%) translateY(6%) scale(1.1);
+  }
+  82% {
+    opacity: 1;
+    transform: translate(-50%, -65%) translateY(-2%) scale(1.04);
+  }
+  94% {
+    opacity: 1;
+    transform: translate(-50%, -65%) translateY(0) scale(1.02);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(-50%, -65%) translateY(0) scale(1);
   }
 }
 
-.splash-emblem {
-  animation: splash-emblem 1.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+@keyframes splash-thud {
+  0%,
+  42% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  45% {
+    transform: translateY(3px) scale(1.03);
+  }
+  49% {
+    transform: translateY(-2px) scale(0.98);
+  }
+  53% {
+    transform: translateY(1px) scale(1.01);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 .splash-grid {
-  animation: splash-grid 1.6s cubic-bezier(0.22, 1, 0.36, 1) both,
-    splash-pulse 1.4s ease-in-out 1.6s infinite;
+  animation: splash-grid-zoom 2s ease-out both;
+}
+
+.splash-stamp {
+  animation: splash-stamp 0.5s cubic-bezier(0.22, 1, 0.36, 1) 0.5s both;
+}
+
+.splash-thud {
+  animation: splash-thud 2s ease-out both;
 }
 
 html {

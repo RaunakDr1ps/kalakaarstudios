@@ -183,22 +183,20 @@ export default function Home() {
             loading ? "opacity-100" : "pointer-events-none opacity-0"
           }`}
         >
-          <div className="flex items-center gap-4">
-            <span className="splash-emblem flex h-24 w-24 items-center justify-center overflow-hidden rounded-md border-2 border-slate-900 bg-white p-2 shadow-[4px_4px_0px_0px_#0f172a]">
-              <Image
-                src="/logo.png"
-                alt="Kalakaar Studios"
-                width={200}
-                height={200}
-                className="h-full w-auto object-contain"
-              />
-            </span>
+          <div className="splash-thud relative flex items-center justify-center">
             <Image
               src="/ks-grid-logo.png"
               alt="Kalakaar Studios"
               width={200}
               height={64}
-              className="splash-grid h-10 w-auto"
+              className="splash-grid h-16 w-auto"
+            />
+            <Image
+              src="/stamp-logo.png"
+              alt="Kalakaar Studios"
+              width={500}
+              height={500}
+              className="splash-stamp absolute left-1/2 top-1/2 h-16 w-16"
             />
           </div>
         </div>
