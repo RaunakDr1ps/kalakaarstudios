@@ -167,13 +167,15 @@ export default function Home() {
       <header className="sticky top-0 z-50 border-b-2 border-ink bg-cream/95 backdrop-blur">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-5 py-4 sm:px-8">
           <a href="#" className="group inline-flex items-center gap-3">
-            <Image
-              src="/logo.png"
-              alt="Kalakaar Studios"
-              width={200}
-              height={200}
-              className="h-10 w-auto"
-            />
+            <span className="flex items-center justify-center rounded-md border-2 border-slate-900 bg-white p-1.5 shadow-[3px_3px_0px_0px_#0f172a]">
+              <Image
+                src="/logo.png"
+                alt="Kalakaar Studios"
+                width={200}
+                height={200}
+                className="h-8 w-auto"
+              />
+            </span>
             <Image
               src="/ks-grid-logo.png"
               alt="Kalakaar Studios"
