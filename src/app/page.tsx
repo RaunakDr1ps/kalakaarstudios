@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { Oswald } from "next/font/google";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   ArrowRight,
   ArrowUpRight,
@@ -128,9 +128,23 @@ const budgetRanges = [
 ];
 
 export default function Home() {
+  const [loading, setLoading] = useState(true);
+  const [hideSplash, setHideSplash] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [formSubmitted, setFormSubmitted] = useState(false);
   const [formError, setFormError] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setLoading(false), 2000);
+    return () => clearTimeout(timer);
+  }, []);
+
+  useEffect(() => {
+    if (!loading) {
+      const timer = setTimeout(() => setHideSplash(true), 500);
+      return () => clearTimeout(timer);
+    }
+  }, [loading]);
 
   async function handleFormSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -163,6 +177,33 @@ export default function Home() {
     <div
       className={`${oswald.variable} min-h-screen bg-cream font-sans text-ink antialiased`}
     >
+      {!hideSplash && (
+        <div
+          className={`fixed inset-0 z-50 flex flex-col items-center justify-center bg-[#FDFBF7] transition-opacity duration-500 ${
+            loading ? "opacity-100" : "pointer-events-none opacity-0"
+          }`}
+        >
+          <div className="flex items-center gap-4">
+            <span className="splash-emblem flex h-24 w-24 items-center justify-center overflow-hidden rounded-md border-2 border-slate-900 bg-white p-2 shadow-[4px_4px_0px_0px_#0f172a]">
+              <Image
+                src="/logo.png"
+                alt="Kalakaar Studios"
+                width={200}
+                height={200}
+                className="h-full w-auto object-contain"
+              />
+            </span>
+            <Image
+              src="/ks-grid-logo.png"
+              alt="Kalakaar Studios"
+              width={200}
+              height={64}
+              className="splash-grid h-10 w-auto"
+            />
+          </div>
+        </div>
+      )}
+
       {/* ─── HEADER ─── */}
       <header className="sticky top-0 z-50 border-b-2 border-ink bg-cream/95 backdrop-blur">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-5 py-4 sm:px-8">

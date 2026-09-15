@@ -29,6 +29,69 @@
     Helvetica, Arial, sans-serif;
 }
 
+@keyframes splash-emblem {
+  0% {
+    opacity: 0;
+    transform: translateX(-140%);
+  }
+  50% {
+    opacity: 1;
+    transform: translateX(4%);
+  }
+  62% {
+    transform: translateX(-2%);
+  }
+  74% {
+    transform: translateX(1%);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes splash-grid {
+  0% {
+    opacity: 0;
+    transform: translateX(140%);
+  }
+  50% {
+    opacity: 1;
+    transform: translateX(-4%);
+  }
+  62% {
+    transform: translateX(2%);
+  }
+  74% {
+    transform: translateX(-1%);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes splash-pulse {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.75;
+    transform: scale(1.04);
+  }
+}
+
+.splash-emblem {
+  animation: splash-emblem 1.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.splash-grid {
+  animation: splash-grid 1.6s cubic-bezier(0.22, 1, 0.36, 1) both,
+    splash-pulse 1.4s ease-in-out 1.6s infinite;
+}
+
 html {
   scroll-behavior: smooth;
 }
