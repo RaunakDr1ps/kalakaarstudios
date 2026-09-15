@@ -527,32 +527,16 @@ export default function Home() {
           See the show, <span className="text-ink/60">not just the photos.</span>
         </h2>
 
-        <div className="group relative mt-8 aspect-video overflow-hidden border-2 border-ink bg-ink shadow-[8px_8px_0px_0px_var(--color-ink)]">
-          <div
-            className="absolute inset-0 opacity-20"
-            style={{
-              backgroundImage:
-                "linear-gradient(rgba(251,249,245,0.14) 1px, transparent 1px), linear-gradient(90deg, rgba(251,249,245,0.14) 1px, transparent 1px)",
-              backgroundSize: "44px 44px",
-            }}
-          />
-          <Spotlight
-            className="absolute -left-10 -top-10 h-44 w-44 text-sky opacity-60"
-            strokeWidth={1}
-          />
-          <Spotlight
-            className="absolute -bottom-12 -right-10 h-44 w-44 scale-y-[-1] text-mint opacity-60"
-            strokeWidth={1}
-          />
-
-          <div className="absolute inset-0 flex flex-col items-center justify-center gap-5">
-            <span className="flex h-20 w-20 rotate-[-4deg] items-center justify-center rounded-full border-2 border-cream bg-sun shadow-[5px_5px_0px_0px_rgba(251,249,245,0.9)] transition-transform group-hover:scale-110">
-              <Play className="ml-1 h-9 w-9 fill-ink text-ink" strokeWidth={2.5} />
-            </span>
-            <span className="border-2 border-cream bg-ink px-4 py-2 text-sm font-bold uppercase tracking-[0.15em] text-cream">
-              [ Production Showreel Video Placeholder — MP4 ]
-            </span>
-          </div>
+        <div className="relative mt-8 aspect-video overflow-hidden border-2 border-ink bg-ink shadow-[8px_8px_0px_0px_var(--color-ink)]">
+          <video
+            className="h-full w-full object-cover"
+            controls
+            playsInline
+            preload="metadata"
+            poster="/logo.png"
+          >
+            <source src="/showreel.mp4" type="video/mp4" />
+          </video>
         </div>
       </section>
 
