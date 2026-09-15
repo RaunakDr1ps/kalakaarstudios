@@ -166,19 +166,21 @@ export default function Home() {
       {/* ─── HEADER ─── */}
       <header className="sticky top-0 z-50 border-b-2 border-ink bg-cream/95 backdrop-blur">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-5 py-4 sm:px-8">
-          <a href="#" className="group inline-flex items-center gap-2.5">
-            <span className="flex h-10 w-10 rotate-[-4deg] items-center justify-center overflow-hidden border-2 border-ink bg-cream shadow-[3px_3px_0px_0px_var(--color-ink)]">
-              <Image
-                src="/logo.png"
-                alt="Kalakaar Studios logo"
-                width={1024}
-                height={1024}
-                className="h-full w-full object-cover"
-              />
-            </span>
-            <span className="font-blocky text-lg font-bold uppercase tracking-tight sm:text-xl">
-              Kalakaar Studios
-            </span>
+          <a href="#" className="group inline-flex items-center gap-3">
+            <Image
+              src="/logo.png"
+              alt="Kalakaar Studios"
+              width={200}
+              height={200}
+              className="h-10 w-auto"
+            />
+            <Image
+              src="/ks-grid-logo.png"
+              alt="Kalakaar Studios"
+              width={200}
+              height={64}
+              className="h-8 w-auto"
+            />
           </a>
 
           <nav className="hidden items-center gap-7 lg:flex">
@@ -813,37 +815,13 @@ export default function Home() {
       {/* ─── CTA BAND ─── */}
       <section className="border-t-2 border-ink bg-sun">
         <div className="mx-auto flex max-w-7xl flex-col items-center gap-5 px-5 py-14 text-center sm:px-8">
-          <Sparkles className="h-8 w-8 rotate-6" strokeWidth={2} />
-          <div className="mt-2 flex flex-col items-center" aria-label="Kalakaar Studios">
-            <div className="flex">
-              {"KALAKAAR".split("").map((ch, i) => (
-                <span
-                  key={`k-${i}`}
-                  className={`flex h-9 w-9 items-center justify-center border border-slate-900 font-blocky text-sm font-black uppercase tracking-tighter sm:h-12 sm:w-12 sm:text-lg ${
-                    i % 2 === 0
-                      ? "translate-y-0.5 bg-ink text-cream"
-                      : "-translate-y-0.5 bg-cream text-ink"
-                  }`}
-                >
-                  {ch}
-                </span>
-              ))}
-            </div>
-            <div className="flex">
-              {"STUDIOS".split("").map((ch, i) => (
-                <span
-                  key={`s-${i}`}
-                  className={`flex h-9 w-9 items-center justify-center border border-slate-900 font-blocky text-sm font-black uppercase tracking-tighter sm:h-12 sm:w-12 sm:text-lg ${
-                    i % 2 === 0
-                      ? "-translate-y-0.5 bg-cream text-ink"
-                      : "translate-y-0.5 bg-ink text-cream"
-                  }`}
-                >
-                  {ch}
-                </span>
-              ))}
-            </div>
-          </div>
+          <Image
+            src="/ks-grid-logo.png"
+            alt="Kalakaar Studios"
+            width={200}
+            height={64}
+            className="h-16 w-auto sm:h-20"
+          />
           <h2 className="font-blocky text-4xl font-bold uppercase leading-[0.95] tracking-tight sm:text-6xl">
             Let&apos;s make some
             <br />
@@ -885,19 +863,21 @@ export default function Home() {
       <footer className="bg-ink text-cream">
         <div className="mx-auto grid max-w-7xl gap-10 px-5 py-14 sm:px-8 md:grid-cols-[1.4fr_1fr_1fr]">
           <div>
-            <a href="#" className="inline-flex items-center gap-2.5">
-              <span className="flex h-9 w-9 rotate-[-4deg] items-center justify-center overflow-hidden border-2 border-cream bg-cream">
-                <Image
-                  src="/logo.png"
-                  alt="Kalakaar Studios logo"
-                  width={1024}
-                  height={1024}
-                  className="h-full w-full object-cover"
-                />
-              </span>
-              <span className="font-blocky text-lg font-bold uppercase tracking-tight">
-                Kalakaar Studios
-              </span>
+            <a href="#" className="inline-flex items-center gap-3">
+              <Image
+                src="/logo.png"
+                alt="Kalakaar Studios"
+                width={200}
+                height={200}
+                className="h-8 w-auto"
+              />
+              <Image
+                src="/ks-grid-logo.png"
+                alt="Kalakaar Studios"
+                width={200}
+                height={64}
+                className="h-8 w-auto"
+              />
             </a>
             <p className="mt-4 max-w-sm text-sm font-medium leading-relaxed text-cream/60">
               A full-service event production and management studio in Patna,
