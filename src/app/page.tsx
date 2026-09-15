@@ -184,20 +184,22 @@ export default function Home() {
           }`}
         >
           <div className="splash-thud relative flex items-center justify-center">
-            <Image
-              src="/ks-grid-logo.png"
-              alt="Kalakaar Studios"
-              width={200}
-              height={64}
-              className="splash-grid h-16 w-auto"
-            />
-            <Image
-              src="/stamp-logo.png"
-              alt="Kalakaar Studios"
-              width={500}
-              height={500}
-              className="splash-stamp absolute left-1/2 top-1/2 h-16 w-16"
-            />
+            <div className="relative inline-block">
+              <Image
+                src="/ks-grid-logo.png"
+                alt="Kalakaar Studios"
+                width={200}
+                height={64}
+                className="splash-grid block h-16 w-auto"
+              />
+              <Image
+                src="/stamp-logo.png"
+                alt="Kalakaar Studios"
+                width={500}
+                height={500}
+                className="splash-stamp absolute left-0 top-0 aspect-square h-72 w-72 rounded-full object-cover"
+              />
+            </div>
           </div>
         </div>
       )}

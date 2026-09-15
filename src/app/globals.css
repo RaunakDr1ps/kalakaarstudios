@@ -59,23 +59,23 @@
 @keyframes splash-stamp {
   0% {
     opacity: 0;
-    transform: translate(-50%, -65%) translateY(-180%) scale(1.8);
+    transform: translate(-5px, -280px) translateY(-180%) scale(1.8);
   }
   70% {
     opacity: 1;
-    transform: translate(-50%, -65%) translateY(6%) scale(1.1);
+    transform: translate(-5px, -280px) translateY(6%) scale(1.1);
   }
   82% {
     opacity: 1;
-    transform: translate(-50%, -65%) translateY(-2%) scale(1.04);
+    transform: translate(-5px, -280px) translateY(-2%) scale(1.04);
   }
   94% {
     opacity: 1;
-    transform: translate(-50%, -65%) translateY(0) scale(1.02);
+    transform: translate(-5px, -280px) translateY(0) scale(1.02);
   }
   100% {
     opacity: 1;
-    transform: translate(-50%, -65%) translateY(0) scale(1);
+    transform: translate(-5px, -280px) translateY(0) scale(1);
   }
 }
 
