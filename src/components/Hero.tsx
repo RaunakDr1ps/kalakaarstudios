@@ -23,13 +23,13 @@ export default function Hero() {
         <div className="mt-10 flex flex-col gap-4 sm:flex-row">
           <a
             href="#past-events"
-            className="rounded-sm bg-graphite px-7 py-3.5 text-sm tracking-wide text-ivory transition-colors hover:bg-graphite-soft"
+            className="inline-flex items-center justify-center gap-2 rounded-md border-2 border-ink bg-red px-7 py-3.5 text-sm font-bold uppercase tracking-wide text-white shadow-[4px_4px_0px_0px_#000000] transition-all hover:-translate-y-0.5 hover:shadow-[5px_5px_0px_0px_#000000]"
           >
             Explore Past Events
           </a>
           <a
             href="#contact"
-            className="rounded-sm border border-graphite/30 px-7 py-3.5 text-sm tracking-wide text-graphite transition-colors hover:border-graphite"
+            className="inline-flex items-center justify-center gap-2 rounded-md border-2 border-ink bg-sun px-7 py-3.5 text-sm font-bold uppercase tracking-wide text-ink shadow-[4px_4px_0px_0px_#000000] transition-all hover:-translate-y-0.5 hover:shadow-[5px_5px_0px_0px_#000000]"
           >
             Book an Event
           </a>

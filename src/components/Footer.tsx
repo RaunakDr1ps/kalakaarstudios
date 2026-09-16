@@ -3,7 +3,7 @@ import Link from "next/link";
 
 export default function Footer() {
   return (
-    <footer className="bg-sand/60">
+    <footer className="border-t-2 border-ink bg-white">
       <div className="mx-auto max-w-5xl px-6 py-14">
         <div className="grid gap-12 md:grid-cols-3">
           <div>
@@ -22,7 +22,7 @@ export default function Footer() {
           </div>
 
           <div className="text-sm">
-            <p className="kicker font-semibold text-smoke">Contact</p>
+            <p className="kicker font-semibold text-ink">Contact</p>
             <ul className="mt-4 space-y-3 text-smoke">
               <li>Kalakaarstudios@ssociopro.com</li>
               <li>Bhub, Maurya Lok, Block A</li>
@@ -30,7 +30,7 @@ export default function Footer() {
               <li>
                 <a
                   href="#contact"
-                  className="transition-colors hover:text-graphite"
+                  className="inline-flex items-center border-2 border-ink bg-sun px-4 py-2 font-bold uppercase tracking-wide text-ink shadow-[3px_3px_0px_0px_#000000] transition-all hover:-translate-y-0.5 hover:shadow-[4px_4px_0px_0px_#000000]"
                 >
                   Book an event
                 </a>
@@ -39,12 +39,12 @@ export default function Footer() {
           </div>
 
           <div className="text-sm">
-            <p className="kicker font-semibold text-smoke">Company</p>
+            <p className="kicker font-semibold text-ink">Company</p>
             <ul className="mt-4 space-y-3 text-smoke">
               <li>
                 <Link
                   href="/terms"
-                  className="transition-colors hover:text-graphite"
+                  className="transition-colors hover:text-ink"
                 >
                   Terms of Service
                 </Link>
@@ -52,7 +52,7 @@ export default function Footer() {
               <li>
                 <Link
                   href="/privacy"
-                  className="transition-colors hover:text-graphite"
+                  className="transition-colors hover:text-ink"
                 >
                   Privacy Policy
                 </Link>
@@ -62,7 +62,7 @@ export default function Footer() {
                   href="https://crm.kalakaarstudios.co.in/login"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-smoke/70 transition-colors hover:text-graphite"
+                  className="text-smoke/70 transition-colors hover:text-ink"
                 >
                   Employee Login
                 </a>
@@ -72,7 +72,7 @@ export default function Footer() {
         </div>
       </div>
 
-      <div className="border-t border-line">
+      <div className="border-t-2 border-ink">
         <div className="mx-auto flex max-w-5xl flex-col items-center justify-between gap-3 px-6 py-6 text-xs text-smoke md:flex-row">
           <p>
             &copy; {new Date().getFullYear()} Kalakaar Studios. All rights

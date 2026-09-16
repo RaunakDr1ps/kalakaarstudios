@@ -15,8 +15,8 @@ export default function Header() {
   const [open, setOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-50 border-b border-line bg-ivory/90 backdrop-blur-sm">
-      <div className="mx-auto flex max-w-5xl items-center justify-between px-6 py-5">
+    <header className="sticky top-0 z-50 border-b-2 border-ink bg-white/95 backdrop-blur">
+      <div className="mx-auto flex max-w-5xl items-center justify-between px-6 py-4">
         <Link href="/" className="flex items-center" aria-label="Kalakaar Studios — home">
           <Image
             src="/logo.png"
@@ -32,9 +32,10 @@ export default function Header() {
             <a
               key={link.href}
               href={link.href}
-              className="text-sm tracking-wide text-smoke transition-colors hover:text-graphite"
+              className="group relative text-sm font-semibold tracking-wide text-ink/70 transition-colors hover:text-ink"
             >
               {link.label}
+              <span className="absolute -bottom-1 left-0 h-[2px] w-0 bg-sun transition-all group-hover:w-full" />
             </a>
           ))}
         </nav>
@@ -44,7 +45,7 @@ export default function Header() {
             href="https://crm.kalakaarstudios.co.in/login"
             target="_blank"
             rel="noopener noreferrer"
-            className="rounded-sm border border-graphite/30 px-5 py-2 text-sm tracking-wide text-graphite transition-colors hover:border-graphite hover:bg-graphite hover:text-ivory"
+            className="inline-flex items-center justify-center rounded-md border-2 border-ink bg-sun px-5 py-2 text-sm font-semibold tracking-wide text-ink shadow-[3px_3px_0px_0px_#000000] transition-all hover:-translate-y-0.5 hover:shadow-[4px_4px_0px_0px_#000000]"
           >
             Employee Portal
           </a>
@@ -58,12 +59,12 @@ export default function Header() {
           aria-expanded={open}
         >
           <span
-            className={`block h-px w-6 bg-graphite transition-transform ${
+            className={`block h-[3px] w-6 bg-ink transition-transform ${
               open ? "translate-y-[3px] rotate-45" : ""
             }`}
           />
           <span
-            className={`mt-1.5 block h-px w-6 bg-graphite transition-opacity ${
+            className={`mt-1.5 block h-[3px] w-6 bg-ink transition-opacity ${
               open ? "opacity-0" : ""
             }`}
           />
@@ -71,13 +72,13 @@ export default function Header() {
       </div>
 
       {open && (
-        <nav className="border-t border-line bg-ivory px-6 pb-6 pt-2 md:hidden">
+        <nav className="border-t-2 border-ink bg-white px-6 pb-6 pt-2 md:hidden">
           {links.map((link) => (
             <a
               key={link.href}
               href={link.href}
               onClick={() => setOpen(false)}
-              className="block border-b border-line/60 py-3.5 text-sm tracking-wide text-smoke transition-colors hover:text-graphite"
+              className="block border-b border-ink/10 py-3.5 text-sm font-semibold tracking-wide text-ink/70 transition-colors hover:text-ink"
             >
               {link.label}
             </a>
@@ -86,7 +87,7 @@ export default function Header() {
             href="https://crm.kalakaarstudios.co.in/login"
             target="_blank"
             rel="noopener noreferrer"
-            className="mt-5 inline-block rounded-sm border border-graphite/30 px-5 py-2 text-sm tracking-wide text-graphite transition-colors hover:border-graphite hover:bg-graphite hover:text-ivory"
+            className="mt-5 inline-flex items-center justify-center rounded-md border-2 border-ink bg-sun px-5 py-2 text-sm font-semibold tracking-wide text-ink shadow-[3px_3px_0px_0px_#000000]"
           >
             Employee Portal
           </a>

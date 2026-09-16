@@ -244,7 +244,7 @@ export default function Contact() {
 
                 <button
                   type="submit"
-                  className="w-full rounded-sm bg-graphite px-7 py-3.5 text-sm tracking-wide text-ivory transition-colors hover:bg-graphite-soft sm:w-auto"
+                  className="w-full rounded-md border-2 border-ink bg-red px-7 py-3.5 text-sm font-bold uppercase tracking-wide text-white shadow-[4px_4px_0px_0px_#000000] transition-all hover:-translate-y-0.5 hover:shadow-[5px_5px_0px_0px_#000000] sm:w-auto"
                 >
                   Send inquiry
                 </button>

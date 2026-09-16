@@ -55,13 +55,13 @@ const services = [
   },
   {
     icon: Boxes,
-    bg: "bg-sky",
+    bg: "bg-sun",
     title: "Corporate Galas & Brand Activations",
     desc: "Product launches, awards nights, and immersive pop-ups that turn brand budgets into crowds, buzz, and measurable ROI.",
   },
   {
     icon: AudioLines,
-    bg: "bg-mint",
+    bg: "bg-sun",
     title: "Staging, Lighting & Audio Systems",
     desc: "Custom stage architecture, concert-grade lighting rigs, and broadcast-clear sound — engineered, rigged, and operated end to end.",
   },
@@ -78,14 +78,14 @@ const steps = [
   {
     step: "02",
     icon: HardHat,
-    chip: "bg-mint",
+    chip: "bg-sun",
     title: "Build",
     desc: "Stage construction, AV load-in, lighting focus, sound checks, and full rehearsal.",
   },
   {
     step: "03",
     icon: PartyPopper,
-    chip: "bg-sky",
+    chip: "bg-sun",
     title: "Run",
     desc: "Live show-call, on-ground ops, real-time troubleshooting, and a spotless load-out.",
   },
@@ -179,7 +179,7 @@ export default function Home() {
     >
       {!hideSplash && (
         <div
-          className={`fixed inset-0 z-50 flex flex-col items-center justify-center bg-[#FDFBF7] transition-opacity duration-500 ${
+          className={`fixed inset-0 z-50 flex flex-col items-center justify-center bg-white transition-opacity duration-500 ${
             loading ? "opacity-100" : "pointer-events-none opacity-0"
           }`}
         >
@@ -208,7 +208,7 @@ export default function Home() {
       <header className="sticky top-0 z-50 border-b-2 border-ink bg-cream/95 backdrop-blur">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-5 py-4 sm:px-8">
           <a href="#" className="group inline-flex items-center gap-3">
-            <span className="flex items-center justify-center rounded-md border-2 border-slate-900 bg-white p-1.5 shadow-[3px_3px_0px_0px_#0f172a]">
+            <span className="flex items-center justify-center rounded-md border-2 border-ink bg-white p-1.5 shadow-[3px_3px_0px_0px_#000000]">
               <Image
                 src="/logo.png"
                 alt="Kalakaar Studios"
@@ -234,12 +234,12 @@ export default function Home() {
                 className="group relative text-sm font-bold uppercase tracking-wide transition-colors hover:text-ink"
               >
                 {link.label}
-                <span className="absolute -bottom-1 left-0 h-[3px] w-0 bg-sky transition-all group-hover:w-full" />
+                <span className="absolute -bottom-1 left-0 h-[3px] w-0 bg-sun transition-all group-hover:w-full" />
               </a>
             ))}
             <a
               href="#contact"
-              className={`${pillBase} bg-sky px-5 py-2.5 text-sm`}
+              className={`${pillBase} bg-red px-5 py-2.5 text-sm`}
             >
               <CalendarPlus className="h-4 w-4" strokeWidth={2.5} />
               Book a Call
@@ -277,7 +277,7 @@ export default function Home() {
               <a
                 href="#contact"
                 onClick={() => setMobileMenuOpen(false)}
-                className={`${pillBase} mt-5 bg-sky px-6 py-3 text-sm`}
+                className={`${pillBase} mt-5 bg-red px-6 py-3 text-sm`}
               >
                 <CalendarPlus className="h-4 w-4" strokeWidth={2.5} />
                 Book a Call
@@ -290,7 +290,7 @@ export default function Home() {
       {/* ─── HERO ─── */}
       <section className="mx-auto grid max-w-7xl items-center gap-12 px-5 py-14 sm:px-8 lg:grid-cols-2 lg:py-20">
         <div>
-          <span className="inline-flex -rotate-1 items-center gap-2 border-2 border-ink bg-mint px-3 py-1.5 text-xs font-bold uppercase tracking-widest shadow-[3px_3px_0px_0px_var(--color-ink)]">
+          <span className="inline-flex -rotate-1 items-center gap-2 border-2 border-ink bg-sun px-3 py-1.5 text-xs font-bold uppercase tracking-widest shadow-[3px_3px_0px_0px_var(--color-ink)]">
             <Star className="h-3.5 w-3.5 fill-current" strokeWidth={2.5} />
             Event Production &amp; Management
           </span>
@@ -306,7 +306,7 @@ export default function Home() {
               >
                 <path
                   d="M3 27 C 32 8, 58 12, 74 21 C 90 31, 118 8, 147 17"
-                  stroke="#FEF08A"
+                  stroke="#F2EE07"
                   strokeWidth="15"
                   strokeLinecap="round"
                   fill="none"
@@ -314,7 +314,7 @@ export default function Home() {
                 <path
                   d="M3 27 C 32 8, 58 12, 74 21 C 90 31, 118 8, 147 17"
                   stroke="none"
-                  fill="#FEF08A"
+                  fill="#F2EE07"
                   opacity="0"
                 />
               </svg>
@@ -330,14 +330,14 @@ export default function Home() {
             >
               <path
                 d="M4 10 C 50 3, 120 3, 216 8"
-                stroke="#86EFAC"
+                stroke="#F2EE07"
                 strokeWidth="7"
                 strokeLinecap="round"
                 fill="none"
               />
               <path
                 d="M4 10 C 50 3, 120 3, 216 8"
-                stroke="#111827"
+                stroke="#000000"
                 strokeWidth="1.5"
                 strokeLinecap="round"
                 fill="none"
@@ -355,7 +355,7 @@ export default function Home() {
           </p>
 
           <div className="mt-9 flex flex-col gap-4 sm:flex-row sm:flex-wrap">
-            <a href="#contact" className={`${pillBase} bg-sun px-7 py-3.5 text-sm`}>
+            <a href="#contact" className={`${pillBase} bg-red px-7 py-3.5 text-sm text-white`}>
               <Send className="h-4 w-4" strokeWidth={2.5} />
               Get Started with a Proposal
             </a>
@@ -368,7 +368,7 @@ export default function Home() {
             </a>
             <a
               href="#contact"
-              className={`${pillBase} bg-mint px-7 py-3.5 text-sm`}
+              className={`${pillBase} bg-sun px-7 py-3.5 text-sm`}
             >
               <Mail className="h-4 w-4" strokeWidth={2.5} />
               Contact Us
@@ -392,7 +392,7 @@ export default function Home() {
         {/* Hero visual placeholder */}
         <div className="relative">
           <div
-            className="relative flex aspect-[4/3] items-center justify-center overflow-hidden border-2 border-dashed border-ink bg-slate-100 shadow-[8px_8px_0px_0px_var(--color-ink)]"
+            className="relative flex aspect-[4/3] items-center justify-center overflow-hidden border-2 border-dashed border-ink bg-white shadow-[8px_8px_0px_0px_var(--color-ink)]"
             style={{
               backgroundImage:
                 "radial-gradient(circle, rgba(17,24,39,0.1) 1.5px, transparent 1.5px)",
@@ -404,11 +404,11 @@ export default function Home() {
             <Star className="absolute bottom-24 right-5 h-4 w-4 fill-sun text-ink/40" />
 
             <Spotlight
-              className="absolute -left-2 top-8 h-16 w-16 text-sky"
+              className="absolute -left-2 top-8 h-16 w-16 text-sun"
               strokeWidth={1.5}
             />
             <Spotlight
-              className="absolute -right-2 top-8 h-16 w-16 scale-x-[-1] text-mint"
+              className="absolute -right-2 top-8 h-16 w-16 scale-x-[-1] text-sun"
               strokeWidth={1.5}
             />
 
@@ -442,7 +442,7 @@ export default function Home() {
             </span>
           </div>
 
-          <span className="absolute -right-2 -top-4 flex h-14 w-14 rotate-12 items-center justify-center rounded-full border-2 border-ink bg-sky text-xs font-bold uppercase leading-tight shadow-[4px_4px_0px_0px_var(--color-ink)] lg:right-4">
+          <span className="absolute -right-2 -top-4 flex h-14 w-14 rotate-12 items-center justify-center rounded-full border-2 border-ink bg-sun text-xs font-bold uppercase leading-tight shadow-[4px_4px_0px_0px_var(--color-ink)] lg:right-4">
             Since
             <br />
             2025
@@ -469,7 +469,7 @@ export default function Home() {
                   >
                     <path
                       d="M3 20 C 30 5, 90 5, 117 14"
-                      stroke="#BAE6FD"
+                      stroke="#F2EE07"
                       strokeWidth="12"
                       strokeLinecap="round"
                       fill="none"
@@ -526,7 +526,7 @@ export default function Home() {
             </div>
             <a
               href="#contact"
-              className={`${pillBase} bg-sky px-6 py-3 text-sm`}
+              className={`${pillBase} bg-red px-6 py-3 text-sm`}
             >
               Start a Project <ArrowUpRight className="h-4 w-4" strokeWidth={2.5} />
             </a>
@@ -588,7 +588,7 @@ export default function Home() {
       {/* ─── FAQ ─── */}
       <section
         id="faq"
-        className="border-t-2 border-ink bg-gradient-to-b from-cream to-mint/40"
+        className="border-t-2 border-ink bg-gradient-to-b from-white to-sun/30"
       >
         <div className="mx-auto max-w-4xl px-5 py-16 sm:px-8">
           <p className="text-xs font-bold uppercase tracking-[0.25em] text-ink/50">
@@ -621,7 +621,7 @@ export default function Home() {
       </section>
 
       {/* ─── CONTACT FORM ─── */}
-      <section id="contact" className="bg-sky/60 border-t-2 border-ink">
+      <section id="contact" className="bg-sun/30 border-t-2 border-ink">
         <div className="mx-auto grid max-w-7xl gap-12 px-5 py-16 sm:px-8 lg:grid-cols-[1fr_1.4fr]">
           <div>
             <span className="inline-flex -rotate-1 items-center gap-2 border-2 border-ink bg-ink px-3 py-1.5 text-xs font-bold uppercase tracking-widest text-cream shadow-[3px_3px_0px_0px_var(--color-ink)]">
@@ -640,7 +640,7 @@ export default function Home() {
                 >
                   <path
                     d="M3 19 C 30 6, 80 6, 127 13"
-                    stroke="#FEF08A"
+                    stroke="#F2EE07"
                     strokeWidth="13"
                     strokeLinecap="round"
                     fill="none"
@@ -683,7 +683,7 @@ export default function Home() {
           <div className="border-2 border-ink bg-cream p-6 shadow-[8px_8px_0px_0px_var(--color-ink)] sm:p-8">
             {formSubmitted ? (
               <div className="flex flex-col items-center justify-center gap-4 py-16 text-center">
-                <span className="flex h-16 w-16 items-center justify-center rounded-full border-2 border-ink bg-mint shadow-[4px_4px_0px_0px_var(--color-ink)]">
+                <span className="flex h-16 w-16 items-center justify-center rounded-full border-2 border-ink bg-sun shadow-[4px_4px_0px_0px_var(--color-ink)]">
                   <Star className="h-8 w-8 fill-current" strokeWidth={2.5} />
                 </span>
                 <h3 className="font-blocky text-2xl font-bold uppercase tracking-tight">
@@ -844,7 +844,7 @@ export default function Home() {
 
                 <button
                   type="submit"
-                  className={`${pillBase} w-full bg-sun px-7 py-3.5 text-sm sm:w-auto`}
+                  className={`${pillBase} w-full bg-red px-7 py-3.5 text-sm text-white sm:w-auto`}
                 >
                   <Send className="h-4 w-4" strokeWidth={2.5} />
                   Send the Brief
@@ -877,7 +877,7 @@ export default function Home() {
               >
                 <path
                   d="M4 13 C 40 5, 90 20, 176 10"
-                  stroke="#86EFAC"
+                  stroke="#F2EE07"
                   strokeWidth="14"
                   strokeLinecap="round"
                   fill="none"
@@ -887,13 +887,13 @@ export default function Home() {
             </span>
           </h2>
           <div className="mt-3 flex flex-col gap-4 sm:flex-row">
-            <a href="#contact" className={`${pillBase} bg-ink px-7 py-3.5 text-sm text-cream`}>
+            <a href="#contact" className={`${pillBase} bg-red px-7 py-3.5 text-sm text-white`}>
               <CalendarPlus className="h-4 w-4" strokeWidth={2.5} />
               Book a Call
             </a>
             <a
               href="mailto:Kalakaarstudios@ssociopro.com"
-              className={`${pillBase} bg-cream px-7 py-3.5 text-sm`}
+              className={`${pillBase} bg-sun px-7 py-3.5 text-sm`}
             >
               <Mail className="h-4 w-4" strokeWidth={2.5} />
               Email the Studio
@@ -975,7 +975,7 @@ export default function Home() {
           </nav>
 
           <nav className="flex flex-col gap-3">
-            <p className="text-xs font-bold uppercase tracking-[0.25em] text-mint">
+            <p className="text-xs font-bold uppercase tracking-[0.25em] text-sun">
               Legal
             </p>
             <Link

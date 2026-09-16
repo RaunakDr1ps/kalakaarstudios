@@ -1,27 +1,28 @@
 @import "tailwindcss";
 
 @theme inline {
-  --color-ivory: #f7f5f0;
-  --color-paper: #fbf9f4;
-  --color-sand: #efe9de;
-  --color-line: #e0d9c9;
-  --color-graphite: #23201a;
-  --color-graphite-soft: #3b362c;
-  --color-smoke: #6e675a;
-  --color-brass: #a9814f;
-  --color-brass-deep: #7c5a1e;
+  --color-ivory: #FFFFFF;
+  --color-paper: #FFFFFF;
+  --color-sand: #F2EE07;
+  --color-line: #000000;
+  --color-graphite: #000000;
+  --color-graphite-soft: #333333;
+  --color-smoke: #555555;
+  --color-brass: #F2EE07;
+  --color-brass-deep: #000000;
 
-  --color-cn-dark: #1a1a1a;
-  --color-cn-card: #242424;
-  --color-cn-cyan: #02a6d6;
-  --color-cn-coral: #ff6254;
-  --color-cn-lime: #36d123;
+  --color-cn-dark: #090D16;
+  --color-cn-card: #090D16;
+  --color-cn-cyan: #F2EE07;
+  --color-cn-coral: #F20A0A;
+  --color-cn-lime: #F2EE07;
 
-  --color-cream: #fbf9f5;
-  --color-ink: #111827;
-  --color-sun: #fef08a;
-  --color-mint: #86efac;
-  --color-sky: #bae6fd;
+  --color-cream: #FFFFFF;
+  --color-ink: #000000;
+  --color-sun: #F2EE07;
+  --color-mint: #F2EE07;
+  --color-sky: #F2EE07;
+  --color-red: #F20A0A;
 
   --font-serif: var(--font-playfair);
   --font-blocky: var(--font-oswald);
@@ -117,8 +118,8 @@ html {
 }
 
 body {
-  background-color: #f7f5f0;
-  color: #23201a;
+  background-color: #FFFFFF;
+  color: #000000;
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   font-feature-settings: "kern" 1;
