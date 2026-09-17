@@ -251,6 +251,12 @@ body {
   text-decoration-color: var(--color-red);
 }
 
+.blog-body u {
+  text-decoration-color: var(--color-sun);
+  text-decoration-thickness: 3px;
+  text-underline-offset: 4px;
+}
+
 .blog-body ul,
 .blog-body ol {
   padding-left: 1.5rem;

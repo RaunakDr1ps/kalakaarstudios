@@ -18,6 +18,10 @@ function isSafeHref(href: string): boolean {
 function renderInline(text: string): string {
   let out = escapeHtml(text);
 
+  // Whitelisted editor-toolbar tag: <u>…</u> survives HTML escaping.
+  // Everything else stays escaped, so user content cannot inject markup.
+  out = out.replace(/&lt;u&gt;/g, "<u>").replace(/&lt;\/u&gt;/g, "</u>");
+
   out = out.replace(/`([^`]+)`/g, "<code>$1</code>");
 
   out = out.replace(
