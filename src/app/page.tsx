@@ -48,6 +48,7 @@ const navLinks = [
   { label: "Services", href: "#services" },
   { label: "Showreel", href: "#showreel" },
   { label: "FAQ", href: "#faq" },
+  { label: "Blog", href: "/blog" },
 ];
 
 const services = [
