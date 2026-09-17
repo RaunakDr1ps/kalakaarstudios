@@ -114,7 +114,7 @@ const eventTypes = [
   "Concert / live show",
   "Corporate gala / launch event",
   "Brand activation / pop-up",
-  "Private celebration / wedding",
+  "Private celebration",
   "Music festival",
   "Other",
 ];
@@ -383,7 +383,7 @@ export default function Home() {
             <Dot />
             <span>Activations</span>
             <Dot />
-            <span>Weddings</span>
+            <span>Celebrations</span>
             <Dot />
             <span>Festivals</span>
           </div>
