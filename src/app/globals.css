@@ -189,3 +189,114 @@ body {
   letter-spacing: 0.22em;
   text-transform: uppercase;
 }
+
+/* ------------------------------------------------------------------ */
+/* Blog article body (rendered markdown)                               */
+/* ------------------------------------------------------------------ */
+
+.blog-body {
+  color: var(--color-ink);
+  overflow-wrap: break-word;
+}
+
+.blog-body > * + * {
+  margin-top: 1.25rem;
+}
+
+.blog-body h1,
+.blog-body h2,
+.blog-body h3,
+.blog-body h4 {
+  font-family: var(--font-blocky);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: -0.01em;
+  line-height: 1.15;
+  margin-top: 2rem;
+}
+
+.blog-body h1 {
+  font-size: 1.75rem;
+}
+.blog-body h2 {
+  font-size: 1.5rem;
+}
+.blog-body h3 {
+  font-size: 1.25rem;
+}
+.blog-body h4 {
+  font-size: 1.125rem;
+}
+.blog-body h1:first-child,
+.blog-body h2:first-child,
+.blog-body h3:first-child,
+.blog-body h4:first-child {
+  margin-top: 0;
+}
+
+.blog-body p {
+  font-size: 1rem;
+  line-height: 1.75;
+}
+
+.blog-body a {
+  font-weight: 700;
+  text-decoration: underline;
+  text-decoration-color: var(--color-sun);
+  text-decoration-thickness: 3px;
+  text-underline-offset: 4px;
+  transition: text-decoration-color 150ms ease;
+}
+.blog-body a:hover {
+  text-decoration-color: var(--color-red);
+}
+
+.blog-body ul,
+.blog-body ol {
+  padding-left: 1.5rem;
+  line-height: 1.75;
+}
+.blog-body ul {
+  list-style: square;
+}
+.blog-body ol {
+  list-style: decimal;
+}
+.blog-body li + li {
+  margin-top: 0.5rem;
+}
+
+.blog-body blockquote {
+  border-left: 6px solid var(--color-sun);
+  padding: 0.75rem 1rem;
+  font-style: italic;
+  color: rgba(17, 24, 39, 0.7);
+}
+
+.blog-body code {
+  font-family: ui-monospace, "Cascadia Code", Consolas, monospace;
+  font-size: 0.875em;
+  background: #f3f4f6;
+  border: 1px solid rgba(17, 24, 39, 0.2);
+  padding: 0.125rem 0.375rem;
+}
+
+.blog-body pre {
+  overflow-x: auto;
+  border: 2px solid var(--color-ink);
+  background: var(--color-ink);
+  color: var(--color-cream);
+  padding: 1rem;
+  box-shadow: 4px 4px 0 0 var(--color-ink);
+}
+.blog-body pre code {
+  background: transparent;
+  border: 0;
+  padding: 0;
+  color: inherit;
+}
+
+.blog-body hr {
+  border: 0;
+  border-top: 3px dashed rgba(17, 24, 39, 0.25);
+}

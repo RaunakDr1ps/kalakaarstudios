@@ -4,6 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Oswald } from "next/font/google";
 import { useEffect, useState } from "react";
+import RandomBlogCards from "@/components/blog/RandomBlogCards";
 import {
   ArrowRight,
   ArrowUpRight,
@@ -12,6 +13,7 @@ import {
   Boxes,
   CalendarPlus,
   Clapperboard,
+  Crown,
   Globe,
   HardHat,
   Lightbulb,
@@ -27,6 +29,7 @@ import {
   Speaker,
   Spotlight,
   Star,
+  UserRound,
   X,
 } from "lucide-react";
 
@@ -40,6 +43,7 @@ const pillBase =
   "inline-flex items-center justify-center gap-2 rounded-full border-2 border-ink shadow-[4px_4px_0px_0px_var(--color-ink)] font-bold uppercase tracking-wide transition-all hover:-translate-y-1 hover:shadow-[6px_6px_0px_0px_var(--color-ink)]";
 
 const navLinks = [
+  { label: "Founder", href: "#founder" },
   { label: "What We Do", href: "#what-we-do" },
   { label: "Services", href: "#services" },
   { label: "Showreel", href: "#showreel" },
@@ -107,6 +111,21 @@ const faqs = [
   {
     q: "Do we need to bring our own gear and crew?",
     a: "Nope. Stage, sound, lights, crew, and talent coordination all come under one roof. You get one accountable team and one invoice.",
+  },
+];
+
+const founders = [
+  {
+    num: "One",
+    role: "Ops & Production",
+    sticker: "The Boss",
+    tags: ["Visionary", "Risk-taker", "Detail-obsessed"],
+  },
+  {
+    num: "Two",
+    role: "Creative & Growth",
+    sticker: "The Hype Man",
+    tags: ["People-first", "Big-ideas", "Phone-a-holic"],
   },
 ];
 
@@ -450,6 +469,127 @@ export default function Home() {
         </div>
       </section>
 
+      {/* ─── FOUNDERS ─── */}
+      <section id="founder" className="border-y-2 border-ink bg-sun/30">
+        <div className="mx-auto max-w-7xl px-5 py-16 sm:px-8">
+          <div className="flex flex-wrap items-end justify-between gap-4">
+            <div>
+              <span className="inline-flex -rotate-1 items-center gap-2 border-2 border-ink bg-sun px-3 py-1.5 text-xs font-bold uppercase tracking-widest shadow-[3px_3px_0px_0px_var(--color-ink)]">
+                <Crown className="h-3.5 w-3.5" strokeWidth={2.5} />
+                The Founders
+              </span>
+              <h2 className="mt-5 font-blocky text-3xl font-bold uppercase tracking-tight sm:text-4xl">
+                Two heads.{" "}
+                <span className="relative z-0 inline-block whitespace-nowrap">
+                  <svg
+                    viewBox="0 0 120 26"
+                    preserveAspectRatio="none"
+                    aria-hidden="true"
+                    className="absolute left-0 top-[30%] -z-10 h-[115%] w-full"
+                  >
+                    <path
+                      d="M3 20 C 30 5, 90 5, 117 14"
+                      stroke="#F2EE07"
+                      strokeWidth="12"
+                      strokeLinecap="round"
+                      fill="none"
+                    />
+                  </svg>
+                  One show.
+                </span>
+              </h2>
+            </div>
+            <p className="max-w-sm text-sm font-medium leading-relaxed text-ink/60">
+              Built double-trouble style — co-founders who split the chaos,
+              double the ambition, and never agree on a playlist.
+            </p>
+          </div>
+
+          <div className="mt-12 grid gap-10 md:grid-cols-2">
+            {founders.map((founder, i) => (
+              <div
+                key={founder.num}
+                className="border-2 border-ink bg-cream p-6 shadow-[6px_6px_0px_0px_var(--color-ink)] sm:p-8"
+              >
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  <p className="text-xs font-bold uppercase tracking-[0.25em] text-ink/50">
+                    Founder {founder.num} / 02
+                  </p>
+                  <span className="border-2 border-ink bg-sun px-2.5 py-1 text-[10px] font-bold uppercase tracking-widest shadow-[2px_2px_0px_0px_var(--color-ink)]">
+                    {founder.role}
+                  </span>
+                </div>
+
+                {/* Sticker photo placeholder */}
+                <div className="relative mx-auto mt-6 w-full max-w-sm">
+                  <div
+                    className={`relative overflow-hidden border-2 border-ink bg-cream shadow-[8px_8px_0px_0px_var(--color-ink)] ${
+                      i === 0 ? "rotate-[-2deg]" : "rotate-[1.5deg]"
+                    }`}
+                  >
+                    <div
+                      className="flex aspect-[4/3] flex-col items-center justify-center gap-4"
+                      style={{
+                        backgroundImage:
+                          "radial-gradient(circle, rgba(17,24,39,0.08) 1.5px, transparent 1.5px)",
+                        backgroundSize: "20px 20px",
+                      }}
+                    >
+                      <span className="flex h-24 w-24 items-center justify-center rounded-full border-2 border-dashed border-ink/40 bg-white shadow-[5px_5px_0px_0px_var(--color-ink)]">
+                        <UserRound
+                          className="h-11 w-11 text-ink/35"
+                          strokeWidth={1.75}
+                        />
+                      </span>
+                      <span className="border-2 border-ink bg-sun px-3 py-1 text-[10px] font-bold uppercase tracking-[0.2em] text-ink">
+                        Sticker photo coming soon
+                      </span>
+                    </div>
+                  </div>
+                  <span className="absolute -right-3 -top-4 z-10 rotate-6 border-2 border-ink bg-red px-3 py-1 text-xs font-bold uppercase tracking-widest text-white shadow-[4px_4px_0px_0px_var(--color-ink)]">
+                    {founder.sticker}
+                  </span>
+                </div>
+
+                <h3 className="mt-8 font-blocky text-2xl font-bold uppercase tracking-tight">
+                  [Founder {founder.num} Name]
+                </h3>
+                <p className="mt-1 text-xs font-bold uppercase tracking-[0.25em] text-ink/50">
+                  Co-Founder — Kalakaar Studios
+                </p>
+
+                <p className="mt-4 text-sm font-medium leading-relaxed text-ink/70">
+                  [Short bio placeholder — a couple of lines on who they are
+                  and the role they own at the studio.]
+                </p>
+
+                <div className="mt-6 flex flex-wrap gap-2.5">
+                  {founder.tags.map((tag) => (
+                    <span
+                      key={tag}
+                      className="inline-flex -rotate-1 items-center gap-1.5 border-2 border-ink bg-cream px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide shadow-[2px_2px_0px_0px_var(--color-ink)]"
+                    >
+                      <Star className="h-2.5 w-2.5 fill-current" strokeWidth={2.5} />
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="mt-12 flex justify-center">
+            <a
+              href="#contact"
+              className={`${pillBase} bg-red px-7 py-3.5 text-sm text-white`}
+            >
+              Work with the Founders
+              <ArrowRight className="h-4 w-4" strokeWidth={2.5} />
+            </a>
+          </div>
+        </div>
+      </section>
+
       {/* ─── WHAT WE DO ─── */}
       <section id="what-we-do" className="border-y-2 border-ink bg-cream">
         <div className="mx-auto max-w-7xl px-5 py-16 sm:px-8">
@@ -619,6 +759,9 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {/* ─── RANDOM BLOG CARDS ─── */}
+      <RandomBlogCards />
 
       {/* ─── CONTACT FORM ─── */}
       <section id="contact" className="bg-sun/30 border-t-2 border-ink">
