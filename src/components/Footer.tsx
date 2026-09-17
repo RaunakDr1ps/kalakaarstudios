@@ -59,9 +59,7 @@ export default function Footer() {
               </li>
               <li>
                 <a
-                  href="https://crm.kalakaarstudios.co.in/login"
-                  target="_blank"
-                  rel="noopener noreferrer"
+                  href="/admin/blogs"
                   className="text-smoke/70 transition-colors hover:text-ink"
                 >
                   Employee Login

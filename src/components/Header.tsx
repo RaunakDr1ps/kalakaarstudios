@@ -43,9 +43,7 @@ export default function Header() {
 
         <div className="hidden md:block">
           <a
-            href="https://crm.kalakaarstudios.co.in/login"
-            target="_blank"
-            rel="noopener noreferrer"
+            href="/admin/blogs"
             className="inline-flex items-center justify-center rounded-md border-2 border-ink bg-sun px-5 py-2 text-sm font-semibold tracking-wide text-ink shadow-[3px_3px_0px_0px_#000000] transition-all hover:-translate-y-0.5 hover:shadow-[4px_4px_0px_0px_#000000]"
           >
             Employee Portal
@@ -85,9 +83,7 @@ export default function Header() {
             </a>
           ))}
           <a
-            href="https://crm.kalakaarstudios.co.in/login"
-            target="_blank"
-            rel="noopener noreferrer"
+            href="/admin/blogs"
             className="mt-5 inline-flex items-center justify-center rounded-md border-2 border-ink bg-sun px-5 py-2 text-sm font-semibold tracking-wide text-ink shadow-[3px_3px_0px_0px_#000000]"
           >
             Employee Portal
