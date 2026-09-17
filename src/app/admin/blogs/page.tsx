@@ -26,8 +26,8 @@ export default function AdminBlogsPage() {
               Blog Moderation
             </h1>
             <p className="mt-4 max-w-xl text-sm font-medium leading-relaxed text-ink/70">
-              Review pending submissions. Tweak the meta description if needed,
-              verify the backlink, then approve or reject.
+              Review pending submissions and manage live posts. Tweak the
+              meta description, edit published content, and watch view counts.
             </p>
           </div>
         </section>

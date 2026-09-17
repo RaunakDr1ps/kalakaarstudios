@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { ArrowLeft, ExternalLink } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import ViewTracker from "@/components/blog/ViewTracker";
 import { fetchPublishedBlog, fetchPublishedBlogs, formatDate } from "@/lib/blog";
 import { renderMarkdown } from "@/lib/markdown";
 
@@ -140,6 +141,7 @@ export default async function BlogPostPage({
           </p>
         </article>
       </main>
+      <ViewTracker id={post.id} />
       <Footer />
     </>
   );

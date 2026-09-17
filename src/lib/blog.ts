@@ -13,6 +13,16 @@ export type Blog = {
   meta_description: string;
   status: BlogStatus;
   created_at: string;
+  /** Read counter. May be absent until the CRM reports it — treat as 0. */
+  views?: number;
+};
+
+export type BlogUpdate = {
+  title?: string;
+  cover_image_url?: string | null;
+  body?: string;
+  meta_description?: string;
+  backlink_url?: string | null;
 };
 
 export type BlogSubmission = {
@@ -105,6 +115,54 @@ export async function moderateBlog(opts: {
     }),
   });
   return true;
+}
+
+/** Increment a published post's view counter in the CRM backend. */
+export async function incrementBlogViews(id: string): Promise<boolean> {
+  try {
+    await crmFetch<{ ok?: boolean }>(`/blogs/${encodeURIComponent(id)}/views`, {
+      method: "POST",
+      body: JSON.stringify({}),
+    });
+    return true;
+  } catch {
+    // Fire-and-forget: a failed view ping must never break the page.
+    return false;
+  }
+}
+
+/** Save content edits on an existing post back to the CRM backend. */
+export async function updateBlog(opts: {
+  id: string;
+  patch: BlogUpdate;
+  adminKey: string;
+}): Promise<boolean> {
+  await crmFetch<{ ok?: boolean }>(`/blogs/${encodeURIComponent(opts.id)}`, {
+    method: "PATCH",
+    headers: { "x-admin-key": opts.adminKey },
+    body: JSON.stringify(opts.patch),
+  });
+  return true;
+}
+
+/** Fire the Cloudflare Pages deploy hook (if configured) so edits go live. */
+export async function triggerDeployWebhook(): Promise<boolean> {
+  const url = process.env.NEXT_PUBLIC_CLOUDFLARE_DEPLOY_HOOK_URL;
+  if (!url) return false;
+  try {
+    await fetch(url, { method: "POST" });
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+export const ADMIN_SESSION_KEY = "ks-blog-admin-key";
+
+/** Read the admin key the editor stored when unlocking the panel. */
+export function getStoredAdminKey(): string {
+  if (typeof window === "undefined") return "";
+  return window.sessionStorage.getItem(ADMIN_SESSION_KEY) ?? "";
 }
 
 export function excerpt(body: string, length = 160): string {
