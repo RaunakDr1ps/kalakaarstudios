@@ -37,6 +37,7 @@ export default function BlogDashboard() {
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
   const [deployNotice, setDeployNotice] = useState<string | null>(null);
+  const [deployFailed, setDeployFailed] = useState(false);
   const [uploadingImage, setUploadingImage] = useState(false);
   const [coverError, setCoverError] = useState<string | null>(null);
   const coverInputRef = useRef<HTMLInputElement>(null);
@@ -94,6 +95,7 @@ export default function BlogDashboard() {
     });
     setSaveError(null);
     setDeployNotice(null);
+    setDeployFailed(false);
     setCoverError(null);
     setUploadingImage(false);
   }
@@ -131,6 +133,8 @@ export default function BlogDashboard() {
     setSaving(true);
     setSaveError(null);
     setDeployNotice(null);
+    setDeployFailed(false);
+    const coverUrl = (draft.cover_image_url ?? "").trim();
     try {
       const adminKey = getStoredAdminKey();
       await updateBlog({
@@ -138,14 +142,26 @@ export default function BlogDashboard() {
         adminKey,
         patch: {
           title: (draft.title ?? "").trim(),
-          cover_image_url: (draft.cover_image_url ?? "").trim() || null,
+          coverImage: coverUrl,
+          cover_image: coverUrl,
+          cover_image_url: coverUrl || null,
+          excerpt: (draft.meta_description ?? "").trim(),
+          content: (draft.body ?? "").trim(),
           body: (draft.body ?? "").trim(),
           meta_description: (draft.meta_description ?? "").trim(),
           backlink_url: (draft.backlink_url ?? "").trim() || null,
+          status: editing.status,
         },
       });
-      await triggerDeployWebhook();
-      setDeployNotice("Changes saved — live redeploy triggered.");
+      const deployed = await triggerDeployWebhook();
+      if (!deployed) {
+        setDeployFailed(true);
+        setDeployNotice(
+          "Changes saved, but the redeploy webhook failed. The site may not be live yet."
+        );
+      } else {
+        setDeployNotice("Changes saved — live redeploy triggered.");
+      }
       await load();
       setEditing(null);
     } catch (err) {
@@ -432,7 +448,11 @@ export default function BlogDashboard() {
               </div>
 
               {deployNotice && (
-                <div className="border-2 border-ink bg-mint px-4 py-3 text-sm font-bold">
+                <div
+                  className={`border-2 border-ink px-4 py-3 text-sm font-bold ${
+                    deployFailed ? "bg-[#fecaca]" : "bg-mint"
+                  }`}
+                >
                   {deployNotice}
                 </div>
               )}

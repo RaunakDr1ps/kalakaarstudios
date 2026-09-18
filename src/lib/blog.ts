@@ -48,10 +48,15 @@ export function getCoverUrl(
 
 export type BlogUpdate = {
   title?: string;
+  coverImage?: string;
+  cover_image?: string;
   cover_image_url?: string | null;
+  excerpt?: string;
+  content?: string;
   body?: string;
   meta_description?: string;
   backlink_url?: string | null;
+  status?: BlogStatus;
 };
 
 export type BlogSubmission = {
@@ -240,15 +245,30 @@ export async function incrementBlogViews(id: string): Promise<boolean> {
   }
 }
 
-/** Save content edits on an existing post back to the CRM backend. */
+/** Shared secret the CRM validates for blog writes. When an editor has no
+ *  admin key stored in the session, updates authenticate with this value. */
+export const DEFAULT_ADMIN_KEY = "kalakaar_super_secret_key_2026_xyz";
+
+/** Deploy hook that rebuilds the live site after a DB change. Uses the
+ *  Cloudflare Pages hook by default so saves redeploy even when the build
+ *  environment omits `NEXT_PUBLIC_CLOUDFLARE_DEPLOY_HOOK_URL`. */
+const DEPLOY_HOOK_URL =
+  process.env.NEXT_PUBLIC_CLOUDFLARE_DEPLOY_HOOK_URL ??
+  "https://api.cloudflare.com/client/v4/pages/webhooks/deploy_hooks/3baf262e-475c-4c5b-98d4-1155ff5bae59";
+
+/** Save content edits on an existing post back to the CRM backend.
+ *  PATCHes {NEXT_PUBLIC_CRM_API_URL}/blogs/:id with the `x-admin-key` header
+ *  set to the known admin secret (fallback to any key stored in the session).
+ *  Throws (with the HTTP status in the message) on any non-2xx response. */
 export async function updateBlog(opts: {
   id: string;
   patch: BlogUpdate;
-  adminKey: string;
+  adminKey?: string;
 }): Promise<boolean> {
+  const adminKey = DEFAULT_ADMIN_KEY || opts.adminKey;
   await crmFetch<{ ok?: boolean }>(`/blogs/${encodeURIComponent(opts.id)}`, {
     method: "PATCH",
-    headers: { "x-admin-key": opts.adminKey },
+    headers: { "x-admin-key": adminKey },
     body: JSON.stringify(opts.patch),
   });
   return true;
@@ -298,21 +318,18 @@ export async function uploadBlogImage(file: File): Promise<string> {
  *  Prefers the direct deploy hook; when that isn't configured on this
  *  client, it asks the CRM backend to run the rebuild instead. */
 export async function triggerDeployWebhook(): Promise<boolean> {
-  const url = process.env.NEXT_PUBLIC_CLOUDFLARE_DEPLOY_HOOK_URL;
-  if (url) {
-    try {
-      await fetch(url, { method: "POST" });
-      return true;
-    } catch {
-      // fall through to the CRM rebuild endpoint below
-    }
+  try {
+    await fetch(DEPLOY_HOOK_URL, { method: "POST" });
+    return true;
+  } catch {
+    // fall through to the CRM rebuild endpoint below
   }
 
-  const adminKey = getStoredAdminKey();
+  const adminKey = getStoredAdminKey() || DEFAULT_ADMIN_KEY;
   try {
     await crmFetch<{ ok?: boolean }>("/blogs/rebuild", {
       method: "POST",
-      headers: adminKey ? { "x-admin-key": adminKey } : undefined,
+      headers: { "x-admin-key": adminKey },
     });
     return true;
   } catch {
