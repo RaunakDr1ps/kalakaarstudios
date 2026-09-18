@@ -34,8 +34,50 @@ export type BlogSubmission = {
   backlink_url?: string;
 };
 
+/**
+ * Shape the CRM actually returns. The backend historically used several
+ * different cover field names (`cover_image`, `coverImage`,
+ * `cover_image_url`) and counters (`views`, `view_count`), so every fetch is
+ * normalized through `normalizeBlog` before it reaches the UI.
+ */
+type RawBlog = {
+  id: string;
+  title: string;
+  author_name: string;
+  cover_image_url?: string | null;
+  cover_image?: string | null;
+  coverImage?: string | null;
+  body: string;
+  backlink_url?: string | null;
+  meta_description?: string;
+  status?: BlogStatus;
+  created_at?: string;
+  views?: number;
+  view_count?: number;
+};
+
+function normalizeBlog(raw: RawBlog): Blog {
+  const cover = [raw.cover_image_url, raw.cover_image, raw.coverImage].find(
+    (c): c is string => typeof c === "string" && c.trim().length > 0
+  );
+
+  return {
+    id: raw.id,
+    title: raw.title,
+    author_name: raw.author_name,
+    cover_image_url: cover ? cover.trim() : null,
+    body: raw.body,
+    backlink_url: raw.backlink_url ?? null,
+    meta_description: raw.meta_description ?? "",
+    status: raw.status ?? "pending",
+    created_at: raw.created_at ?? new Date().toISOString(),
+    views: raw.views ?? raw.view_count ?? 0,
+  };
+}
+
 async function crmFetch<T>(path: string, init?: RequestInit): Promise<T> {
   const res = await fetch(`${CRM_API_URL}${path}`, {
+    cache: "no-store",
     ...init,
     headers: {
       "Content-Type": "application/json",
@@ -62,8 +104,8 @@ async function crmFetch<T>(path: string, init?: RequestInit): Promise<T> {
 
 export async function fetchPublishedBlogs(): Promise<Blog[]> {
   try {
-    const rows = await crmFetch<Blog[]>("/blogs?status=published");
-    return Array.isArray(rows) ? rows : [];
+    const rows = await crmFetch<RawBlog[]>("/blogs?status=published");
+    return Array.isArray(rows) ? rows.map(normalizeBlog) : [];
   } catch {
     // Degrade gracefully during static builds / when the API is down.
     return [];
@@ -72,15 +114,16 @@ export async function fetchPublishedBlogs(): Promise<Blog[]> {
 
 export async function fetchPublishedBlog(id: string): Promise<Blog | null> {
   try {
-    return await crmFetch<Blog>(`/blogs/${encodeURIComponent(id)}`);
+    const raw = await crmFetch<RawBlog>(`/blogs/${encodeURIComponent(id)}`);
+    return raw ? normalizeBlog(raw) : null;
   } catch {
     return null;
   }
 }
 
 export async function fetchPendingBlogs(): Promise<Blog[]> {
-  const rows = await crmFetch<Blog[]>("/blogs?status=pending");
-  return Array.isArray(rows) ? rows : [];
+  const rows = await crmFetch<RawBlog[]>("/blogs?status=pending");
+  return Array.isArray(rows) ? rows.map(normalizeBlog) : [];
 }
 
 export async function submitBlog(input: BlogSubmission): Promise<Blog> {
