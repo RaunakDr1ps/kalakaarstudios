@@ -6,7 +6,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ViewTracker from "@/components/blog/ViewTracker";
 import ImageWithFallback from "@/components/blog/ImageWithFallback";
-import { fetchPublishedBlog, fetchPublishedBlogs, formatDate } from "@/lib/blog";
+import { fetchPublishedBlog, fetchPublishedBlogs, formatDate, getCoverUrl } from "@/lib/blog";
 import { renderMarkdown } from "@/lib/markdown";
 
 type Params = { id: string };
@@ -53,15 +53,13 @@ export async function generateMetadata({
       type: "article",
       publishedTime: post.created_at,
       authors: [post.author_name],
-      images: post.cover_image_url
-        ? [{ url: post.cover_image_url, alt: post.title }]
-        : [],
+      images: getCoverUrl(post) ? [{ url: getCoverUrl(post), alt: post.title }] : [],
     },
     twitter: {
       card: "summary_large_image",
       title: post.title,
       description: post.meta_description,
-      images: post.cover_image_url ? [post.cover_image_url] : [],
+      images: getCoverUrl(post) ? [getCoverUrl(post)] : [],
     },
   };
 }
@@ -99,10 +97,10 @@ export default async function BlogPostPage({
             By {post.author_name} · {formatDate(post.created_at)}
           </p>
 
-          {post.cover_image_url && (
+          {getCoverUrl(post) && (
             <div className="mt-8 flex aspect-[16/9] w-full items-center justify-center overflow-hidden border-2 border-ink bg-white shadow-[8px_8px_0px_0px_var(--color-ink)]">
               <ImageWithFallback
-                src={post.cover_image_url}
+                src={getCoverUrl(post)}
                 alt={post.title}
                 className="h-full w-full object-cover"
               />

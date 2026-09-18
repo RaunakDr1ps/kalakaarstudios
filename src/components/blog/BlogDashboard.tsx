@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import {
   fetchPublishedBlogs,
+  getCoverUrl,
   getStoredAdminKey,
   triggerDeployWebhook,
   updateBlog,
@@ -87,7 +88,7 @@ export default function BlogDashboard() {
     setEditing(post);
     setDraft({
       title: post.title,
-      cover_image_url: post.cover_image_url ?? "",
+      cover_image_url: getCoverUrl(post),
       body: post.body,
       meta_description: post.meta_description,
       backlink_url: post.backlink_url ?? "",

@@ -8,6 +8,10 @@ export type Blog = {
   title: string;
   author_name: string;
   cover_image_url: string | null;
+  /** Raw alias fields the CRM has historically returned. The display
+   *  components read all three names via `getCoverUrl`. */
+  cover_image?: string | null;
+  coverImage?: string | null;
   body: string;
   backlink_url: string | null;
   meta_description: string;
@@ -16,6 +20,19 @@ export type Blog = {
   /** Read counter. May be absent until the CRM reports it — treat as 0. */
   views?: number;
 };
+
+function firstCover(...candidates: Array<string | null | undefined>): string {
+  const found = candidates.find(
+    (c): c is string => typeof c === "string" && c.trim().length > 0
+  );
+  return found ? found.trim() : "";
+}
+
+/** Resolve a post's cover URL from any of the field names the CRM uses:
+ *  `cover_image`, `coverImage`, or `cover_image_url`. */
+export function getCoverUrl(post: Pick<Blog, "cover_image_url" | "cover_image" | "coverImage">): string {
+  return firstCover(post.cover_image_url, post.cover_image, post.coverImage);
+}
 
 export type BlogUpdate = {
   title?: string;
@@ -57,15 +74,14 @@ type RawBlog = {
 };
 
 function normalizeBlog(raw: RawBlog): Blog {
-  const cover = [raw.cover_image_url, raw.cover_image, raw.coverImage].find(
-    (c): c is string => typeof c === "string" && c.trim().length > 0
-  );
-
   return {
     id: raw.id,
     title: raw.title,
     author_name: raw.author_name,
-    cover_image_url: cover ? cover.trim() : null,
+    cover_image_url:
+      firstCover(raw.cover_image_url, raw.cover_image, raw.coverImage) || null,
+    cover_image: raw.cover_image ?? null,
+    coverImage: raw.coverImage ?? null,
     body: raw.body,
     backlink_url: raw.backlink_url ?? null,
     meta_description: raw.meta_description ?? "",
@@ -76,8 +92,11 @@ function normalizeBlog(raw: RawBlog): Blog {
 }
 
 async function crmFetch<T>(path: string, init?: RequestInit): Promise<T> {
+  // No `cache: "no-store"`: with `output: export`, a no-store fetch is
+  // treated as revalidate:0 and cannot be rendered statically. Cloudflare
+  // Pages builds from a fresh checkout, so this build-time fetch always
+  // reflects the current database values.
   const res = await fetch(`${CRM_API_URL}${path}`, {
-    cache: "no-store",
     ...init,
     headers: {
       "Content-Type": "application/json",
@@ -96,6 +115,10 @@ async function crmFetch<T>(path: string, init?: RequestInit): Promise<T> {
     } catch {
       // non-JSON error body; fall back to the status text
     }
+    // Log the exact status so empty/failed static builds are diagnosable.
+    console.error(
+      `[blog] CRM ${init?.method?.toUpperCase() ?? "GET"} ${path} → status ${res.status}: ${detail}`
+    );
     throw new Error(detail);
   }
 
@@ -105,9 +128,27 @@ async function crmFetch<T>(path: string, init?: RequestInit): Promise<T> {
 export async function fetchPublishedBlogs(): Promise<Blog[]> {
   try {
     const rows = await crmFetch<RawBlog[]>("/blogs?status=published");
-    return Array.isArray(rows) ? rows.map(normalizeBlog) : [];
-  } catch {
+    if (!Array.isArray(rows)) {
+      console.error(
+        "[blog] CRM /blogs?status=published returned a non-array payload"
+      );
+      return [];
+    }
+    if (rows.length === 0 && typeof window === "undefined") {
+      // Log lightweight warning during builds: a static export with zero
+      // posts will show the empty state but the client feed refreshes it.
+      console.warn(
+        "[blog] CRM returned 0 published posts — static /blog output may be empty"
+      );
+    }
+    return rows.map(normalizeBlog);
+  } catch (err) {
     // Degrade gracefully during static builds / when the API is down.
+    console.error(
+      `[blog] Failed to fetch published posts: ${
+        err instanceof Error ? err.message : "unknown error"
+      }`
+    );
     return [];
   }
 }
@@ -116,7 +157,12 @@ export async function fetchPublishedBlog(id: string): Promise<Blog | null> {
   try {
     const raw = await crmFetch<RawBlog>(`/blogs/${encodeURIComponent(id)}`);
     return raw ? normalizeBlog(raw) : null;
-  } catch {
+  } catch (err) {
+    console.error(
+      `[blog] Failed to fetch post ${id}: ${
+        err instanceof Error ? err.message : "unknown error"
+      }`
+    );
     return null;
   }
 }

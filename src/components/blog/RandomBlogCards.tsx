@@ -3,7 +3,8 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { ArrowRight, NotebookPen, RefreshCw, Shuffle } from "lucide-react";
-import { excerpt, fetchPublishedBlogs, formatDate, type Blog } from "@/lib/blog";
+import { excerpt, fetchPublishedBlogs, formatDate, getCoverUrl, type Blog } from "@/lib/blog";
+import ImageWithFallback from "@/components/blog/ImageWithFallback";
 
 function shuffle<T>(items: T[]): T[] {
   const arr = [...items];
@@ -89,12 +90,10 @@ export default function RandomBlogCards() {
               }`}
             >
               <div className="flex aspect-[16/9] w-full items-center justify-center overflow-hidden border-b-2 border-ink bg-white">
-                {post.cover_image_url ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    src={post.cover_image_url}
+                {getCoverUrl(post) ? (
+                  <ImageWithFallback
+                    src={getCoverUrl(post)}
                     alt={post.title}
-                    loading="lazy"
                     className="h-full w-full object-cover"
                   />
                 ) : (
