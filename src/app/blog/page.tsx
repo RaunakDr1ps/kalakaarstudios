@@ -3,6 +3,7 @@ import Link from "next/link";
 import { ArrowRight, NotebookPen } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import ImageWithFallback from "@/components/blog/ImageWithFallback";
 import { excerpt, fetchPublishedBlogs, formatDate } from "@/lib/blog";
 
 export const metadata: Metadata = {
@@ -62,11 +63,9 @@ export default async function BlogIndexPage() {
                 >
                   <div className="flex aspect-[16/9] w-full items-center justify-center overflow-hidden border-b-2 border-ink bg-white">
                     {post.cover_image_url ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img
+                      <ImageWithFallback
                         src={post.cover_image_url}
                         alt={post.title}
-                        loading="lazy"
                         className="h-full w-full object-cover"
                       />
                     ) : (

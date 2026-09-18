@@ -5,6 +5,7 @@ import { ArrowLeft, ExternalLink } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ViewTracker from "@/components/blog/ViewTracker";
+import ImageWithFallback from "@/components/blog/ImageWithFallback";
 import { fetchPublishedBlog, fetchPublishedBlogs, formatDate } from "@/lib/blog";
 import { renderMarkdown } from "@/lib/markdown";
 
@@ -100,8 +101,7 @@ export default async function BlogPostPage({
 
           {post.cover_image_url && (
             <div className="mt-8 flex aspect-[16/9] w-full items-center justify-center overflow-hidden border-2 border-ink bg-white shadow-[8px_8px_0px_0px_var(--color-ink)]">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
+              <ImageWithFallback
                 src={post.cover_image_url}
                 alt={post.title}
                 className="h-full w-full object-cover"

@@ -145,6 +145,46 @@ export async function updateBlog(opts: {
   return true;
 }
 
+/**
+ * Upload an image to Supabase Storage (bucket `blog-images`) through the CRM
+ * backend upload API and return the public HTTP URL to embed as the cover.
+ * The backend owns the Supabase credentials; it stores the file and hands
+ * back the public URL. Expected contract: POST {CRM_API_URL}/blogs/upload
+ * with multipart field "file" -> { url: "https://…/blog-images/…" }.
+ */
+export async function uploadBlogImage(file: File): Promise<string> {
+  const formData = new FormData();
+  formData.append("file", file);
+
+  const res = await fetch(`${CRM_API_URL}/blogs/upload`, {
+    method: "POST",
+    body: formData,
+  });
+
+  if (!res.ok) {
+    let detail = `HTTP ${res.status}`;
+    try {
+      const body = (await res.json()) as {
+        message?: string;
+        error?: string;
+      };
+      detail = body?.message ?? body?.error ?? detail;
+    } catch {
+      // non-JSON error body; fall back to the status text
+    }
+    throw new Error(detail);
+  }
+
+  const data = (await res.json()) as {
+    url?: string;
+    public_url?: string;
+    path?: string;
+  };
+  const candidate = data.url ?? data.public_url ?? data.path ?? "";
+  if (/^https?:\/\//i.test(candidate.trim())) return candidate.trim();
+  throw new Error("Image upload didn't return a public URL.");
+}
+
 /** Trigger a Cloudflare rebuild so edits go live.
  *  Prefers the direct deploy hook; when that isn't configured on this
  *  client, it asks the CRM backend to run the rebuild instead. */

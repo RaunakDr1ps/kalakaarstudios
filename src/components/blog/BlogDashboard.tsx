@@ -17,9 +17,11 @@ import {
   getStoredAdminKey,
   triggerDeployWebhook,
   updateBlog,
+  uploadBlogImage,
   type Blog,
   type BlogUpdate,
 } from "@/lib/blog";
+import ImageWithFallback from "@/components/blog/ImageWithFallback";
 
 const inputCls =
   "mt-2 w-full border-2 border-ink bg-cream px-4 py-3 text-sm font-medium outline-none transition-shadow focus:shadow-[3px_3px_0px_0px_var(--color-ink)]";
@@ -35,6 +37,8 @@ export default function BlogDashboard() {
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
   const [deployNotice, setDeployNotice] = useState<string | null>(null);
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const [coverError, setCoverError] = useState<string | null>(null);
   const coverInputRef = useRef<HTMLInputElement>(null);
 
   const load = useCallback(async () => {
@@ -90,6 +94,8 @@ export default function BlogDashboard() {
     });
     setSaveError(null);
     setDeployNotice(null);
+    setCoverError(null);
+    setUploadingImage(false);
   }
 
   function closeEdit() {
@@ -101,18 +107,22 @@ export default function BlogDashboard() {
     setDraft((prev) => ({ ...prev, [field]: value }));
   }
 
-  function handleCoverFile(e: React.ChangeEvent<HTMLInputElement>) {
+  async function handleCoverFile(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => {
-      const result = reader.result;
-      if (typeof result === "string") {
-        setDraft((prev) => ({ ...prev, cover_image_url: result }));
-      }
-    };
-    reader.readAsDataURL(file);
-    e.target.value = "";
+    setUploadingImage(true);
+    setCoverError(null);
+    try {
+      const url = await uploadBlogImage(file);
+      setDraft((prev) => ({ ...prev, cover_image_url: url }));
+    } catch (err) {
+      setCoverError(
+        err instanceof Error ? err.message : "Image upload failed."
+      );
+    } finally {
+      setUploadingImage(false);
+      e.target.value = "";
+    }
   }
 
   async function handleSave(e: React.FormEvent<HTMLFormElement>) {
@@ -323,11 +333,26 @@ export default function BlogDashboard() {
                   <button
                     type="button"
                     onClick={() => coverInputRef.current?.click()}
-                    disabled={saving}
+                    disabled={saving || uploadingImage}
                     className="inline-flex items-center gap-1.5 border-2 border-ink bg-cream px-3 py-1 text-[10px] font-bold uppercase tracking-wide transition-all hover:-translate-y-0.5 hover:shadow-[2px_2px_0px_0px_var(--color-ink)] disabled:cursor-not-allowed disabled:opacity-60"
                   >
-                    <ImagePlus className="h-3.5 w-3.5" strokeWidth={2.5} />
-                    Upload Image
+                    {uploadingImage ? (
+                      <>
+                        <LoaderCircle
+                          className="h-3.5 w-3.5 animate-spin"
+                          strokeWidth={2.5}
+                        />
+                        Uploading…
+                      </>
+                    ) : (
+                      <>
+                        <ImagePlus
+                          className="h-3.5 w-3.5"
+                          strokeWidth={2.5}
+                        />
+                        Upload Image
+                      </>
+                    )}
                   </button>
                 </div>
                 <input
@@ -342,21 +367,23 @@ export default function BlogDashboard() {
                   type="url"
                   value={draft.cover_image_url ?? ""}
                   onChange={(e) => setField("cover_image_url", e.target.value)}
-                  placeholder="https://… or upload a file"
+                  placeholder="https://blog-images.yourcdn.com/…"
                   className={inputCls}
                 />
+                {coverError && (
+                  <p className="mt-1.5 text-xs font-bold text-red">
+                    Image upload failed: {coverError}
+                  </p>
+                )}
                 {draft.cover_image_url && (
                   <div className="mt-2 flex items-center gap-3 border-2 border-ink bg-white p-2 shadow-[2px_2px_0px_0px_var(--color-ink)]">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
+                    <ImageWithFallback
                       src={draft.cover_image_url}
                       alt="Cover preview"
                       className="h-16 w-24 shrink-0 border border-ink object-cover"
                     />
                     <span className="text-[10px] font-bold uppercase tracking-widest text-ink/50">
-                      {draft.cover_image_url.startsWith("data:")
-                        ? "Local image attached (Base64)"
-                        : "Remote image URL"}
+                      Cover image URL
                     </span>
                   </div>
                 )}
