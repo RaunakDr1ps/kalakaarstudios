@@ -19,7 +19,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import ImageWithFallback from "@/components/blog/ImageWithFallback";
-import { submitBlog, uploadBlogImage } from "@/lib/blog";
+import { submitBlog, triggerDeployWebhook, uploadBlogImage } from "@/lib/blog";
 
 const inputCls =
   "mt-2 w-full border-2 border-ink bg-cream px-4 py-3 text-sm font-medium outline-none transition-shadow focus:shadow-[3px_3px_0px_0px_var(--color-ink)]";
@@ -153,6 +153,9 @@ export default function BlogSubmissionForm() {
         backlink_url: String(data.get("backlink_url") ?? "").trim(),
       });
       setSubmitted(true);
+      // Post created in the DB — fire the lightweight Cloudflare redeploy
+      // hook so the site rebuild reflects the change.
+      void triggerDeployWebhook();
     } catch (err) {
       setError(
         err instanceof Error

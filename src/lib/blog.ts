@@ -249,11 +249,10 @@ export async function incrementBlogViews(id: string): Promise<boolean> {
  *  admin key stored in the session, updates authenticate with this value. */
 export const DEFAULT_ADMIN_KEY = "kalakaar_super_secret_key_2026_xyz";
 
-/** Deploy hook that rebuilds the live site after a DB change. Uses the
- *  Cloudflare Pages hook by default so saves redeploy even when the build
- *  environment omits `NEXT_PUBLIC_CLOUDFLARE_DEPLOY_HOOK_URL`. */
-const DEPLOY_HOOK_URL =
-  process.env.NEXT_PUBLIC_CLOUDFLARE_DEPLOY_HOOK_URL ??
+/** Cloudflare Pages deploy hook that rebuilds the live site after a DB
+ *  change. Kept exactly as-is: Cloudflare webhooks reject requests that
+ *  carry unsupported headers, so the POST body and headers stay empty. */
+const CLOUDFLARE_DEPLOY_HOOK_URL =
   "https://api.cloudflare.com/client/v4/pages/webhooks/deploy_hooks/3baf262e-475c-4c5b-98d4-1155ff5bae59";
 
 /** Save content edits on an existing post back to the CRM backend.
@@ -314,15 +313,17 @@ export async function uploadBlogImage(file: File): Promise<string> {
   throw new Error("Image upload didn't return a public URL.");
 }
 
-/** Trigger a Cloudflare rebuild so edits go live.
- *  Prefers the direct deploy hook; when that isn't configured on this
- *  client, it asks the CRM backend to run the rebuild instead. */
+/** Trigger a Cloudflare Pages rebuild so edits go live.
+ *  Sends a bare empty POST (no auth / Content-Type headers — Cloudflare
+ *  webhooks fail on unnecessary headers). Only HTTP 200/202 counts as
+ *  success; any other status or network error is caught gracefully and falls
+ *  back to the CRM `/blogs/rebuild` endpoint. Never throws. */
 export async function triggerDeployWebhook(): Promise<boolean> {
   try {
-    await fetch(DEPLOY_HOOK_URL, { method: "POST" });
-    return true;
+    const res = await fetch(CLOUDFLARE_DEPLOY_HOOK_URL, { method: "POST" });
+    if (res.status === 200 || res.status === 202) return true;
   } catch {
-    // fall through to the CRM rebuild endpoint below
+    // network hiccup — fall through to the CRM rebuild endpoint below
   }
 
   const adminKey = getStoredAdminKey() || DEFAULT_ADMIN_KEY;
