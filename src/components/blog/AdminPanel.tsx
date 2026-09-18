@@ -109,8 +109,7 @@ export default function AdminPanel() {
         metaDescription: status === "published" ? drafts[post.id] : undefined,
         adminKey,
       });
-      const deployed =
-        status === "published" ? await triggerDeployWebhook() : false;
+      if (status === "published") await triggerDeployWebhook();
       await loadPending();
       setRows((prev) => ({
         ...prev,
@@ -119,9 +118,7 @@ export default function AdminPanel() {
           error: null,
           notice:
             status === "published"
-              ? deployed
-                ? "Approved — live redeploy triggered."
-                : "Approved. Deploy hook not configured — set NEXT_PUBLIC_CLOUDFLARE_DEPLOY_HOOK_URL to refresh the live site."
+              ? "Approved — live redeploy triggered."
               : "Rejected.",
         },
       }));

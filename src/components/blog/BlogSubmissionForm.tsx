@@ -6,6 +6,7 @@ import {
   Bold,
   FilePenLine,
   Heading2,
+  ImagePlus,
   Italic,
   Link2,
   List,
@@ -29,9 +30,22 @@ export default function BlogSubmissionForm() {
   const [error, setError] = useState<string | null>(null);
   const [submitted, setSubmitted] = useState(false);
   const [body, setBody] = useState("");
+  const [coverImageUrl, setCoverImageUrl] = useState("");
   const [linkPopupOpen, setLinkPopupOpen] = useState(false);
   const [linkUrl, setLinkUrl] = useState("");
   const bodyRef = useRef<HTMLTextAreaElement>(null);
+  const coverInputRef = useRef<HTMLInputElement>(null);
+
+  function handleCoverFile(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      if (typeof reader.result === "string") setCoverImageUrl(reader.result);
+    };
+    reader.readAsDataURL(file);
+    e.target.value = "";
+  }
 
   function applyInline(before: string, after: string, placeholder: string) {
     const el = bodyRef.current;
@@ -186,16 +200,50 @@ export default function BlogSubmissionForm() {
           />
         </div>
         <div>
-          <label htmlFor="cover_image_url" className={labelCls}>
-            Cover Image URL
-          </label>
+          <div className="flex items-center justify-between gap-2">
+            <label htmlFor="cover_image_url" className={labelCls}>
+              Cover Image URL
+            </label>
+            <button
+              type="button"
+              onClick={() => coverInputRef.current?.click()}
+              className="inline-flex items-center gap-1.5 border-2 border-ink bg-cream px-3 py-1 text-[10px] font-bold uppercase tracking-wide transition-all hover:-translate-y-0.5 hover:shadow-[2px_2px_0px_0px_var(--color-ink)]"
+            >
+              <ImagePlus className="h-3.5 w-3.5" strokeWidth={2.5} />
+              Upload Image
+            </button>
+          </div>
+          <input
+            ref={coverInputRef}
+            type="file"
+            accept="image/*"
+            className="hidden"
+            onChange={handleCoverFile}
+          />
           <input
             type="url"
             id="cover_image_url"
             name="cover_image_url"
-            placeholder="https://…"
+            value={coverImageUrl}
+            onChange={(e) => setCoverImageUrl(e.target.value)}
+            placeholder="https://… or upload a file"
             className={inputCls}
           />
+          {coverImageUrl && (
+            <div className="mt-2 flex items-center gap-3 border-2 border-ink bg-white p-2 shadow-[2px_2px_0px_0px_var(--color-ink)]">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={coverImageUrl}
+                alt="Cover preview"
+                className="h-16 w-24 shrink-0 border border-ink object-cover"
+              />
+              <span className="text-[10px] font-bold uppercase tracking-widest text-ink/50">
+                {coverImageUrl.startsWith("data:")
+                  ? "Local image attached (Base64)"
+                  : "Remote image URL"}
+              </span>
+            </div>
+          )}
         </div>
       </div>
 

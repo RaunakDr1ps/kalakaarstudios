@@ -145,12 +145,26 @@ export async function updateBlog(opts: {
   return true;
 }
 
-/** Fire the Cloudflare Pages deploy hook (if configured) so edits go live. */
+/** Trigger a Cloudflare rebuild so edits go live.
+ *  Prefers the direct deploy hook; when that isn't configured on this
+ *  client, it asks the CRM backend to run the rebuild instead. */
 export async function triggerDeployWebhook(): Promise<boolean> {
   const url = process.env.NEXT_PUBLIC_CLOUDFLARE_DEPLOY_HOOK_URL;
-  if (!url) return false;
+  if (url) {
+    try {
+      await fetch(url, { method: "POST" });
+      return true;
+    } catch {
+      // fall through to the CRM rebuild endpoint below
+    }
+  }
+
+  const adminKey = getStoredAdminKey();
   try {
-    await fetch(url, { method: "POST" });
+    await crmFetch<{ ok?: boolean }>("/blogs/rebuild", {
+      method: "POST",
+      headers: adminKey ? { "x-admin-key": adminKey } : undefined,
+    });
     return true;
   } catch {
     return false;

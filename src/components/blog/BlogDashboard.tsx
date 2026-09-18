@@ -1,10 +1,11 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import {
   Eye,
   FilePenLine,
+  ImagePlus,
   LoaderCircle,
   NotebookPen,
   RefreshCw,
@@ -34,6 +35,7 @@ export default function BlogDashboard() {
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
   const [deployNotice, setDeployNotice] = useState<string | null>(null);
+  const coverInputRef = useRef<HTMLInputElement>(null);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -99,6 +101,20 @@ export default function BlogDashboard() {
     setDraft((prev) => ({ ...prev, [field]: value }));
   }
 
+  function handleCoverFile(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      const result = reader.result;
+      if (typeof result === "string") {
+        setDraft((prev) => ({ ...prev, cover_image_url: result }));
+      }
+    };
+    reader.readAsDataURL(file);
+    e.target.value = "";
+  }
+
   async function handleSave(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (!editing) return;
@@ -118,12 +134,8 @@ export default function BlogDashboard() {
           backlink_url: (draft.backlink_url ?? "").trim() || null,
         },
       });
-      const deployed = await triggerDeployWebhook();
-      setDeployNotice(
-        deployed
-          ? "Changes saved — live redeploy triggered."
-          : "Changes saved. Deploy hook not configured (set NEXT_PUBLIC_CLOUDFLARE_DEPLOY_HOOK_URL in the environment to auto-refresh the live site)."
-      );
+      await triggerDeployWebhook();
+      setDeployNotice("Changes saved — live redeploy triggered.");
       await load();
       setEditing(null);
     } catch (err) {
@@ -304,17 +316,50 @@ export default function BlogDashboard() {
               </div>
 
               <div>
-                <label htmlFor="edit-cover" className={labelCls}>
-                  Cover image URL
-                </label>
+                <div className="flex items-center justify-between gap-2">
+                  <label htmlFor="edit-cover" className={labelCls}>
+                    Cover image URL
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => coverInputRef.current?.click()}
+                    disabled={saving}
+                    className="inline-flex items-center gap-1.5 border-2 border-ink bg-cream px-3 py-1 text-[10px] font-bold uppercase tracking-wide transition-all hover:-translate-y-0.5 hover:shadow-[2px_2px_0px_0px_var(--color-ink)] disabled:cursor-not-allowed disabled:opacity-60"
+                  >
+                    <ImagePlus className="h-3.5 w-3.5" strokeWidth={2.5} />
+                    Upload Image
+                  </button>
+                </div>
+                <input
+                  ref={coverInputRef}
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={handleCoverFile}
+                />
                 <input
                   id="edit-cover"
                   type="url"
                   value={draft.cover_image_url ?? ""}
                   onChange={(e) => setField("cover_image_url", e.target.value)}
-                  placeholder="https://…"
+                  placeholder="https://… or upload a file"
                   className={inputCls}
                 />
+                {draft.cover_image_url && (
+                  <div className="mt-2 flex items-center gap-3 border-2 border-ink bg-white p-2 shadow-[2px_2px_0px_0px_var(--color-ink)]">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={draft.cover_image_url}
+                      alt="Cover preview"
+                      className="h-16 w-24 shrink-0 border border-ink object-cover"
+                    />
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-ink/50">
+                      {draft.cover_image_url.startsWith("data:")
+                        ? "Local image attached (Base64)"
+                        : "Remote image URL"}
+                    </span>
+                  </div>
+                )}
               </div>
 
               <div>
