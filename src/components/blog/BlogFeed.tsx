@@ -8,7 +8,6 @@ import {
   excerpt,
   fetchPublishedBlogs,
   formatDate,
-  getCoverUrl,
   type Blog,
 } from "@/lib/blog";
 
@@ -49,9 +48,9 @@ export default function BlogFeed({ initialPosts }: { initialPosts: Blog[] }) {
             }`}
           >
             <div className="flex aspect-[16/9] w-full items-center justify-center overflow-hidden border-b-2 border-ink bg-white">
-              {getCoverUrl(post) ? (
+              {post.coverImage ? (
                 <ImageWithFallback
-                  src={getCoverUrl(post)}
+                  src={post.coverImage}
                   alt={post.title}
                   className="h-full w-full object-cover"
                 />

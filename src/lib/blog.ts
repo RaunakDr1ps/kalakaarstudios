@@ -7,11 +7,15 @@ export type Blog = {
   id: string;
   title: string;
   author_name: string;
-  cover_image_url: string | null;
-  /** Raw alias fields the CRM has historically returned. The display
-   *  components read all three names via `getCoverUrl`. */
+  /** Canonical cover URL. `normalizeBlog` folds every historical field name
+   *  (`coverImage`, `cover_image`, `cover_image_url`, `image`) into this one,
+   *  defaulting to an empty string when none is present. */
+  coverImage: string;
+  /** Raw alias fields the CRM has historically returned, kept as-is for
+   *  debugging/pass-through. Prefer `coverImage` in the UI. */
+  cover_image_url?: string | null;
   cover_image?: string | null;
-  coverImage?: string | null;
+  image?: string | null;
   body: string;
   backlink_url: string | null;
   meta_description: string;
@@ -28,10 +32,18 @@ function firstCover(...candidates: Array<string | null | undefined>): string {
   return found ? found.trim() : "";
 }
 
-/** Resolve a post's cover URL from any of the field names the CRM uses:
- *  `cover_image`, `coverImage`, or `cover_image_url`. */
-export function getCoverUrl(post: Pick<Blog, "cover_image_url" | "cover_image" | "coverImage">): string {
-  return firstCover(post.cover_image_url, post.cover_image, post.coverImage);
+/** Resolve a post's cover URL. `coverImage` is already canonical, but this
+ *  also falls back to the raw per-post alias fields for safety. */
+export function getCoverUrl(
+  post: Pick<Blog, "coverImage"> &
+    Partial<Pick<Blog, "cover_image_url" | "cover_image" | "image">>
+): string {
+  return firstCover(
+    post.coverImage,
+    post.cover_image_url,
+    post.cover_image,
+    post.image
+  );
 }
 
 export type BlogUpdate = {
@@ -64,6 +76,7 @@ type RawBlog = {
   cover_image_url?: string | null;
   cover_image?: string | null;
   coverImage?: string | null;
+  image?: string | null;
   body: string;
   backlink_url?: string | null;
   meta_description?: string;
@@ -78,10 +91,16 @@ function normalizeBlog(raw: RawBlog): Blog {
     id: raw.id,
     title: raw.title,
     author_name: raw.author_name,
-    cover_image_url:
-      firstCover(raw.cover_image_url, raw.cover_image, raw.coverImage) || null,
+    coverImage:
+      firstCover(
+        raw.coverImage,
+        raw.cover_image,
+        raw.cover_image_url,
+        raw.image
+      ) || "",
+    cover_image_url: raw.cover_image_url ?? null,
     cover_image: raw.cover_image ?? null,
-    coverImage: raw.coverImage ?? null,
+    image: raw.image ?? null,
     body: raw.body,
     backlink_url: raw.backlink_url ?? null,
     meta_description: raw.meta_description ?? "",
@@ -173,7 +192,7 @@ export async function fetchPendingBlogs(): Promise<Blog[]> {
 }
 
 export async function submitBlog(input: BlogSubmission): Promise<Blog> {
-  return crmFetch<Blog>("/blogs/submit", {
+  const raw = await crmFetch<RawBlog>("/blogs/submit", {
     method: "POST",
     body: JSON.stringify({
       title: input.title,
@@ -185,6 +204,7 @@ export async function submitBlog(input: BlogSubmission): Promise<Blog> {
       status: "pending",
     }),
   });
+  return normalizeBlog(raw);
 }
 
 export async function moderateBlog(opts: {
