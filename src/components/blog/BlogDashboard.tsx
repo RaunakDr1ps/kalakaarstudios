@@ -15,7 +15,6 @@ import {
 import {
   fetchPublishedBlogs,
   getStoredAdminKey,
-  triggerDeployWebhook,
   updateBlog,
   uploadBlogImage,
   type Blog,
@@ -153,14 +152,15 @@ export default function BlogDashboard() {
           status: editing.status,
         },
       });
-      const deployed = await triggerDeployWebhook();
-      if (!deployed) {
+      const res = await fetch("/api/redeploy", { method: "POST" });
+      const data = (await res.json()) as { success?: boolean };
+      if (!res.ok || !data.success) {
         setDeployFailed(true);
         setDeployNotice(
           "Changes saved, but the redeploy webhook failed. The site may not be live yet."
         );
       } else {
-        setDeployNotice("Changes saved — live redeploy triggered.");
+        setSaveError(null);
       }
       await load();
       setEditing(null);
