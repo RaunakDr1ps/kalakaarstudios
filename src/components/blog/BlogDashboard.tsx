@@ -130,21 +130,13 @@ export default function BlogDashboard() {
     setSaveError(null);
     const coverUrl = (draft.cover_image_url ?? "").trim();
     try {
-      const baseUrl = (
-        process.env.NEXT_PUBLIC_CRM_API_URL ||
-        "https://crm.kalakaarstudios.co.in/api"
-      ).replace(/\/+$/, "");
-      const updateUrl = `${baseUrl}/blogs/${
-        editing.id || (editing as Blog & { _id?: string })._id || ""
-      }`;
+      const postId = editing.id || (editing as Blog & { _id?: string })._id || "";
+      const updateUrl = `/api/admin/blogs/${encodeURIComponent(postId)}`;
       console.log("[blog] Saving post to:", updateUrl);
       const res = await fetch(updateUrl, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
-          "x-admin-key":
-            process.env.NEXT_PUBLIC_ADMIN_KEY ||
-            "kalakaar_super_secret_key_2026_xyz",
         },
         body: JSON.stringify({
           title: (draft.title ?? "").trim(),
@@ -175,13 +167,8 @@ export default function BlogDashboard() {
       setEditing(null);
       await load();
     } catch (err) {
-      const baseUrl = (
-        process.env.NEXT_PUBLIC_CRM_API_URL ||
-        "https://crm.kalakaarstudios.co.in/api"
-      ).replace(/\/+$/, "");
-      const updateUrl = `${baseUrl}/blogs/${
-        editing.id || (editing as Blog & { _id?: string })._id || ""
-      }`;
+      const postId = editing.id || (editing as Blog & { _id?: string })._id || "";
+      const updateUrl = `/api/admin/blogs/${encodeURIComponent(postId)}`;
       console.error("Save Fetch Error:", err);
       alert(
         `Failed to save post. Target URL: ${updateUrl}\n\nError: ${
