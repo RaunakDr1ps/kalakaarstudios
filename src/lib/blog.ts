@@ -1,4 +1,4 @@
-const CRM_API_URL =
+export const CRM_API_URL =
   process.env.NEXT_PUBLIC_CRM_API_URL ?? "https://crm.kalakaarstudios.co.in/api";
 
 export type BlogStatus = "pending" | "published" | "rejected";
@@ -252,7 +252,8 @@ export const DEFAULT_ADMIN_KEY = "kalakaar_super_secret_key_2026_xyz";
 /** Cloudflare Pages deploy hook that rebuilds the live site after a DB
  *  change. Kept exactly as-is: Cloudflare webhooks reject requests that
  *  carry unsupported headers, so the POST body and headers stay empty. */
-const CLOUDFLARE_DEPLOY_HOOK_URL =
+export const CLOUDFLARE_DEPLOY_HOOK_URL =
+  process.env.NEXT_PUBLIC_CLOUDFLARE_DEPLOY_HOOK_URL ??
   "https://api.cloudflare.com/client/v4/pages/webhooks/deploy_hooks/3baf262e-475c-4c5b-98d4-1155ff5bae59";
 
 /** Save content edits on an existing post back to the CRM backend.

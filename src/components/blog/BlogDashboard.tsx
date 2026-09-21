@@ -13,9 +13,9 @@ import {
   X,
 } from "lucide-react";
 import {
+  CLOUDFLARE_DEPLOY_HOOK_URL,
+  CRM_API_URL,
   fetchPublishedBlogs,
-  getStoredAdminKey,
-  updateBlog,
   uploadBlogImage,
   type Blog,
   type BlogUpdate,
@@ -35,8 +35,7 @@ export default function BlogDashboard() {
   const [draft, setDraft] = useState<BlogUpdate>({});
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
-  const [deployNotice, setDeployNotice] = useState<string | null>(null);
-  const [deployFailed, setDeployFailed] = useState(false);
+  const [successNotice, setSuccessNotice] = useState<string | null>(null);
   const [uploadingImage, setUploadingImage] = useState(false);
   const [coverError, setCoverError] = useState<string | null>(null);
   const coverInputRef = useRef<HTMLInputElement>(null);
@@ -93,8 +92,7 @@ export default function BlogDashboard() {
       backlink_url: post.backlink_url ?? "",
     });
     setSaveError(null);
-    setDeployNotice(null);
-    setDeployFailed(false);
+    setSuccessNotice(null);
     setCoverError(null);
     setUploadingImage(false);
   }
@@ -131,39 +129,45 @@ export default function BlogDashboard() {
     if (!editing) return;
     setSaving(true);
     setSaveError(null);
-    setDeployNotice(null);
-    setDeployFailed(false);
     const coverUrl = (draft.cover_image_url ?? "").trim();
     try {
-      const adminKey = getStoredAdminKey();
-      await updateBlog({
-        id: editing.id,
-        adminKey,
-        patch: {
-          title: (draft.title ?? "").trim(),
-          coverImage: coverUrl,
-          cover_image: coverUrl,
-          cover_image_url: coverUrl || null,
-          excerpt: (draft.meta_description ?? "").trim(),
-          content: (draft.body ?? "").trim(),
-          body: (draft.body ?? "").trim(),
-          meta_description: (draft.meta_description ?? "").trim(),
-          backlink_url: (draft.backlink_url ?? "").trim() || null,
-          status: editing.status,
-        },
-      });
-      const res = await fetch("/api/redeploy", { method: "POST" });
-      const data = (await res.json()) as { success?: boolean };
-      if (!res.ok || !data.success) {
-        setDeployFailed(true);
-        setDeployNotice(
-          "Changes saved, but the redeploy webhook failed. The site may not be live yet."
-        );
-      } else {
-        setSaveError(null);
+      const res = await fetch(
+        `${CRM_API_URL}/blogs/${encodeURIComponent(editing.id)}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            "x-admin-key": "kalakaar_super_secret_key_2026_xyz",
+          },
+          body: JSON.stringify({
+            title: (draft.title ?? "").trim(),
+            cover_image: coverUrl || null,
+            coverImage: coverUrl || null,
+            content: (draft.body ?? "").trim(),
+            excerpt: (draft.meta_description ?? "").trim(),
+            status: "published",
+          }),
+        }
+      );
+      if (!res.ok) {
+        throw new Error(`Failed to save post (HTTP ${res.status})`);
       }
-      await load();
+      // Non-blocking redeploy: fire-and-forget so a stuck webhook never blocks
+      // the save UI. `no-cors` keeps this a simple cross-origin POST (Cloudflare
+      // deploy hooks reject requests that carry unnecessary headers).
+      try {
+        void fetch(CLOUDFLARE_DEPLOY_HOOK_URL, {
+          method: "POST",
+          mode: "no-cors",
+        }).catch((err) =>
+          console.warn("[blog] Redeploy webhook failed (non-blocking):", err)
+        );
+      } catch (err) {
+        console.warn("[blog] Redeploy webhook failed (non-blocking):", err);
+      }
+      setSuccessNotice("Post saved successfully!");
       setEditing(null);
+      await load();
     } catch (err) {
       setSaveError(
         err instanceof Error ? err.message : "Failed to save changes."
@@ -197,6 +201,12 @@ export default function BlogDashboard() {
       {error && (
         <div className="border-2 border-ink bg-[#fecaca] px-4 py-3 text-sm font-bold">
           {error}
+        </div>
+      )}
+
+      {successNotice && (
+        <div className="border-2 border-ink bg-mint px-4 py-3 text-sm font-bold">
+          {successNotice}
         </div>
       )}
 
@@ -446,16 +456,6 @@ export default function BlogDashboard() {
                   className={inputCls}
                 />
               </div>
-
-              {deployNotice && (
-                <div
-                  className={`border-2 border-ink px-4 py-3 text-sm font-bold ${
-                    deployFailed ? "bg-[#fecaca]" : "bg-mint"
-                  }`}
-                >
-                  {deployNotice}
-                </div>
-              )}
 
               <div className="flex flex-wrap items-center gap-3 pt-1">
                 <button
