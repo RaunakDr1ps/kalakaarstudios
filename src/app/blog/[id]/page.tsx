@@ -5,7 +5,6 @@ import { ArrowLeft, ExternalLink } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ViewTracker from "@/components/blog/ViewTracker";
-import ImageWithFallback from "@/components/blog/ImageWithFallback";
 import { fetchPublishedBlog, fetchPublishedBlogs, formatDate } from "@/lib/blog";
 import { renderMarkdown } from "@/lib/markdown";
 
@@ -89,6 +88,25 @@ export default async function BlogPostPage({
             All posts
           </Link>
 
+          {(() => {
+            const coverUrl =
+              post.cover_image ||
+              post.coverImage ||
+              post.cover_image_url ||
+              post.image ||
+              "";
+            return coverUrl ? (
+              <div className="relative mb-8 mt-6 h-[350px] w-full overflow-hidden rounded-lg border border-black/10 md:h-[450px]">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={coverUrl}
+                  alt={post.title}
+                  className="h-full w-full object-cover"
+                />
+              </div>
+            ) : null;
+          })()}
+
           <h1 className="mt-6 font-blocky text-4xl font-bold uppercase leading-[1.05] tracking-tight sm:text-5xl">
             {post.title}
           </h1>
@@ -96,16 +114,6 @@ export default async function BlogPostPage({
           <p className="mt-4 text-xs font-bold uppercase tracking-[0.25em] text-ink/50">
             By {post.author_name} · {formatDate(post.created_at)}
           </p>
-
-          {post.coverImage && (
-            <div className="mt-8 flex aspect-[16/9] w-full items-center justify-center overflow-hidden border-2 border-ink bg-white shadow-[8px_8px_0px_0px_var(--color-ink)]">
-              <ImageWithFallback
-                src={post.coverImage}
-                alt={post.title}
-                className="h-full w-full object-cover"
-              />
-            </div>
-          )}
 
           <div
             className="blog-body mt-10 max-w-none"
