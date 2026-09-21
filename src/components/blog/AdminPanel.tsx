@@ -8,23 +8,28 @@ import {
   Inbox,
   LoaderCircle,
   LockKeyhole,
+  Plus,
   ShieldCheck,
+  X,
   XCircle,
 } from "lucide-react";
 import BlogDashboard from "@/components/blog/BlogDashboard";
 import {
   ADMIN_SESSION_KEY,
+  createBlog,
   fetchPendingBlogs,
   getStoredAdminKey,
   moderateBlog,
   triggerDeployWebhook,
   type Blog,
+  type BlogStatus,
 } from "@/lib/blog";
 
 const ADMIN_KEY = process.env.NEXT_PUBLIC_ADMIN_KEY ?? "";
 
 const inputCls =
   "mt-2 w-full border-2 border-ink bg-cream px-4 py-3 text-sm font-medium outline-none transition-shadow focus:shadow-[3px_3px_0px_0px_var(--color-ink)]";
+const labelCls = "block text-xs font-bold uppercase tracking-widest";
 
 type RowState = {
   saving: boolean;
@@ -33,6 +38,24 @@ type RowState = {
 };
 
 type Tab = "queue" | "published";
+
+type CreateForm = {
+  title: string;
+  cover_image_url: string;
+  meta_description: string;
+  body: string;
+  status: BlogStatus;
+  backlink_url: string;
+};
+
+const EMPTY_CREATE: CreateForm = {
+  title: "",
+  cover_image_url: "",
+  meta_description: "",
+  body: "",
+  status: "published",
+  backlink_url: "",
+};
 
 export default function AdminPanel() {
   const [unlocked, setUnlocked] = useState(false);
@@ -44,6 +67,12 @@ export default function AdminPanel() {
   const [gateError, setGateError] = useState<string | null>(null);
   const [queueError, setQueueError] = useState<string | null>(null);
   const [tab, setTab] = useState<Tab>("queue");
+  const [createOpen, setCreateOpen] = useState(false);
+  const [createForm, setCreateForm] = useState<CreateForm>(EMPTY_CREATE);
+  const [createSubmitting, setCreateSubmitting] = useState(false);
+  const [createError, setCreateError] = useState<string | null>(null);
+  const [createNotice, setCreateNotice] = useState<string | null>(null);
+  const [publishedKey, setPublishedKey] = useState(0);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -134,6 +163,53 @@ export default function AdminPanel() {
     }
   }
 
+  function openCreate() {
+    setCreateForm(EMPTY_CREATE);
+    setCreateError(null);
+    setCreateOpen(true);
+  }
+
+  function closeCreate() {
+    if (createSubmitting) return;
+    setCreateOpen(false);
+    setCreateError(null);
+  }
+
+  function setCreateField(field: keyof CreateForm, value: string) {
+    setCreateForm((prev) => ({ ...prev, [field]: value }));
+  }
+
+  async function handleCreate(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setCreateSubmitting(true);
+    setCreateError(null);
+    try {
+      const coverUrl = createForm.cover_image_url.trim();
+      await createBlog({
+        title: createForm.title.trim(),
+        cover_image: coverUrl || null,
+        coverImage: coverUrl || null,
+        meta_description: createForm.meta_description.trim(),
+        content: createForm.body.trim(),
+        backlink_url: createForm.backlink_url.trim() || null,
+        status: createForm.status,
+      });
+      // Non-blocking redeploy: never blocks form completion.
+      void triggerDeployWebhook();
+      setCreateOpen(false);
+      setCreateForm(EMPTY_CREATE);
+      setCreateNotice("Post created! Published list updating…");
+      await loadPending();
+      setPublishedKey((k) => k + 1);
+    } catch (err) {
+      setCreateError(
+        err instanceof Error ? err.message : "Failed to create post."
+      );
+    } finally {
+      setCreateSubmitting(false);
+    }
+  }
+
   if (!unlocked) {
     return (
       <div className="mx-auto max-w-md border-2 border-ink bg-cream p-8 shadow-[8px_8px_0px_0px_var(--color-ink)]">
@@ -182,35 +258,52 @@ export default function AdminPanel() {
 
   return (
     <div className="space-y-6">
-      <div className="inline-flex flex-wrap items-center gap-1 border-2 border-ink bg-cream p-1.5 shadow-[3px_3px_0px_0px_var(--color-ink)]">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="inline-flex flex-wrap items-center gap-1 border-2 border-ink bg-cream p-1.5 shadow-[3px_3px_0px_0px_var(--color-ink)]">
+          <button
+            type="button"
+            onClick={() => setTab("queue")}
+            className={`inline-flex items-center gap-2 border-2 px-4 py-2 text-xs font-bold uppercase tracking-wide transition-all ${
+              tab === "queue"
+                ? "border-ink bg-sun shadow-[3px_3px_0px_0px_var(--color-ink)]"
+                : "border-transparent text-ink/60 hover:text-ink"
+            }`}
+          >
+            <Inbox className="h-3.5 w-3.5" strokeWidth={2.5} />
+            Pending review
+          </button>
+          <button
+            type="button"
+            onClick={() => setTab("published")}
+            className={`inline-flex items-center gap-2 border-2 px-4 py-2 text-xs font-bold uppercase tracking-wide transition-all ${
+              tab === "published"
+                ? "border-ink bg-sun shadow-[3px_3px_0px_0px_var(--color-ink)]"
+                : "border-transparent text-ink/60 hover:text-ink"
+            }`}
+          >
+            <BarChart3 className="h-3.5 w-3.5" strokeWidth={2.5} />
+            Published & analytics
+          </button>
+        </div>
+
         <button
           type="button"
-          onClick={() => setTab("queue")}
-          className={`inline-flex items-center gap-2 border-2 px-4 py-2 text-xs font-bold uppercase tracking-wide transition-all ${
-            tab === "queue"
-              ? "border-ink bg-sun shadow-[3px_3px_0px_0px_var(--color-ink)]"
-              : "border-transparent text-ink/60 hover:text-ink"
-          }`}
+          onClick={openCreate}
+          className="inline-flex items-center gap-2 rounded-full border-2 border-ink bg-red px-5 py-2.5 text-xs font-bold uppercase tracking-wide text-white shadow-[3px_3px_0px_0px_var(--color-ink)] transition-all hover:-translate-y-1 hover:shadow-[5px_5px_0px_0px_var(--color-ink)]"
         >
-          <Inbox className="h-3.5 w-3.5" strokeWidth={2.5} />
-          Pending review
-        </button>
-        <button
-          type="button"
-          onClick={() => setTab("published")}
-          className={`inline-flex items-center gap-2 border-2 px-4 py-2 text-xs font-bold uppercase tracking-wide transition-all ${
-            tab === "published"
-              ? "border-ink bg-sun shadow-[3px_3px_0px_0px_var(--color-ink)]"
-              : "border-transparent text-ink/60 hover:text-ink"
-          }`}
-        >
-          <BarChart3 className="h-3.5 w-3.5" strokeWidth={2.5} />
-          Published & analytics
+          <Plus className="h-4 w-4" strokeWidth={2.75} />
+          Create post
         </button>
       </div>
 
+      {createNotice && (
+        <div className="border-2 border-ink bg-mint px-4 py-3 text-sm font-bold">
+          {createNotice}
+        </div>
+      )}
+
       {tab === "published" ? (
-        <BlogDashboard />
+        <BlogDashboard key={publishedKey} />
       ) : (
         <>
           <div className="flex flex-wrap items-center justify-between gap-3">
@@ -379,6 +472,168 @@ export default function AdminPanel() {
             );
           })}
         </>
+      )}
+
+      {createOpen && (
+        <div className="fixed inset-0 z-[80] flex items-start justify-center overflow-y-auto bg-ink/60 p-4 sm:p-8">
+          <div className="w-full max-w-2xl border-2 border-ink bg-cream p-6 shadow-[8px_8px_0px_0px_var(--color-ink)] sm:p-8">
+            <div className="flex items-center justify-between gap-4">
+              <div>
+                <h3 className="font-blocky text-xl font-bold uppercase tracking-tight">
+                  Create post
+                </h3>
+                <p className="mt-1 text-xs font-medium text-ink/50">
+                  Create a post directly in the CRM and trigger a live redeploy.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={closeCreate}
+                disabled={createSubmitting}
+                aria-label="Close"
+                className="flex h-10 w-10 shrink-0 items-center justify-center border-2 border-ink bg-cream text-ink transition-colors hover:bg-[#fecaca] disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                <X className="h-4 w-4" strokeWidth={2.5} />
+              </button>
+            </div>
+
+            <form
+              onSubmit={(e) => void handleCreate(e)}
+              className="mt-6 space-y-4"
+            >
+              {createError && (
+                <div className="border-2 border-ink bg-[#fecaca] px-4 py-3 text-sm font-bold">
+                  Couldn&apos;t create: {createError}
+                </div>
+              )}
+
+              <div>
+                <label htmlFor="create-title" className={labelCls}>
+                  Title *
+                </label>
+                <input
+                  id="create-title"
+                  type="text"
+                  required
+                  value={createForm.title}
+                  onChange={(e) => setCreateField("title", e.target.value)}
+                  className={inputCls}
+                />
+              </div>
+
+              <div>
+                <label htmlFor="create-cover" className={labelCls}>
+                  Cover image URL
+                </label>
+                <input
+                  id="create-cover"
+                  type="url"
+                  value={createForm.cover_image_url}
+                  onChange={(e) =>
+                    setCreateField("cover_image_url", e.target.value)
+                  }
+                  placeholder="https://…"
+                  className={inputCls}
+                />
+              </div>
+
+              <div>
+                <label htmlFor="create-meta" className={labelCls}>
+                  Meta description *
+                </label>
+                <input
+                  id="create-meta"
+                  type="text"
+                  required
+                  value={createForm.meta_description}
+                  onChange={(e) =>
+                    setCreateField("meta_description", e.target.value)
+                  }
+                  className={inputCls}
+                />
+              </div>
+
+              <div>
+                <label htmlFor="create-body" className={labelCls}>
+                  Content (markdown) *
+                </label>
+                <textarea
+                  id="create-body"
+                  rows={12}
+                  required
+                  value={createForm.body}
+                  onChange={(e) => setCreateField("body", e.target.value)}
+                  className={`${inputCls} resize-y font-mono text-xs leading-relaxed`}
+                />
+              </div>
+
+              <div>
+                <label htmlFor="create-status" className={labelCls}>
+                  Status *
+                </label>
+                <select
+                  id="create-status"
+                  value={createForm.status}
+                  onChange={(e) =>
+                    setCreateField("status", e.target.value as BlogStatus)
+                  }
+                  className={inputCls}
+                >
+                  <option value="published">Published</option>
+                  <option value="pending">Pending review</option>
+                  <option value="rejected">Rejected</option>
+                </select>
+              </div>
+
+              <div>
+                <label htmlFor="create-backlink" className={labelCls}>
+                  Backlink URL (optional)
+                </label>
+                <input
+                  id="create-backlink"
+                  type="url"
+                  value={createForm.backlink_url}
+                  onChange={(e) =>
+                    setCreateField("backlink_url", e.target.value)
+                  }
+                  placeholder="https://your-site.com"
+                  className={inputCls}
+                />
+              </div>
+
+              <div className="flex flex-wrap items-center gap-3 pt-1">
+                <button
+                  type="submit"
+                  disabled={createSubmitting}
+                  className="inline-flex items-center gap-2 rounded-full border-2 border-ink bg-red px-6 py-3 text-sm font-bold uppercase tracking-wide text-white shadow-[4px_4px_0px_0px_var(--color-ink)] transition-all hover:-translate-y-1 hover:shadow-[6px_6px_0px_0px_var(--color-ink)] disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  {createSubmitting ? (
+                    <>
+                      <LoaderCircle
+                        className="h-4 w-4 animate-spin"
+                        strokeWidth={2.5}
+                      />
+                      Creating…
+                    </>
+                  ) : (
+                    <>
+                      <Plus className="h-4 w-4" strokeWidth={2.5} />
+                      Create post
+                    </>
+                  )}
+                </button>
+                <button
+                  type="button"
+                  onClick={closeCreate}
+                  disabled={createSubmitting}
+                  className="inline-flex items-center gap-2 rounded-full border-2 border-ink bg-cream px-6 py-3 text-sm font-bold uppercase tracking-wide shadow-[4px_4px_0px_0px_var(--color-ink)] transition-all hover:-translate-y-1 hover:shadow-[6px_6px_0px_0px_var(--color-ink)] disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
       )}
     </div>
   );
