@@ -465,7 +465,7 @@ export default function Home() {
           <span className="absolute -right-2 -top-4 flex h-14 w-14 rotate-12 items-center justify-center rounded-full border-2 border-ink bg-sun text-xs font-bold uppercase leading-tight shadow-[4px_4px_0px_0px_var(--color-ink)] lg:right-4">
             Since
             <br />
-            2025
+            2018
           </span>
         </div>
       </section>
@@ -1068,7 +1068,7 @@ export default function Home() {
             </a>
             <p className="mt-4 max-w-sm text-sm font-medium leading-relaxed text-cream/60">
               A full-service event production and management studio in Patna,
-              making chaos look effortless since 2025. Plan it, build it, run
+              making chaos look effortless since 2018. Plan it, build it, run
               it — loudly.
             </p>
             <div className="mt-6 flex flex-wrap gap-2.5 text-xs font-bold uppercase tracking-wide">
