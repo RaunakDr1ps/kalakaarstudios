@@ -14,7 +14,6 @@ import {
 } from "lucide-react";
 import {
   CLOUDFLARE_DEPLOY_HOOK_URL,
-  CRM_API_URL,
   fetchPublishedBlogs,
   uploadBlogImage,
   type Blog,
@@ -131,24 +130,31 @@ export default function BlogDashboard() {
     setSaveError(null);
     const coverUrl = (draft.cover_image_url ?? "").trim();
     try {
-      const res = await fetch(
-        `${CRM_API_URL}/blogs/${encodeURIComponent(editing.id)}`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            "x-admin-key": "kalakaar_super_secret_key_2026_xyz",
-          },
-          body: JSON.stringify({
-            title: (draft.title ?? "").trim(),
-            cover_image: coverUrl || null,
-            coverImage: coverUrl || null,
-            content: (draft.body ?? "").trim(),
-            excerpt: (draft.meta_description ?? "").trim(),
-            status: "published",
-          }),
-        }
-      );
+      const baseUrl = (
+        process.env.NEXT_PUBLIC_CRM_API_URL ||
+        "https://crm.kalakaarstudios.co.in/api"
+      ).replace(/\/+$/, "");
+      const updateUrl = `${baseUrl}/blogs/${
+        editing.id || (editing as Blog & { _id?: string })._id || ""
+      }`;
+      console.log("[blog] Saving post to:", updateUrl);
+      const res = await fetch(updateUrl, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "x-admin-key":
+            process.env.NEXT_PUBLIC_ADMIN_KEY ||
+            "kalakaar_super_secret_key_2026_xyz",
+        },
+        body: JSON.stringify({
+          title: (draft.title ?? "").trim(),
+          cover_image: coverUrl || null,
+          coverImage: coverUrl || null,
+          meta_description: (draft.meta_description ?? "").trim(),
+          content: (draft.body ?? "").trim(),
+          backlink_url: (draft.backlink_url ?? "").trim() || null,
+        }),
+      });
       if (!res.ok) {
         throw new Error(`Failed to save post (HTTP ${res.status})`);
       }
@@ -169,6 +175,19 @@ export default function BlogDashboard() {
       setEditing(null);
       await load();
     } catch (err) {
+      const baseUrl = (
+        process.env.NEXT_PUBLIC_CRM_API_URL ||
+        "https://crm.kalakaarstudios.co.in/api"
+      ).replace(/\/+$/, "");
+      const updateUrl = `${baseUrl}/blogs/${
+        editing.id || (editing as Blog & { _id?: string })._id || ""
+      }`;
+      console.error("Save Fetch Error:", err);
+      alert(
+        `Failed to save post. Target URL: ${updateUrl}\n\nError: ${
+          err instanceof Error ? err.message : "Unknown error"
+        }`
+      );
       setSaveError(
         err instanceof Error ? err.message : "Failed to save changes."
       );
