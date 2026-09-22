@@ -3,6 +3,7 @@ import { NotebookPen } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import BlogFeed from "@/components/blog/BlogFeed";
+import BlogSubmitModal from "@/components/blog/BlogSubmitModal";
 import { fetchPublishedBlogs } from "@/lib/blog";
 
 export const metadata: Metadata = {
@@ -34,6 +35,9 @@ export default async function BlogIndexPage() {
               Field notes from live production — readable in the time it takes
               a band to soundcheck.
             </p>
+            <div className="mt-6">
+              <BlogSubmitModal />
+            </div>
           </div>
         </section>
 
