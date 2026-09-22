@@ -10,6 +10,7 @@ import {
   NotebookPen,
   RefreshCw,
   Save,
+  Trash2,
   X,
 } from "lucide-react";
 import {
@@ -37,6 +38,7 @@ export default function BlogDashboard() {
   const [successNotice, setSuccessNotice] = useState<string | null>(null);
   const [uploadingImage, setUploadingImage] = useState(false);
   const [coverError, setCoverError] = useState<string | null>(null);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
   const coverInputRef = useRef<HTMLInputElement>(null);
 
   const load = useCallback(async () => {
@@ -196,6 +198,61 @@ export default function BlogDashboard() {
     }
   }
 
+  async function handleDelete(id: string) {
+    if (!window.confirm("Are you sure you want to delete this blog post?")) {
+      return;
+    }
+    setDeletingId(id);
+    try {
+      const baseUrl = (
+        process.env.NEXT_PUBLIC_CRM_API_URL ||
+        "https://crm.kalakaarstudios.co.in/api"
+      ).replace(/\/+$/, "");
+      const deleteUrl = `${baseUrl}/blogs/${encodeURIComponent(id)}`;
+      console.log("[blog] Deleting post at:", deleteUrl);
+      const res = await fetch(deleteUrl, {
+        method: "DELETE",
+        headers: {
+          "x-admin-key":
+            process.env.NEXT_PUBLIC_ADMIN_KEY ||
+            "kalakaar_super_secret_key_2026_xyz",
+        },
+      });
+      if (!res.ok) {
+        throw new Error(`Failed to delete post (HTTP ${res.status})`);
+      }
+      // Non-blocking redeploy: fire-and-forget so a stuck webhook never
+      // blocks the UI. `no-cors` keeps this a simple cross-origin POST.
+      try {
+        void fetch(CLOUDFLARE_DEPLOY_HOOK_URL, {
+          method: "POST",
+          mode: "no-cors",
+        }).catch((err) =>
+          console.warn("[blog] Redeploy webhook failed (non-blocking):", err)
+        );
+      } catch (err) {
+        console.warn("[blog] Redeploy webhook failed (non-blocking):", err);
+      }
+      alert("Post deleted successfully!");
+      setPosts((prev) => prev.filter((post) => post.id !== id));
+      if (editing?.id === id) setEditing(null);
+    } catch (err) {
+      const baseUrl = (
+        process.env.NEXT_PUBLIC_CRM_API_URL ||
+        "https://crm.kalakaarstudios.co.in/api"
+      ).replace(/\/+$/, "");
+      const deleteUrl = `${baseUrl}/blogs/${encodeURIComponent(id)}`;
+      console.error("Delete Post Error:", err);
+      alert(
+        `Failed to delete post. Target URL: ${deleteUrl}\n\nError: ${
+          err instanceof Error ? err.message : "Unknown error"
+        }`
+      );
+    } finally {
+      setDeletingId(null);
+    }
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
@@ -310,14 +367,33 @@ export default function BlogDashboard() {
                     </span>
                   </td>
                   <td className="px-4 py-3 text-right">
-                    <button
-                      type="button"
-                      onClick={() => openEdit(post)}
-                      className="inline-flex items-center gap-1.5 border-2 border-ink bg-sun px-3 py-1.5 text-xs font-bold uppercase tracking-wide shadow-[2px_2px_0px_0px_var(--color-ink)] transition-all hover:-translate-y-0.5"
-                    >
-                      <FilePenLine className="h-3.5 w-3.5" strokeWidth={2.5} />
-                      Edit
-                    </button>
+                    <div className="flex items-center justify-end gap-2">
+                      <button
+                        type="button"
+                        onClick={() => openEdit(post)}
+                        disabled={deletingId !== null}
+                        className="inline-flex items-center gap-1.5 border-2 border-ink bg-sun px-3 py-1.5 text-xs font-bold uppercase tracking-wide shadow-[2px_2px_0px_0px_var(--color-ink)] transition-all hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-60"
+                      >
+                        <FilePenLine className="h-3.5 w-3.5" strokeWidth={2.5} />
+                        Edit
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => void handleDelete(post.id)}
+                        disabled={deletingId !== null}
+                        className="inline-flex items-center gap-1.5 border-2 border-ink bg-[#fecaca] px-3 py-1.5 text-xs font-bold uppercase tracking-wide shadow-[2px_2px_0px_0px_var(--color-ink)] transition-all hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-60"
+                      >
+                        {deletingId === post.id ? (
+                          <LoaderCircle
+                            className="h-3.5 w-3.5 animate-spin"
+                            strokeWidth={2.5}
+                          />
+                        ) : (
+                          <Trash2 className="h-3.5 w-3.5" strokeWidth={2.5} />
+                        )}
+                        Delete
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -479,7 +555,7 @@ export default function BlogDashboard() {
               <div className="flex flex-wrap items-center gap-3 pt-1">
                 <button
                   type="submit"
-                  disabled={saving}
+                  disabled={saving || deletingId !== null}
                   className="inline-flex items-center gap-2 rounded-full border-2 border-ink bg-red px-6 py-3 text-sm font-bold uppercase tracking-wide text-white shadow-[4px_4px_0px_0px_var(--color-ink)] transition-all hover:-translate-y-1 hover:shadow-[6px_6px_0px_0px_var(--color-ink)] disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   {saving ? (
@@ -499,8 +575,29 @@ export default function BlogDashboard() {
                 </button>
                 <button
                   type="button"
+                  onClick={() => void handleDelete(editing.id)}
+                  disabled={saving || deletingId !== null}
+                  className="inline-flex items-center gap-2 rounded-full border-2 border-red bg-cream px-6 py-3 text-sm font-bold uppercase tracking-wide text-red shadow-[4px_4px_0px_0px_var(--color-red)] transition-all hover:-translate-y-1 hover:bg-[#fecaca] hover:shadow-[6px_6px_0px_0px_var(--color-red)] disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  {deletingId !== null ? (
+                    <>
+                      <LoaderCircle
+                        className="h-4 w-4 animate-spin"
+                        strokeWidth={2.5}
+                      />
+                      Deleting…
+                    </>
+                  ) : (
+                    <>
+                      <Trash2 className="h-4 w-4" strokeWidth={2.5} />
+                      Delete post
+                    </>
+                  )}
+                </button>
+                <button
+                  type="button"
                   onClick={closeEdit}
-                  disabled={saving}
+                  disabled={saving || deletingId !== null}
                   className="inline-flex items-center gap-2 rounded-full border-2 border-ink bg-cream px-6 py-3 text-sm font-bold uppercase tracking-wide shadow-[4px_4px_0px_0px_var(--color-ink)] transition-all hover:-translate-y-1 hover:shadow-[6px_6px_0px_0px_var(--color-ink)] disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   Cancel
