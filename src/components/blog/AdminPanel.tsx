@@ -16,7 +16,7 @@ import {
 import BlogDashboard from "@/components/blog/BlogDashboard";
 import {
   ADMIN_SESSION_KEY,
-  createBlog,
+  CLOUDFLARE_DEPLOY_HOOK_URL,
   fetchPendingBlogs,
   getStoredAdminKey,
   moderateBlog,
@@ -185,23 +185,63 @@ export default function AdminPanel() {
     setCreateError(null);
     try {
       const coverUrl = createForm.cover_image_url.trim();
-      await createBlog({
-        title: createForm.title.trim(),
-        cover_image: coverUrl || null,
-        coverImage: coverUrl || null,
-        meta_description: createForm.meta_description.trim(),
-        content: createForm.body.trim(),
-        backlink_url: createForm.backlink_url.trim() || null,
-        status: createForm.status,
+      const baseUrl = (
+        process.env.NEXT_PUBLIC_CRM_API_URL ||
+        "https://crm.kalakaarstudios.co.in/api"
+      ).replace(/\/+$/, "");
+      const createUrl = `${baseUrl}/blogs`;
+      console.log("[blog] Creating post at:", createUrl);
+      const res = await fetch(createUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-admin-key":
+            process.env.NEXT_PUBLIC_ADMIN_KEY ||
+            "kalakaar_super_secret_key_2026_xyz",
+        },
+        body: JSON.stringify({
+          title: createForm.title.trim(),
+          cover_image: coverUrl || null,
+          coverImage: coverUrl || null,
+          meta_description: createForm.meta_description.trim(),
+          content: createForm.body.trim(),
+          backlink_url: createForm.backlink_url.trim() || null,
+          status: createForm.status,
+        }),
       });
-      // Non-blocking redeploy: never blocks form completion.
-      void triggerDeployWebhook();
+      if (!res.ok) {
+        throw new Error(`Failed to create post (HTTP ${res.status})`);
+      }
+      // Non-blocking redeploy: fire-and-forget so a stuck webhook never
+      // blocks the UI. `no-cors` keeps this a simple cross-origin POST.
+      try {
+        void fetch(CLOUDFLARE_DEPLOY_HOOK_URL, {
+          method: "POST",
+          mode: "no-cors",
+        }).catch((err) =>
+          console.warn("[blog] Redeploy webhook failed (non-blocking):", err)
+        );
+      } catch (err) {
+        console.warn("[blog] Redeploy webhook failed (non-blocking):", err);
+      }
       setCreateOpen(false);
       setCreateForm(EMPTY_CREATE);
       setCreateNotice("Post created! Published list updating…");
+      alert("Blog post created successfully!");
       await loadPending();
       setPublishedKey((k) => k + 1);
     } catch (err) {
+      const baseUrl = (
+        process.env.NEXT_PUBLIC_CRM_API_URL ||
+        "https://crm.kalakaarstudios.co.in/api"
+      ).replace(/\/+$/, "");
+      const createUrl = `${baseUrl}/blogs`;
+      console.error("Create Post Error:", err);
+      alert(
+        `Failed to create post. Target URL: ${createUrl}\n\nError: ${
+          err instanceof Error ? err.message : "Unknown error"
+        }`
+      );
       setCreateError(
         err instanceof Error ? err.message : "Failed to create post."
       );

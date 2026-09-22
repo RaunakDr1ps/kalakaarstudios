@@ -231,36 +231,6 @@ export async function moderateBlog(opts: {
   return true;
 }
 
-export type BlogCreation = {
-  title: string;
-  cover_image?: string | null;
-  coverImage?: string | null;
-  meta_description: string;
-  content: string;
-  backlink_url?: string | null;
-  status?: BlogStatus;
-};
-
-/** Create a new post directly in the CRM. Authenticates with the shared
- *  admin key and returns the normalized created post. */
-export async function createBlog(input: BlogCreation): Promise<Blog> {
-  const adminKey = process.env.NEXT_PUBLIC_ADMIN_KEY || DEFAULT_ADMIN_KEY;
-  const raw = await crmFetch<RawBlog>("/blogs", {
-    method: "POST",
-    headers: { "x-admin-key": adminKey },
-    body: JSON.stringify({
-      title: input.title,
-      cover_image: input.cover_image ?? null,
-      coverImage: input.coverImage ?? null,
-      meta_description: input.meta_description,
-      content: input.content,
-      backlink_url: input.backlink_url ?? null,
-      status: input.status ?? "published",
-    }),
-  });
-  return normalizeBlog(raw);
-}
-
 /** Increment a published post's view counter in the CRM backend. */
 export async function incrementBlogViews(id: string): Promise<boolean> {
   try {
