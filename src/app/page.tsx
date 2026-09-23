@@ -121,6 +121,7 @@ const founders = [
     num: "One",
     name: "Qaima Hussain",
     role: "Ops & Production",
+    subtitle: "Co-Founder & CEO — Kalakaar Studios",
     photo: "/founders/founder2.png",
     alignLeft: true,
     tags: ["Visionary", "Risk-taker", "Detail-obsessed"],
@@ -129,6 +130,7 @@ const founders = [
     num: "Two",
     name: "Ashutosh Ranjan",
     role: "Creative & Growth",
+    subtitle: "Co-Founder & COO — Kalakaar Studios",
     photo: "/founders/founder1.png",
     alignLeft: false,
     tags: ["People-first", "Big-ideas", "Phone-a-holic"],
@@ -547,7 +549,7 @@ export default function Home() {
                   {founder.name}
                 </h3>
                 <p className="mt-1 text-xs font-bold uppercase tracking-[0.25em] text-ink/50">
-                  Co-Founder — Kalakaar Studios
+                  {founder.subtitle}
                 </p>
 
                 <p className="mt-4 text-sm font-medium leading-relaxed text-ink/70">
