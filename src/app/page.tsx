@@ -30,7 +30,6 @@ import {
   Speaker,
   Spotlight,
   Star,
-  UserRound,
   X,
 } from "lucide-react";
 
@@ -120,15 +119,18 @@ const faqs = [
 const founders = [
   {
     num: "One",
+    name: "Qaima Hussain",
     role: "Ops & Production",
-    sticker: "The Boss",
-    photo: "/founders/founder1.png",
+    photo: "/founders/founder2.png",
+    alignLeft: true,
     tags: ["Visionary", "Risk-taker", "Detail-obsessed"],
   },
   {
     num: "Two",
+    name: "Ashutosh Ranjan",
     role: "Creative & Growth",
-    sticker: "The Hype Man",
+    photo: "/founders/founder1.png",
+    alignLeft: false,
     tags: ["People-first", "Big-ideas", "Phone-a-holic"],
   },
 ];
@@ -513,7 +515,7 @@ export default function Home() {
             {founders.map((founder) => (
               <div
                 key={founder.num}
-                className="border-2 border-ink bg-cream p-6 shadow-[6px_6px_0px_0px_var(--color-ink)] sm:p-8"
+                className="group/founder border-2 border-ink bg-cream p-6 shadow-[6px_6px_0px_0px_var(--color-ink)] sm:p-8"
               >
                 <div className="flex flex-wrap items-center justify-between gap-3">
                   <p className="text-xs font-bold uppercase tracking-[0.25em] text-ink/50">
@@ -524,47 +526,25 @@ export default function Home() {
                   </span>
                 </div>
 
-                {/* Sticker photo (transparent cutout) when provided, placeholder otherwise */}
-                <div className="relative mx-auto mt-6 w-full max-w-sm">
-                  {founder.photo ? (
-                    <div className="relative rotate-[-2deg] border-2 border-ink bg-cream shadow-[8px_8px_0px_0px_var(--color-ink)]">
-                      <Image
-                        src={founder.photo}
-                        alt={`${founder.role} — Kalakaar Studios founder`}
-                        width={1024}
-                        height={1024}
-                        className="h-auto w-full object-contain drop-shadow-lg"
-                      />
-                    </div>
-                  ) : (
-                    <div className="relative rotate-[1.5deg] overflow-hidden border-2 border-ink bg-cream shadow-[8px_8px_0px_0px_var(--color-ink)]">
-                      <div
-                        className="flex aspect-[4/3] flex-col items-center justify-center gap-4"
-                        style={{
-                          backgroundImage:
-                            "radial-gradient(circle, rgba(17,24,39,0.08) 1.5px, transparent 1.5px)",
-                          backgroundSize: "20px 20px",
-                        }}
-                      >
-                        <span className="flex h-24 w-24 items-center justify-center rounded-full border-2 border-dashed border-ink/40 bg-white shadow-[5px_5px_0px_0px_var(--color-ink)]">
-                          <UserRound
-                            className="h-11 w-11 text-ink/35"
-                            strokeWidth={1.75}
-                          />
-                        </span>
-                        <span className="border-2 border-ink bg-sun px-3 py-1 text-[10px] font-bold uppercase tracking-[0.2em] text-ink">
-                          Sticker photo coming soon
-                        </span>
-                      </div>
-                    </div>
-                  )}
-                  <span className="absolute -right-3 -top-4 z-10 rotate-6 border-2 border-ink bg-red px-3 py-1 text-xs font-bold uppercase tracking-widest text-white shadow-[4px_4px_0px_0px_var(--color-ink)]">
-                    {founder.sticker}
-                  </span>
+                {/* Sticker cutout photo */}
+                <div className="relative z-0 -mt-10 w-full">
+                  <div className="founder-wobble">
+<Image
+                          src={founder.photo}
+                          alt={`${founder.role} — Kalakaar Studios founder`}
+                          width={1024}
+                          height={1024}
+                          className={
+                            founder.alignLeft
+                              ? "relative -ml-8 h-[520px] w-auto max-w-none object-contain object-left drop-shadow-xl transition-transform duration-300 ease-out group-hover/founder:rotate-3 group-hover/founder:scale-110"
+                              : "relative mx-auto block h-[540px] w-auto max-w-none object-contain drop-shadow-xl transition-transform duration-300 ease-out group-hover/founder:rotate-3 group-hover/founder:scale-110"
+                          }
+                        />
+                  </div>
                 </div>
 
                 <h3 className="mt-8 font-blocky text-2xl font-bold uppercase tracking-tight">
-                  [Founder {founder.num} Name]
+                  {founder.name}
                 </h3>
                 <p className="mt-1 text-xs font-bold uppercase tracking-[0.25em] text-ink/50">
                   Co-Founder — Kalakaar Studios
