@@ -122,6 +122,7 @@ const founders = [
     num: "One",
     role: "Ops & Production",
     sticker: "The Boss",
+    photo: "/founders/founder1.png",
     tags: ["Visionary", "Risk-taker", "Detail-obsessed"],
   },
   {
@@ -509,7 +510,7 @@ export default function Home() {
           </div>
 
           <div className="mt-12 grid gap-10 md:grid-cols-2">
-            {founders.map((founder, i) => (
+            {founders.map((founder) => (
               <div
                 key={founder.num}
                 className="border-2 border-ink bg-cream p-6 shadow-[6px_6px_0px_0px_var(--color-ink)] sm:p-8"
@@ -523,32 +524,40 @@ export default function Home() {
                   </span>
                 </div>
 
-                {/* Sticker photo placeholder */}
+                {/* Sticker photo (transparent cutout) when provided, placeholder otherwise */}
                 <div className="relative mx-auto mt-6 w-full max-w-sm">
-                  <div
-                    className={`relative overflow-hidden border-2 border-ink bg-cream shadow-[8px_8px_0px_0px_var(--color-ink)] ${
-                      i === 0 ? "rotate-[-2deg]" : "rotate-[1.5deg]"
-                    }`}
-                  >
-                    <div
-                      className="flex aspect-[4/3] flex-col items-center justify-center gap-4"
-                      style={{
-                        backgroundImage:
-                          "radial-gradient(circle, rgba(17,24,39,0.08) 1.5px, transparent 1.5px)",
-                        backgroundSize: "20px 20px",
-                      }}
-                    >
-                      <span className="flex h-24 w-24 items-center justify-center rounded-full border-2 border-dashed border-ink/40 bg-white shadow-[5px_5px_0px_0px_var(--color-ink)]">
-                        <UserRound
-                          className="h-11 w-11 text-ink/35"
-                          strokeWidth={1.75}
-                        />
-                      </span>
-                      <span className="border-2 border-ink bg-sun px-3 py-1 text-[10px] font-bold uppercase tracking-[0.2em] text-ink">
-                        Sticker photo coming soon
-                      </span>
+                  {founder.photo ? (
+                    <div className="relative rotate-[-2deg] border-2 border-ink bg-cream shadow-[8px_8px_0px_0px_var(--color-ink)]">
+                      <Image
+                        src={founder.photo}
+                        alt={`${founder.role} — Kalakaar Studios founder`}
+                        width={1024}
+                        height={1024}
+                        className="h-auto w-full object-contain drop-shadow-lg"
+                      />
                     </div>
-                  </div>
+                  ) : (
+                    <div className="relative rotate-[1.5deg] overflow-hidden border-2 border-ink bg-cream shadow-[8px_8px_0px_0px_var(--color-ink)]">
+                      <div
+                        className="flex aspect-[4/3] flex-col items-center justify-center gap-4"
+                        style={{
+                          backgroundImage:
+                            "radial-gradient(circle, rgba(17,24,39,0.08) 1.5px, transparent 1.5px)",
+                          backgroundSize: "20px 20px",
+                        }}
+                      >
+                        <span className="flex h-24 w-24 items-center justify-center rounded-full border-2 border-dashed border-ink/40 bg-white shadow-[5px_5px_0px_0px_var(--color-ink)]">
+                          <UserRound
+                            className="h-11 w-11 text-ink/35"
+                            strokeWidth={1.75}
+                          />
+                        </span>
+                        <span className="border-2 border-ink bg-sun px-3 py-1 text-[10px] font-bold uppercase tracking-[0.2em] text-ink">
+                          Sticker photo coming soon
+                        </span>
+                      </div>
+                    </div>
+                  )}
                   <span className="absolute -right-3 -top-4 z-10 rotate-6 border-2 border-ink bg-red px-3 py-1 text-xs font-bold uppercase tracking-widest text-white shadow-[4px_4px_0px_0px_var(--color-ink)]">
                     {founder.sticker}
                   </span>
