@@ -5,9 +5,12 @@ import { ArrowLeft, ArrowRight, Camera, X } from "lucide-react";
 import ImageWithFallback from "@/components/blog/ImageWithFallback";
 import { galleryImages, type GalleryImage } from "@/data/gallery";
 
-const categories = ["All", "Events", "Esports", "Behind the Scenes"] as const;
+type Category = "All" | GalleryImage["category"];
 
-type Category = (typeof categories)[number];
+const categories: Category[] = [
+  "All",
+  ...Array.from(new Set(galleryImages.map((img) => img.category))),
+];
 
 // Staggered aspect ratios give the grid a masonry-like rhythm.
 const ratios = ["aspect-[4/3]", "aspect-square", "aspect-[3/4]", "aspect-square", "aspect-[4/5]", "aspect-[3/4]"];
