@@ -5,6 +5,7 @@ import Image from "next/image";
 import { Oswald } from "next/font/google";
 import { useEffect, useState } from "react";
 import RandomBlogCards from "@/components/blog/RandomBlogCards";
+import GalleryPreview from "@/components/GalleryPreview";
 import {
   ArrowRight,
   ArrowUpRight,
@@ -48,6 +49,7 @@ const navLinks = [
   { label: "Services", href: "#services" },
   { label: "Showreel", href: "#showreel" },
   { label: "FAQ", href: "#faq" },
+  { label: "Gallery", href: "/gallery" },
   { label: "Blog", href: "/blog" },
 ];
 
@@ -725,6 +727,9 @@ export default function Home() {
           </video>
         </div>
       </section>
+
+      {/* ─── GALLERY PREVIEW ─── */}
+      <GalleryPreview />
 
       {/* ─── FAQ ─── */}
       <section
