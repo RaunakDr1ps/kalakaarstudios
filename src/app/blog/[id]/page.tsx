@@ -5,8 +5,8 @@ import { ArrowLeft, ExternalLink } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ViewTracker from "@/components/blog/ViewTracker";
+import MarkdownBody from "@/components/blog/MarkdownBody";
 import { fetchPublishedBlog, fetchPublishedBlogs, formatDate } from "@/lib/blog";
-import { renderMarkdown } from "@/lib/markdown";
 
 type Params = { id: string };
 
@@ -73,8 +73,6 @@ export default async function BlogPostPage({
 
   if (!post) notFound();
 
-  const bodyHtml = renderMarkdown(post.body);
-
   return (
     <>
       <Header />
@@ -115,10 +113,9 @@ export default async function BlogPostPage({
             By {post.author_name} · {formatDate(post.created_at)}
           </p>
 
-          <div
-            className="blog-body mt-10 max-w-none"
-            dangerouslySetInnerHTML={{ __html: bodyHtml }}
-          />
+          <div className="blog-body mt-10 max-w-none space-y-4">
+            <MarkdownBody markdown={post.body} />
+          </div>
 
           {isSafeBacklink(post.backlink_url) && (
             <div className="mt-10 flex flex-wrap items-center gap-3 border-2 border-ink bg-cream p-4 shadow-[4px_4px_0px_0px_var(--color-ink)]">
