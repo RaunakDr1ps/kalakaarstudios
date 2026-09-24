@@ -14,8 +14,8 @@ import {
   X,
 } from "lucide-react";
 import {
-  CLOUDFLARE_DEPLOY_HOOK_URL,
   fetchPublishedBlogs,
+  triggerDeployWebhook,
   uploadBlogImage,
   type Blog,
   type BlogUpdate,
@@ -130,15 +130,16 @@ export default function BlogDashboard() {
     if (!editing) return;
     setSaving(true);
     setSaveError(null);
+    setSuccessNotice(null);
     const coverUrl = (draft.cover_image_url ?? "").trim();
+    const content = (draft.body ?? "").trim();
     try {
       const baseUrl = (
         process.env.NEXT_PUBLIC_CRM_API_URL ||
         "https://crm.kalakaarstudios.co.in/api"
       ).replace(/\/+$/, "");
-      const updateUrl = `${baseUrl}/blogs/${
-        editing.id || (editing as Blog & { _id?: string })._id || ""
-      }`;
+      const id = editing.id || (editing as Blog & { _id?: string })._id || "";
+      const updateUrl = `${baseUrl}/blogs/${encodeURIComponent(id)}`;
       console.log("[blog] Saving post to:", updateUrl);
       const res = await fetch(updateUrl, {
         method: "PUT",
@@ -150,46 +151,29 @@ export default function BlogDashboard() {
         },
         body: JSON.stringify({
           title: (draft.title ?? "").trim(),
+          cover_image_url: coverUrl || null,
           cover_image: coverUrl || null,
           coverImage: coverUrl || null,
           meta_description: (draft.meta_description ?? "").trim(),
-          content: (draft.body ?? "").trim(),
+          body: content,
+          content,
           backlink_url: (draft.backlink_url ?? "").trim() || null,
         }),
       });
       if (!res.ok) {
         throw new Error(`Failed to save post (HTTP ${res.status})`);
       }
-      // Non-blocking redeploy: fire-and-forget so a stuck webhook never blocks
-      // the save UI. `no-cors` keeps this a simple cross-origin POST (Cloudflare
-      // deploy hooks reject requests that carry unnecessary headers).
-      try {
-        void fetch(CLOUDFLARE_DEPLOY_HOOK_URL, {
-          method: "POST",
-          mode: "no-cors",
-        }).catch((err) =>
-          console.warn("[blog] Redeploy webhook failed (non-blocking):", err)
-        );
-      } catch (err) {
-        console.warn("[blog] Redeploy webhook failed (non-blocking):", err);
-      }
+      // Live-site revalidation: trigger a Cloudflare Pages rebuild (with a
+      // CRM /blogs/rebuild fallback) so /blog and /blog/[id] serve the updated
+      // post. Non-blocking so a slow deploy never locks up the save UI.
+      void triggerDeployWebhook().catch((err) =>
+        console.warn("[blog] Redeploy webhook failed (non-blocking):", err)
+      );
       setSuccessNotice("Post saved successfully!");
       setEditing(null);
       await load();
     } catch (err) {
-      const baseUrl = (
-        process.env.NEXT_PUBLIC_CRM_API_URL ||
-        "https://crm.kalakaarstudios.co.in/api"
-      ).replace(/\/+$/, "");
-      const updateUrl = `${baseUrl}/blogs/${
-        editing.id || (editing as Blog & { _id?: string })._id || ""
-      }`;
       console.error("Save Fetch Error:", err);
-      alert(
-        `Failed to save post. Target URL: ${updateUrl}\n\nError: ${
-          err instanceof Error ? err.message : "Unknown error"
-        }`
-      );
       setSaveError(
         err instanceof Error ? err.message : "Failed to save changes."
       );
@@ -222,17 +206,10 @@ export default function BlogDashboard() {
         throw new Error(`Failed to delete post (HTTP ${res.status})`);
       }
       // Non-blocking redeploy: fire-and-forget so a stuck webhook never
-      // blocks the UI. `no-cors` keeps this a simple cross-origin POST.
-      try {
-        void fetch(CLOUDFLARE_DEPLOY_HOOK_URL, {
-          method: "POST",
-          mode: "no-cors",
-        }).catch((err) =>
-          console.warn("[blog] Redeploy webhook failed (non-blocking):", err)
-        );
-      } catch (err) {
-        console.warn("[blog] Redeploy webhook failed (non-blocking):", err);
-      }
+      // blocks the UI.
+      void triggerDeployWebhook().catch((err) =>
+        console.warn("[blog] Redeploy webhook failed (non-blocking):", err)
+      );
       alert("Post deleted successfully!");
       setPosts((prev) => prev.filter((post) => post.id !== id));
       if (editing?.id === id) setEditing(null);
@@ -428,7 +405,10 @@ export default function BlogDashboard() {
             <form onSubmit={(e) => void handleSave(e)} className="mt-6 space-y-4">
               {saveError && (
                 <div className="border-2 border-ink bg-[#fecaca] px-4 py-3 text-sm font-bold">
-                  Couldn&apos;t save: {saveError}
+                  <p>Failed to save changes. Please try again.</p>
+                  <p className="mt-1 text-xs font-semibold break-words">
+                    {saveError}
+                  </p>
                 </div>
               )}
 
