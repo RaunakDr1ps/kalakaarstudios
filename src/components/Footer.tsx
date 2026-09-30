@@ -43,6 +43,14 @@ export default function Footer() {
             <ul className="mt-4 space-y-3 text-smoke">
               <li>
                 <Link
+                  href="/events"
+                  className="transition-colors hover:text-ink"
+                >
+                  Events
+                </Link>
+              </li>
+              <li>
+                <Link
                   href="/terms"
                   className="transition-colors hover:text-ink"
                 >

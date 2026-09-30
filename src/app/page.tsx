@@ -5,6 +5,7 @@ import Image from "next/image";
 import { Oswald } from "next/font/google";
 import { useEffect, useState } from "react";
 import RandomBlogCards from "@/components/blog/RandomBlogCards";
+import EventsPreview from "@/components/events/EventsPreview";
 import GalleryPreview from "@/components/GalleryPreview";
 import {
   ArrowRight,
@@ -46,6 +47,7 @@ const navLinks = [
   { label: "Founder", href: "#founder" },
   { label: "What We Do", href: "#what-we-do" },
   { label: "Services", href: "#services" },
+  { label: "Events", href: "/events" },
   { label: "Showreel", href: "#showreel" },
   { label: "FAQ", href: "#faq" },
   { label: "Gallery", href: "/gallery" },
@@ -721,6 +723,9 @@ export default function Home() {
 
       {/* ─── GALLERY PREVIEW ─── */}
       <GalleryPreview />
+
+      {/* ─── EVENTS PREVIEW ─── */}
+      <EventsPreview />
 
       {/* ─── FAQ ─── */}
       <section

@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useState } from "react";
 
 const links = [
-  { label: "Past Events", href: "/#past-events" },
+  { label: "Events", href: "/events" },
   { label: "Services", href: "/#services" },
   { label: "About", href: "/#about" },
   { label: "Gallery", href: "/gallery" },
