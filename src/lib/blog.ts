@@ -178,18 +178,47 @@ function normalizeBlog(raw: RawBlog): Blog {
   };
 }
 
+/** The admin key the CRM accepts on `x-admin-key`, preferring the session value
+ *  the editor pasted when unlocking the panel. */
+function adminKeyHeaders(): Record<string, string> {
+  const key = getStoredAdminKey() || DEFAULT_ADMIN_KEY;
+  return key ? { "x-admin-key": key } : {};
+}
+
 async function crmFetch<T>(path: string, init?: RequestInit): Promise<T> {
   // No `cache: "no-store"`: with `output: export`, a no-store fetch is
   // treated as revalidate:0 and cannot be rendered statically. Cloudflare
   // Pages builds from a fresh checkout, so this build-time fetch always
   // reflects the current database values.
-  const res = await fetch(`${CRM_API_URL}${path}`, {
-    ...init,
-    headers: {
-      "Content-Type": "application/json",
-      ...(init?.headers ?? {}),
-    },
-  });
+  const hasBody = typeof init?.body === "string";
+
+  let res: Response;
+  try {
+    res = await fetch(`${CRM_API_URL}${path}`, {
+      ...init,
+      headers: {
+        // Only declare a JSON content type when there is a body. On a bodyless
+        // GET it forces a CORS preflight that buys nothing.
+        ...(hasBody ? { "Content-Type": "application/json" } : {}),
+        ...adminKeyHeaders(),
+        ...(init?.headers ?? {}),
+      },
+    });
+  } catch (err) {
+    // `fetch` rejects with a bare `TypeError: Failed to fetch` for DNS
+    // failures, TLS problems, and CORS blocks alike, and the browser refuses to
+    // say which. Surface the real cause: the CRM answers every preflight with
+    // a fixed `Access-Control-Allow-Origin`, so any origin other than
+    // https://kalakaarstudios.co.in is rejected by the browser.
+    if (err instanceof TypeError || err instanceof DOMException) {
+      throw new Error(
+        `Could not reach ${CRM_API_URL} from this browser. The CRM returns a fixed ` +
+          `Access-Control-Allow-Origin, so requests from localhost, www, and preview ` +
+          `deployments are blocked by CORS.`
+      );
+    }
+    throw err;
+  }
 
   if (!res.ok) {
     let detail = `HTTP ${res.status}`;
@@ -202,6 +231,17 @@ async function crmFetch<T>(path: string, init?: RequestInit): Promise<T> {
     } catch {
       // non-JSON error body; fall back to the status text
     }
+
+    if (res.status === 401 || res.status === 403) {
+      // Log the exact status so empty/failed static builds are diagnosable.
+      console.error(
+        `[blog] CRM ${init?.method?.toUpperCase() ?? "GET"} ${path} → status ${res.status}: ${detail}`
+      );
+      throw new Error(
+        `The CRM rejected the admin key (${res.status}). Check NEXT_PUBLIC_ADMIN_KEY. ${detail}`
+      );
+    }
+
     // Log the exact status so empty/failed static builds are diagnosable.
     console.error(
       `[blog] CRM ${init?.method?.toUpperCase() ?? "GET"} ${path} → status ${res.status}: ${detail}`
@@ -212,15 +252,25 @@ async function crmFetch<T>(path: string, init?: RequestInit): Promise<T> {
   return res.json() as Promise<T>;
 }
 
+/**
+ * Like `fetchPublishedBlogs` but rejects on failure instead of returning `[]`.
+ *
+ * Callers that need to tell "the API is unreachable" apart from "there are
+ * genuinely no published posts" must use this — swallowing the error and
+ * defaulting to an empty list makes the two indistinguishable, which would let
+ * a fallback layer resurrect posts that were actually deleted.
+ */
+export async function fetchPublishedBlogsStrict(): Promise<Blog[]> {
+  const rows = await crmFetch<RawBlog[]>("/blogs?status=published");
+  if (!Array.isArray(rows)) {
+    throw new Error("CRM /blogs?status=published returned a non-array payload");
+  }
+  return rows.map(normalizeBlog);
+}
+
 export async function fetchPublishedBlogs(): Promise<Blog[]> {
   try {
-    const rows = await crmFetch<RawBlog[]>("/blogs?status=published");
-    if (!Array.isArray(rows)) {
-      console.error(
-        "[blog] CRM /blogs?status=published returned a non-array payload"
-      );
-      return [];
-    }
+    const rows = await fetchPublishedBlogsStrict();
     if (rows.length === 0 && typeof window === "undefined") {
       // Log lightweight warning during builds: a static export with zero
       // posts will show the empty state but the client feed refreshes it.
@@ -228,7 +278,7 @@ export async function fetchPublishedBlogs(): Promise<Blog[]> {
         "[blog] CRM returned 0 published posts — static /blog output may be empty"
       );
     }
-    return rows.map(normalizeBlog);
+    return rows;
   } catch (err) {
     // Degrade gracefully during static builds / when the API is down.
     console.error(

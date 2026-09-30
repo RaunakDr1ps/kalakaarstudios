@@ -14,13 +14,12 @@ import {
   X,
 } from "lucide-react";
 import {
-  fetchAllBlogs,
-  splitByStatus,
   triggerDeployWebhook,
   uploadBlogImage,
   type Blog,
   type BlogUpdate,
 } from "@/lib/blog";
+import { fetchDashboardTabs } from "@/lib/blog-dashboard-data";
 import ImageWithFallback from "@/components/blog/ImageWithFallback";
 
 const inputCls =
@@ -31,6 +30,7 @@ export default function BlogDashboard() {
   const [posts, setPosts] = useState<Blog[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [staleNotice, setStaleNotice] = useState<string | null>(null);
 
   const [editing, setEditing] = useState<Blog | null>(null);
   const [draft, setDraft] = useState<BlogUpdate>({});
@@ -42,12 +42,20 @@ export default function BlogDashboard() {
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const coverInputRef = useRef<HTMLInputElement>(null);
 
+  // `fetchDashboardTabs` resolves on every path — live, snapshot, or empty —
+  // so this can only set a hard error if the helper itself is broken.
+  async function runLoad(): Promise<{ published: Blog[]; notice?: string }> {
+    const result = await fetchDashboardTabs();
+    return { published: result.published, notice: result.notice };
+  }
+
   const load = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
-      const { published } = splitByStatus(await fetchAllBlogs());
+      const { published, notice } = await runLoad();
       setPosts(published);
+      setStaleNotice(notice ?? null);
     } catch (err) {
       setError(
         err instanceof Error ? err.message : "Failed to load published posts."
@@ -61,8 +69,10 @@ export default function BlogDashboard() {
     let cancelled = false;
     (async () => {
       try {
-        const { published } = splitByStatus(await fetchAllBlogs());
-        if (!cancelled) setPosts(published);
+        const { published, notice } = await runLoad();
+        if (cancelled) return;
+        setPosts(published);
+        setStaleNotice(notice ?? null);
       } catch (err) {
         if (!cancelled)
           setError(
@@ -255,6 +265,15 @@ export default function BlogDashboard() {
       {error && (
         <div className="border-2 border-ink bg-[#fecaca] px-4 py-3 text-sm font-bold">
           {error}
+        </div>
+      )}
+
+      {staleNotice && (
+        <div className="border-2 border-ink bg-sun px-4 py-3 text-sm font-medium">
+          <span className="font-bold uppercase tracking-widest">
+            Offline snapshot
+          </span>{" "}
+          — {staleNotice}
         </div>
       )}
 

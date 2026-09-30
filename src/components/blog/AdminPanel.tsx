@@ -17,14 +17,13 @@ import BlogDashboard from "@/components/blog/BlogDashboard";
 import {
   ADMIN_SESSION_KEY,
   CLOUDFLARE_DEPLOY_HOOK_URL,
-  fetchAllBlogs,
   getStoredAdminKey,
   moderateBlog,
-  splitByStatus,
   triggerDeployWebhook,
   type Blog,
   type BlogStatus,
 } from "@/lib/blog";
+import { fetchDashboardTabs } from "@/lib/blog-dashboard-data";
 
 const ADMIN_KEY = process.env.NEXT_PUBLIC_ADMIN_KEY ?? "";
 
@@ -67,6 +66,7 @@ export default function AdminPanel() {
   const [rows, setRows] = useState<Record<string, RowState>>({});
   const [gateError, setGateError] = useState<string | null>(null);
   const [queueError, setQueueError] = useState<string | null>(null);
+  const [queueNotice, setQueueNotice] = useState<string | null>(null);
   const [tab, setTab] = useState<Tab>("queue");
   const [createOpen, setCreateOpen] = useState(false);
   const [createForm, setCreateForm] = useState<CreateForm>(EMPTY_CREATE);
@@ -103,11 +103,16 @@ export default function AdminPanel() {
     setLoading(true);
     setQueueError(null);
     try {
-      const { pending } = splitByStatus(await fetchAllBlogs());
+      // Resolves on every path (live / snapshot / empty), so a blocked or
+      // failing API degrades to a notice rather than a crash banner.
+      const result = await fetchDashboardTabs();
+      const { pending } = result;
       setPosts(pending);
       setDrafts(
         Object.fromEntries(pending.map((p) => [p.id, p.meta_description]))
       );
+      setQueueNotice(result.notice ?? null);
+      setQueueError(result.source === "unavailable" ? result.notice ?? null : null);
     } catch (err) {
       setQueueError(
         err instanceof Error ? err.message : "Failed to load the queue."
@@ -372,7 +377,16 @@ export default function AdminPanel() {
             </div>
           )}
 
-          {!loading && posts.length === 0 && !queueError && (
+          {queueNotice && (
+            <div className="border-2 border-ink bg-sun px-4 py-3 text-sm font-medium">
+              <span className="font-bold uppercase tracking-widest">
+                Live API unavailable
+              </span>{" "}
+              — {queueNotice}
+            </div>
+          )}
+
+          {!loading && posts.length === 0 && !queueError && !queueNotice && (
             <div className="flex flex-col items-center justify-center gap-3 border-2 border-dashed border-ink py-16 text-center">
               <CheckCircle2 className="h-10 w-10 text-ink/30" strokeWidth={1.5} />
               <p className="font-blocky text-2xl font-bold uppercase tracking-tight">
