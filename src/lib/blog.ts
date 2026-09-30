@@ -3,6 +3,47 @@ export const CRM_API_URL =
 
 export type BlogStatus = "pending" | "published" | "rejected";
 
+/**
+ * The moderation dashboard must never silently drop a post because the CRM
+ * stored its status in a different casing or under a legacy enum name. Every
+ * spelling the API has used maps onto one of the three real states; anything
+ * unrecognised falls back to `pending` so an odd row surfaces in the review
+ * queue instead of vanishing.
+ */
+const STATUS_ALIASES: Record<string, BlogStatus> = {
+  published: "published",
+  publish: "published",
+  live: "published",
+  approved: "published",
+  public: "published",
+  pending: "pending",
+  draft: "pending",
+  submitted: "pending",
+  submission: "pending",
+  review: "pending",
+  in_review: "pending",
+  rejected: "rejected",
+  reject: "rejected",
+  declined: "rejected",
+  denied: "rejected",
+  spam: "rejected",
+  archived: "rejected",
+};
+
+export function normalizeStatus(value: unknown): BlogStatus {
+  if (typeof value !== "string") return "pending";
+  const key = value.trim().toLowerCase().replace(/[\s-]+/g, "_");
+  return STATUS_ALIASES[key] ?? "pending";
+}
+
+export function isPublished(post: Pick<Blog, "status">): boolean {
+  return post.status === "published";
+}
+
+export function isPending(post: Pick<Blog, "status">): boolean {
+  return post.status === "pending";
+}
+
 export type Blog = {
   id: string;
   title: string;
@@ -71,8 +112,9 @@ export type BlogSubmission = {
 /**
  * Shape the CRM actually returns. The backend historically used several
  * different cover field names (`cover_image`, `coverImage`,
- * `cover_image_url`) and counters (`views`, `view_count`), so every fetch is
- * normalized through `normalizeBlog` before it reaches the UI.
+ * `cover_image_url`), status spellings, and counters (`views`, `view_count`),
+ * so every fetch is normalized through `normalizeBlog` before it reaches the
+ * UI.
  */
 type RawBlog = {
   id: string;
@@ -85,11 +127,26 @@ type RawBlog = {
   body: string;
   backlink_url?: string | null;
   meta_description?: string;
-  status?: BlogStatus;
+  status?: string;
   created_at?: string;
-  views?: number;
-  view_count?: number;
+  views?: number | string | null;
+  view_count?: number | string | null;
+  views_count?: number | string | null;
+  viewCount?: number | string | null;
+  total_views?: number | string | null;
 };
+
+/** Coerces a counter that may arrive as a number or a numeric string. */
+function firstCount(...candidates: Array<number | string | null | undefined>) {
+  for (const candidate of candidates) {
+    if (candidate === null || candidate === undefined) continue;
+    const value = typeof candidate === "string" ? Number(candidate) : candidate;
+    if (typeof value === "number" && Number.isFinite(value) && value >= 0) {
+      return Math.floor(value);
+    }
+  }
+  return 0;
+}
 
 function normalizeBlog(raw: RawBlog): Blog {
   return {
@@ -109,9 +166,15 @@ function normalizeBlog(raw: RawBlog): Blog {
     body: raw.body,
     backlink_url: raw.backlink_url ?? null,
     meta_description: raw.meta_description ?? "",
-    status: raw.status ?? "pending",
+    status: normalizeStatus(raw.status),
     created_at: raw.created_at ?? new Date().toISOString(),
-    views: raw.views ?? raw.view_count ?? 0,
+    views: firstCount(
+      raw.views,
+      raw.view_count,
+      raw.views_count,
+      raw.viewCount,
+      raw.total_views
+    ),
   };
 }
 
@@ -191,9 +254,31 @@ export async function fetchPublishedBlog(id: string): Promise<Blog | null> {
   }
 }
 
-export async function fetchPendingBlogs(): Promise<Blog[]> {
-  const rows = await crmFetch<RawBlog[]>("/blogs?status=pending");
+/**
+ * Every post the CRM knows about, with no status filter on the request.
+ *
+ * The moderation dashboard loads once through this and splits the result
+ * client-side, because the API validates `?status=` against a strict enum and
+ * answers 400 for anything outside it — probing for legacy spellings
+ * (`PUBLISHED`, `approved`, `live`) from the client is not an option. Filtering
+ * in memory also means a post stored under an unexpected status still lands in
+ * the review queue rather than being dropped by the query. Throws on failure
+ * so the dashboard can surface the error instead of showing a false zero.
+ */
+export async function fetchAllBlogs(): Promise<Blog[]> {
+  const rows = await crmFetch<RawBlog[]>("/blogs");
   return Array.isArray(rows) ? rows.map(normalizeBlog) : [];
+}
+
+/** Splits a full listing into the dashboard's two tabs. */
+export function splitByStatus(posts: Blog[]): {
+  published: Blog[];
+  pending: Blog[];
+} {
+  return {
+    published: posts.filter(isPublished),
+    pending: posts.filter(isPending),
+  };
 }
 
 export async function submitBlog(input: BlogSubmission): Promise<Blog> {

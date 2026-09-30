@@ -14,7 +14,8 @@ import {
   X,
 } from "lucide-react";
 import {
-  fetchPublishedBlogs,
+  fetchAllBlogs,
+  splitByStatus,
   triggerDeployWebhook,
   uploadBlogImage,
   type Blog,
@@ -45,7 +46,7 @@ export default function BlogDashboard() {
     setLoading(true);
     setError(null);
     try {
-      const published = await fetchPublishedBlogs();
+      const { published } = splitByStatus(await fetchAllBlogs());
       setPosts(published);
     } catch (err) {
       setError(
@@ -60,7 +61,7 @@ export default function BlogDashboard() {
     let cancelled = false;
     (async () => {
       try {
-        const published = await fetchPublishedBlogs();
+        const { published } = splitByStatus(await fetchAllBlogs());
         if (!cancelled) setPosts(published);
       } catch (err) {
         if (!cancelled)

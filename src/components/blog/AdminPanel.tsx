@@ -17,9 +17,10 @@ import BlogDashboard from "@/components/blog/BlogDashboard";
 import {
   ADMIN_SESSION_KEY,
   CLOUDFLARE_DEPLOY_HOOK_URL,
-  fetchPendingBlogs,
+  fetchAllBlogs,
   getStoredAdminKey,
   moderateBlog,
+  splitByStatus,
   triggerDeployWebhook,
   type Blog,
   type BlogStatus,
@@ -102,7 +103,7 @@ export default function AdminPanel() {
     setLoading(true);
     setQueueError(null);
     try {
-      const pending = await fetchPendingBlogs();
+      const { pending } = splitByStatus(await fetchAllBlogs());
       setPosts(pending);
       setDrafts(
         Object.fromEntries(pending.map((p) => [p.id, p.meta_description]))
