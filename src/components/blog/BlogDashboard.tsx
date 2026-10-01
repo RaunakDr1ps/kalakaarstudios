@@ -271,7 +271,7 @@ export default function BlogDashboard() {
       {staleNotice && (
         <div className="border-2 border-ink bg-sun px-4 py-3 text-sm font-medium">
           <span className="font-bold uppercase tracking-widest">
-            Offline snapshot
+            Live data unavailable
           </span>{" "}
           — {staleNotice}
         </div>

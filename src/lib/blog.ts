@@ -1,5 +1,24 @@
+import { FALLBACK_PUBLISHED_POSTS } from "@/data/blog-fallback";
+
 export const CRM_API_URL =
   process.env.NEXT_PUBLIC_CRM_API_URL ?? "https://crm.kalakaarstudios.co.in/api";
+
+/**
+ * Detects the CRM's login redirect.
+ *
+ * The API is now session-gated: an unauthenticated request to `/api/blogs`
+ * answers `307 -> /login?next=%2Fapi%2Fblogs`. `fetch` follows redirects
+ * transparently and reports the final `200`, so the caller receives an HTML
+ * login page with a JSON content type and dies with an opaque
+ * `Unexpected token '<'`. Checking the URL turns that into a real diagnosis.
+ */
+function isLoginRedirect(res: Response): boolean {
+  return typeof res.url === "string" && /\/login(\?|$)/.test(res.url);
+}
+
+const AUTH_REQUIRED_MESSAGE =
+  "The CRM blog API requires an authenticated session (it redirects to /login). " +
+  "Its CORS headers now allow any origin, but no header this site can send is accepted.";
 
 export type BlogStatus = "pending" | "published" | "rejected";
 
@@ -207,17 +226,20 @@ async function crmFetch<T>(path: string, init?: RequestInit): Promise<T> {
   } catch (err) {
     // `fetch` rejects with a bare `TypeError: Failed to fetch` for DNS
     // failures, TLS problems, and CORS blocks alike, and the browser refuses to
-    // say which. Surface the real cause: the CRM answers every preflight with
-    // a fixed `Access-Control-Allow-Origin`, so any origin other than
-    // https://kalakaarstudios.co.in is rejected by the browser.
+    // say which.
     if (err instanceof TypeError || err instanceof DOMException) {
-      throw new Error(
-        `Could not reach ${CRM_API_URL} from this browser. The CRM returns a fixed ` +
-          `Access-Control-Allow-Origin, so requests from localhost, www, and preview ` +
-          `deployments are blocked by CORS.`
-      );
+      throw new Error(`Could not reach ${CRM_API_URL} from this browser.`);
     }
     throw err;
+  }
+
+  // The session gate answers with a redirect that `fetch` already followed, so
+  // `res.ok` is true and only the final URL reveals what happened.
+  if (isLoginRedirect(res)) {
+    console.error(
+      `[blog] CRM ${init?.method?.toUpperCase() ?? "GET"} ${path} → redirected to a login page (session required)`
+    );
+    throw new Error(AUTH_REQUIRED_MESSAGE);
   }
 
   if (!res.ok) {
@@ -232,20 +254,17 @@ async function crmFetch<T>(path: string, init?: RequestInit): Promise<T> {
       // non-JSON error body; fall back to the status text
     }
 
+    // Log the exact status so empty/failed static builds are diagnosable.
+    console.error(
+      `[blog] CRM ${init?.method?.toUpperCase() ?? "GET"} ${path} → status ${res.status}: ${detail}`
+    );
+
     if (res.status === 401 || res.status === 403) {
-      // Log the exact status so empty/failed static builds are diagnosable.
-      console.error(
-        `[blog] CRM ${init?.method?.toUpperCase() ?? "GET"} ${path} → status ${res.status}: ${detail}`
-      );
       throw new Error(
         `The CRM rejected the admin key (${res.status}). Check NEXT_PUBLIC_ADMIN_KEY. ${detail}`
       );
     }
 
-    // Log the exact status so empty/failed static builds are diagnosable.
-    console.error(
-      `[blog] CRM ${init?.method?.toUpperCase() ?? "GET"} ${path} → status ${res.status}: ${detail}`
-    );
     throw new Error(detail);
   }
 
@@ -268,6 +287,15 @@ export async function fetchPublishedBlogsStrict(): Promise<Blog[]> {
   return rows.map(normalizeBlog);
 }
 
+/**
+ * Published posts for the public site, falling back to the bundled snapshot.
+ *
+ * The CRM blog API is session-gated, so a `next build` that cannot authenticate
+ * receives an HTML login page, `fetchPublishedBlogsStrict` throws, and an
+ * unhandled `[]` would emit a `/blog` with zero posts and no detail routes —
+ * silently unpublishing every post from the live site. Preferring live data
+ * but degrading to the snapshot keeps published content on the site.
+ */
 export async function fetchPublishedBlogs(): Promise<Blog[]> {
   try {
     const rows = await fetchPublishedBlogsStrict();
@@ -286,6 +314,12 @@ export async function fetchPublishedBlogs(): Promise<Blog[]> {
         err instanceof Error ? err.message : "unknown error"
       }`
     );
+    if (FALLBACK_PUBLISHED_POSTS.length > 0) {
+      console.warn(
+        `[blog] Serving ${FALLBACK_PUBLISHED_POSTS.length} published post(s) from the bundled snapshot`
+      );
+      return [...FALLBACK_PUBLISHED_POSTS];
+    }
     return [];
   }
 }

@@ -68,13 +68,21 @@ export async function fetchDashboardBlogs(): Promise<DashboardBlogsResult> {
   }
 
   if (FALLBACK_PUBLISHED_POSTS.length > 0) {
+    // The usual cause is no longer a blocked CORS preflight — the CRM allows
+    // every origin now — but a session gate that redirects to /login. Name the
+    // real reason instead of claiming the API is unreachable.
+    const authBlocked = failures.some((line) =>
+      /login|session/i.test(line)
+    );
     return {
       posts: FALLBACK_PUBLISHED_POSTS,
       source: "cached",
       notice:
-        `Live CRM unreachable — showing the last snapshot from ${snapshotAge()}. ` +
-        `The pending queue is empty until the API is reachable again. ` +
-        `Cause: ${failures[0] ?? "unknown"}`,
+        (authBlocked
+          ? `The CRM blog API needs an authenticated session, so this panel can't read live data. `
+          : `The CRM blog API could not be reached. `) +
+        `Showing the last snapshot from ${snapshotAge()}; the pending queue is empty until live access is restored. ` +
+        `Cause: ${failures[0] ?? "unknown error"}`,
     };
   }
 

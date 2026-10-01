@@ -380,7 +380,7 @@ export default function AdminPanel() {
           {queueNotice && (
             <div className="border-2 border-ink bg-sun px-4 py-3 text-sm font-medium">
               <span className="font-bold uppercase tracking-widest">
-                Live API unavailable
+                Live data unavailable
               </span>{" "}
               — {queueNotice}
             </div>
