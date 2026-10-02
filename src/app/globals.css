@@ -158,6 +158,18 @@
 
 html {
   scroll-behavior: smooth;
+  /* Safety net for the decorative stickers, rotated badges, and offset
+     drop-shadows this design leans on: several sit outside their parent's
+     box by design and would otherwise extend the scrollable area sideways on
+     narrow viewports. Clipping keeps that decoration from becoming a
+     horizontal scrollbar without hiding the whitespace it was drawn into. */
+  max-width: 100%;
+  overflow-x: clip;
+}
+
+body {
+  max-width: 100%;
+  overflow-x: clip;
 }
 
 /* ------------------------------------------------------------------ */

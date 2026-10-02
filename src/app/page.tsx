@@ -533,19 +533,25 @@ export default function Home() {
                 </div>
 
                 {/* Sticker cutout photo */}
-                <div className="relative z-0 -mt-10 w-full">
-                  <div className="founder-wobble">
-<Image
-                          src={founder.photo}
-                          alt={`${founder.role} — Kalakaar Studios founder`}
-                          width={1024}
-                          height={1024}
-                          className={
-                            founder.alignLeft
-                              ? "relative -ml-8 h-[520px] w-auto max-w-none object-contain object-left drop-shadow-xl transition-transform duration-300 ease-out group-hover/founder:rotate-3 group-hover/founder:scale-110"
-                              : "relative mx-auto block h-[540px] w-auto max-w-none object-contain drop-shadow-xl transition-transform duration-300 ease-out group-hover/founder:rotate-3 group-hover/founder:scale-110"
-                          }
-                        />
+                <div className="relative z-0 -mt-10 w-full max-w-full overflow-hidden">
+                  <div className="founder-wobble flex h-[300px] items-end sm:h-[420px] lg:h-[520px]">
+                    <Image
+                      src={founder.photo}
+                      alt={`${founder.role} — Kalakaar Studios founder`}
+                      width={1024}
+                      height={1024}
+                      /* Intrinsic sizes are 921x1152 and 1080x1080, so the old
+                         fixed pixel height rendered them ~416px and ~520px wide
+                         — both wider than a 375px phone, which is what produced
+                         the sideways scroll. Height now fills a responsive box
+                         and `max-w-full` lets each image shrink to its column
+                         while the aspect ratio is preserved. */
+                      className={
+                        founder.alignLeft
+                          ? "relative -ml-8 h-full max-h-full w-auto max-w-full object-contain object-left drop-shadow-xl transition-transform duration-300 ease-out group-hover/founder:rotate-3 group-hover/founder:scale-110"
+                          : "relative mx-auto block h-full max-h-full w-auto max-w-full object-contain drop-shadow-xl transition-transform duration-300 ease-out group-hover/founder:rotate-3 group-hover/founder:scale-110"
+                      }
+                    />
                   </div>
                 </div>
 
