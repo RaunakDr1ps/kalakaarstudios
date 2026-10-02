@@ -324,17 +324,35 @@ export async function fetchPublishedBlogs(): Promise<Blog[]> {
   }
 }
 
+/** The bundled snapshot's copy of a post, or null if it is not in the snapshot. */
+function findFallbackPost(id: string): Blog | null {
+  return FALLBACK_PUBLISHED_POSTS.find((post) => post.id === id) ?? null;
+}
+
+/**
+ * A single published post, falling back to the bundled snapshot.
+ *
+ * `generateStaticParams`, `generateMetadata`, and the page body each call this
+ * at build time. The CRM blog API is session-gated, so all three currently throw
+ * and a bare `null` here means the page renders `notFound()` — turning every
+ * published post into a 404 while the snapshot still lists it. Serving the
+ * snapshot keeps the static HTML present. A live answer always wins, so edits
+ * still reach the site once the API is reachable.
+ */
 export async function fetchPublishedBlog(id: string): Promise<Blog | null> {
   try {
     const raw = await crmFetch<RawBlog>(`/blogs/${encodeURIComponent(id)}`);
-    return raw ? normalizeBlog(raw) : null;
+    if (!raw) return findFallbackPost(id);
+    const post = normalizeBlog(raw);
+    // The CRM serves drafts on this route. Never let one reach the public site.
+    return isPublished(post) ? post : findFallbackPost(id);
   } catch (err) {
     console.error(
       `[blog] Failed to fetch post ${id}: ${
         err instanceof Error ? err.message : "unknown error"
       }`
     );
-    return null;
+    return findFallbackPost(id);
   }
 }
 

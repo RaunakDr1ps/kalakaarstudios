@@ -14,6 +14,15 @@ function isSafeBacklink(url: string | null): url is string {
   return Boolean(url && /^(https?):\/\/./i.test(url.trim()));
 }
 
+/**
+ * Only IDs from `generateStaticParams` exist in the export; anything else 404s.
+ *
+ * `dynamicParams = true` is not an option here — Next rejects it outright under
+ * `output: "export"` ("cannot be used with output: export"). `generateStaticParams`
+ * is therefore the single source of truth for which post pages get built, and it
+ * already unions in the snapshot via `fetchPublishedBlogs`, so every post the
+ * site knows about is covered.
+ */
 export const dynamicParams = false;
 
 const PLACEHOLDER_ID = "__placeholder__";
