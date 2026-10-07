@@ -6,6 +6,8 @@ import { Oswald } from "next/font/google";
 import { useEffect, useState } from "react";
 import RandomBlogCards from "@/components/blog/RandomBlogCards";
 import EventsPreview from "@/components/events/EventsPreview";
+import BiharGotTalentSection from "@/components/events/BiharGotTalentSection";
+import NotificationBell from "@/components/notifications/NotificationBell";
 import GalleryPreview from "@/components/GalleryPreview";
 import {
   ArrowRight,
@@ -48,6 +50,7 @@ const navLinks = [
   { label: "What We Do", href: "#what-we-do" },
   { label: "Services", href: "#services" },
   { label: "Events", href: "/events" },
+  { label: "Bihar Got Talent", href: "/events/bihar-got-talent" },
   { label: "Showreel", href: "#showreel" },
   { label: "FAQ", href: "#faq" },
   { label: "Gallery", href: "/gallery" },
@@ -268,6 +271,7 @@ export default function Home() {
                 <span className="absolute -bottom-1 left-0 h-[3px] w-0 bg-sun transition-all group-hover:w-full" />
               </a>
             ))}
+            <NotificationBell />
             <a
               href="#contact"
               className={`${pillBase} bg-red px-5 py-2.5 text-sm`}
@@ -277,19 +281,22 @@ export default function Home() {
             </a>
           </nav>
 
-          <button
-            type="button"
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            aria-label="Toggle menu"
-            aria-expanded={mobileMenuOpen}
-            className="flex h-10 w-10 items-center justify-center border-2 border-ink bg-cream shadow-[3px_3px_0px_0px_var(--color-ink)] lg:hidden"
-          >
-            {mobileMenuOpen ? (
-              <X className="h-5 w-5" strokeWidth={2.5} />
-            ) : (
-              <Menu className="h-5 w-5" strokeWidth={2.5} />
-            )}
-          </button>
+          <div className="flex items-center gap-3 lg:hidden">
+            <NotificationBell />
+            <button
+              type="button"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              aria-label="Toggle menu"
+              aria-expanded={mobileMenuOpen}
+              className="flex h-10 w-10 items-center justify-center border-2 border-ink bg-cream shadow-[3px_3px_0px_0px_var(--color-ink)]"
+            >
+              {mobileMenuOpen ? (
+                <X className="h-5 w-5" strokeWidth={2.5} />
+              ) : (
+                <Menu className="h-5 w-5" strokeWidth={2.5} />
+              )}
+            </button>
+          </div>
         </div>
 
         {mobileMenuOpen && (
@@ -733,6 +740,9 @@ export default function Home() {
 
       {/* ─── EVENTS PREVIEW ─── */}
       <EventsPreview />
+
+      {/* ─── BIHAR GOT TALENT ─── */}
+      <BiharGotTalentSection />
 
       {/* ─── FAQ ─── */}
       <section

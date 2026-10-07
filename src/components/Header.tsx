@@ -3,9 +3,11 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
+import NotificationBell from "@/components/notifications/NotificationBell";
 
 const links = [
   { label: "Events", href: "/events" },
+  { label: "Bihar Got Talent", href: "/events/bihar-got-talent" },
   { label: "Services", href: "/#services" },
   { label: "About", href: "/#about" },
   { label: "Gallery", href: "/gallery" },
@@ -42,7 +44,8 @@ export default function Header() {
           ))}
         </nav>
 
-        <div className="hidden md:block">
+        <div className="hidden items-center gap-3 md:flex">
+          <NotificationBell />
           <a
             href="/admin/blogs"
             className="inline-flex items-center justify-center rounded-md border-2 border-ink bg-sun px-5 py-2 text-sm font-semibold tracking-wide text-ink shadow-[3px_3px_0px_0px_#000000] transition-all hover:-translate-y-0.5 hover:shadow-[4px_4px_0px_0px_#000000]"
@@ -51,24 +54,26 @@ export default function Header() {
           </a>
         </div>
 
-        <button
-          type="button"
-          className="md:hidden"
-          onClick={() => setOpen(!open)}
-          aria-label="Toggle menu"
-          aria-expanded={open}
-        >
-          <span
-            className={`block h-[3px] w-6 bg-ink transition-transform ${
-              open ? "translate-y-[3px] rotate-45" : ""
-            }`}
-          />
-          <span
-            className={`mt-1.5 block h-[3px] w-6 bg-ink transition-opacity ${
-              open ? "opacity-0" : ""
-            }`}
-          />
-        </button>
+        <div className="flex items-center gap-3 md:hidden">
+          <NotificationBell />
+          <button
+            type="button"
+            onClick={() => setOpen(!open)}
+            aria-label="Toggle menu"
+            aria-expanded={open}
+          >
+            <span
+              className={`block h-[3px] w-6 bg-ink transition-transform ${
+                open ? "translate-y-[3px] rotate-45" : ""
+              }`}
+            />
+            <span
+              className={`mt-1.5 block h-[3px] w-6 bg-ink transition-opacity ${
+                open ? "opacity-0" : ""
+              }`}
+            />
+          </button>
+        </div>
       </div>
 
       {open && (
