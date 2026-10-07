@@ -357,19 +357,57 @@ export async function fetchPublishedBlog(id: string): Promise<Blog | null> {
 }
 
 /**
- * Every post the CRM knows about, with no status filter on the request.
+ * Every post the CRM knows about, across all three statuses.
  *
- * The moderation dashboard loads once through this and splits the result
- * client-side, because the API validates `?status=` against a strict enum and
- * answers 400 for anything outside it — probing for legacy spellings
- * (`PUBLISHED`, `approved`, `live`) from the client is not an option. Filtering
- * in memory also means a post stored under an unexpected status still lands in
- * the review queue rather than being dropped by the query. Throws on failure
- * so the dashboard can surface the error instead of showing a false zero.
+ * The API's no-filter listing (`GET /blogs`) answers with published posts
+ * only — pending submissions and rejections are invisible until each status
+ * is requested explicitly — so the dashboard must query every status and
+ * merge the results, otherwise the moderation queue always renders empty
+ * even though submissions are stored. `?status=` is validated against a
+ * strict lowercase enum (`pending` | `published` | `rejected`) and 400s for
+ * anything else, including legacy spellings (`PUBLISHED`, `approved`,
+ * `draft`), so only the canonical values are requested here. Any unexpected
+ * status the API might still return falls through `normalizeStatus` to
+ * `pending` and lands in the review queue rather than being dropped.
+ *
+ * Throws if any status request fails so the dashboard can surface the error
+ * instead of showing a false zero.
  */
 export async function fetchAllBlogs(): Promise<Blog[]> {
-  const rows = await crmFetch<RawBlog[]>("/blogs");
-  return Array.isArray(rows) ? rows.map(normalizeBlog) : [];
+  const statuses: BlogStatus[] = ["pending", "published", "rejected"];
+  const settled = await Promise.allSettled(
+    statuses.map((status) => crmFetch<RawBlog[]>(`/blogs?status=${status}`))
+  );
+
+  const rows: RawBlog[] = [];
+  const failures: string[] = [];
+  settled.forEach((result, i) => {
+    if (result.status === "fulfilled" && Array.isArray(result.value)) {
+      rows.push(...result.value);
+    } else {
+      const reason =
+        result.status === "rejected"
+          ? result.reason instanceof Error
+            ? result.reason.message
+            : String(result.reason)
+          : `non-array payload for status=${statuses[i]}`;
+      failures.push(`${statuses[i]}: ${reason}`);
+    }
+  });
+
+  if (failures.length > 0) {
+    throw new Error(`Could not load every blog status (${failures.join(" · ")})`);
+  }
+
+  // A row should appear under exactly one status, but dedupe by id so a
+  // misbehaving API can never double-render a post in the dashboard.
+  const seen = new Set<string>();
+  const unique = rows.filter((row) => {
+    if (!row || typeof row.id !== "string" || seen.has(row.id)) return false;
+    seen.add(row.id);
+    return true;
+  });
+  return unique.map(normalizeBlog);
 }
 
 /** Splits a full listing into the dashboard's two tabs. */

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { FilePenLine, LoaderCircle, Send, X } from "lucide-react";
 import { CLOUDFLARE_DEPLOY_HOOK_URL } from "@/lib/blog";
 
@@ -19,6 +20,7 @@ const EMPTY_FORM = {
 };
 
 export default function BlogSubmitModal() {
+  const router = useRouter();
   const [open, setOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -38,6 +40,21 @@ export default function BlogSubmitModal() {
     if (submitting) return;
     setOpen(false);
     setError(null);
+  }
+
+  /** Pull a human-readable message out of a non-2xx CRM response. */
+  async function readServerError(res: Response): Promise<string> {
+    try {
+      const body = (await res.json()) as {
+        error?: string;
+        message?: string;
+      };
+      const detail = body?.error ?? body?.message;
+      if (detail) return detail;
+    } catch {
+      // Non-JSON error body — fall through to the status line.
+    }
+    return `The server answered HTTP ${res.status}. Please try again in a moment.`;
   }
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -69,7 +86,11 @@ export default function BlogSubmitModal() {
         }),
       });
       if (!res.ok) {
-        throw new Error(`Submission failed (HTTP ${res.status})`);
+        // Never celebrate on a failed write — surface the server's message.
+        const detail = await readServerError(res);
+        console.error("[blog] Submit rejected:", res.status, detail);
+        setError(detail);
+        return;
       }
       // Non-blocking redeploy: fire-and-forget so a stuck webhook never
       // blocks the form. `no-cors` keeps this a simple cross-origin POST.
@@ -86,18 +107,11 @@ export default function BlogSubmitModal() {
       alert("Thank you! Your story has been submitted for editorial review.");
       setForm({ ...EMPTY_FORM });
       setOpen(false);
+      // Re-run the server components so any list that depends on the CRM
+      // picks up the new row without a full page reload.
+      router.refresh();
     } catch (err) {
-      const baseUrl = (
-        process.env.NEXT_PUBLIC_CRM_API_URL ||
-        "https://crm.kalakaarstudios.co.in/api"
-      ).replace(/\/+$/, "");
-      const submitUrl = `${baseUrl}/blogs/submit`;
       console.error("Submit Story Error:", err);
-      alert(
-        `Failed to submit your story. Target URL: ${submitUrl}\n\nError: ${
-          err instanceof Error ? err.message : "Unknown error"
-        }`
-      );
       setError(
         err instanceof Error ? err.message : "Failed to submit your story."
       );

@@ -55,7 +55,7 @@ export async function fetchDashboardBlogs(): Promise<DashboardBlogsResult> {
   const failures: string[] = [];
 
   const tiers: Array<{ label: string; run: () => Promise<Blog[]> }> = [
-    { label: "unfiltered listing", run: fetchAllBlogs },
+    { label: "all-status listing", run: fetchAllBlogs },
     { label: "published listing", run: fetchPublishedBlogsStrict },
   ];
 
