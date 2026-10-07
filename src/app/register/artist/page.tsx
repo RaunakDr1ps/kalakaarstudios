@@ -3,10 +3,10 @@ import Link from "next/link";
 import { Oswald } from "next/font/google";
 import {
   ArrowLeft,
-  BellRing,
   CalendarCheck,
   IdCard,
   Mail,
+  Phone,
   Sparkles,
   Star,
 } from "lucide-react";
@@ -31,7 +31,7 @@ const steps = [
   {
     icon: IdCard,
     title: "You register",
-    body: "Two minutes, seven fields. You get a registration ID and a spot on the Artist Network roster.",
+    body: "Two minutes, seven fields. Your name and contact details land straight on our artist roster.",
   },
   {
     icon: CalendarCheck,
@@ -39,9 +39,9 @@ const steps = [
     body: "Curators review every entry against the audition slate — portfolio, category and city considered together.",
   },
   {
-    icon: BellRing,
+    icon: Phone,
     title: "You get the call",
-    body: "Audition slot, venue and call time arrive by email and in the on-site Notification Center.",
+    body: "If you're shortlisted, we reach out by phone or email with your audition slot, venue and call time.",
   },
 ];
 

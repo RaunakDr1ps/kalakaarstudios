@@ -1,12 +1,10 @@
 /**
- * Shared contract for the "Bihar Got Talent" artist registration flow and the
- * on-site Notification Center.
+ * Shared contract for the "Bihar Got Talent" artist registration flow.
  *
  * The site is a static export served by Cloudflare Pages, so the server side
  * of this contract lives in `functions/api/*` (Pages Functions), not in Next
  * route handlers. Everything here is client-safe: it only talks to those
- * endpoints over same-origin fetches and to `localStorage` for the local
- * "signed in" artist session.
+ * endpoints over same-origin fetches.
  */
 
 /** CRM / roster tag applied to every registration from this campaign. */
@@ -74,30 +72,7 @@ export type RegisterResponse = {
   fallback?: boolean;
 };
 
-export type NotificationItem = {
-  id: string;
-  title: string;
-  body: string;
-  link?: string;
-  type?: string;
-  read: boolean;
-  createdAt: string;
-};
-
-/**
- * The local artist session — there is no account system on this site, so a
- * successful registration stores the artist's email here. The Notification
- * Bell and /notifications read it to decide which inbox to fetch.
- */
-export type ArtistSession = {
-  email: string;
-  name: string;
-  genre: string;
-  city: string;
-  registeredAt: string;
-};
-
-const SESSION_KEY = "ks-artist-session";
+/* ─── Registration API ─────────────────────────────────────────────── */
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 const URL_RE = /^https?:\/\/[^\s/$.?#].[^\s]*$/i;
@@ -156,96 +131,6 @@ export function validateRegistration(
     errors.consent = "We need your permission to send audition updates.";
   }
   return errors;
-}
-
-/* ─── Local artist session ─────────────────────────────────────────── */
-
-const sessionSubscribers = new Set<() => void>();
-
-function notifySessionSubscribers() {
-  sessionSubscribers.forEach((notify) => notify());
-}
-
-function readSessionRaw(): string | null {
-  if (typeof window === "undefined") return null;
-  try {
-    return window.localStorage.getItem(SESSION_KEY);
-  } catch {
-    return null;
-  }
-}
-
-function parseSession(raw: string | null): ArtistSession | null {
-  if (!raw) return null;
-  try {
-    const parsed = JSON.parse(raw) as Partial<ArtistSession>;
-    if (typeof parsed?.email !== "string") return null;
-    return {
-      email: parsed.email,
-      name: parsed.name ?? "",
-      genre: parsed.genre ?? "",
-      city: parsed.city ?? "",
-      registeredAt: parsed.registeredAt ?? new Date().toISOString(),
-    };
-  } catch {
-    return null;
-  }
-}
-
-// `useSyncExternalStore` calls getSnapshot on every render and bails out of
-// re-rendering only when the reference is unchanged, so the parsed value is
-// memoized against the raw string.
-let cachedRaw: string | null | undefined;
-let cachedSession: ArtistSession | null = null;
-
-/**
- * Snapshot for `useSyncExternalStore`. Returns the same object instance for
- * the same stored JSON, and `null` during SSR / static export.
- */
-export function getArtistSessionSnapshot(): ArtistSession | null {
-  const raw = readSessionRaw();
-  if (raw !== cachedRaw) {
-    cachedRaw = raw;
-    cachedSession = parseSession(raw);
-  }
-  return cachedSession;
-}
-
-/** Notifies React subscribers about session writes (same tab or another). */
-export function subscribeArtistSession(onChange: () => void): () => void {
-  sessionSubscribers.add(onChange);
-  const onStorage = (event: StorageEvent) => {
-    if (event.key === SESSION_KEY || event.key === null) onChange();
-  };
-  window.addEventListener("storage", onStorage);
-  return () => {
-    sessionSubscribers.delete(onChange);
-    window.removeEventListener("storage", onStorage);
-  };
-}
-
-export function getArtistSession(): ArtistSession | null {
-  return getArtistSessionSnapshot();
-}
-
-export function saveArtistSession(session: ArtistSession): void {
-  if (typeof window === "undefined") return;
-  try {
-    window.localStorage.setItem(SESSION_KEY, JSON.stringify(session));
-    notifySessionSubscribers();
-  } catch {
-    // Private browsing / storage quota — the bell simply stays hidden.
-  }
-}
-
-export function clearArtistSession(): void {
-  if (typeof window === "undefined") return;
-  try {
-    window.localStorage.removeItem(SESSION_KEY);
-    notifySessionSubscribers();
-  } catch {
-    // ignore
-  }
 }
 
 /* ─── Registration API ─────────────────────────────────────────────── */
@@ -341,62 +226,4 @@ export async function registerArtist(
     return formSpreeFallback(form, "The registration API returned an unreadable response.");
   }
   return { ...data, ok: res.ok && data.ok !== false };
-}
-
-/* ─── Notifications API ────────────────────────────────────────────── */
-
-export async function fetchNotifications(
-  email: string
-): Promise<{ notifications: NotificationItem[]; unread: number }> {
-  const res = await fetch(
-    `/api/notifications?email=${encodeURIComponent(normalizeEmail(email))}`,
-    { headers: { Accept: "application/json" } }
-  );
-  if (!res.ok) {
-    const detail = res.status === 404 ? "Notification API unavailable" : `HTTP ${res.status}`;
-    throw new Error(detail);
-  }
-  const data = (await res.json()) as {
-    notifications?: NotificationItem[];
-    unread?: number;
-  };
-  const notifications = Array.isArray(data.notifications) ? data.notifications : [];
-  return {
-    notifications,
-    unread:
-      typeof data.unread === "number"
-        ? data.unread
-        : notifications.filter((n) => !n.read).length,
-  };
-}
-
-export async function postNotificationAction(body: Record<string, unknown>): Promise<void> {
-  const res = await fetch("/api/notifications", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body),
-  });
-  if (!res.ok && res.status !== 404) {
-    throw new Error(`HTTP ${res.status}`);
-  }
-}
-
-/* ─── Formatting ───────────────────────────────────────────────────── */
-
-export function formatTimeAgo(iso: string): string {
-  const then = new Date(iso).getTime();
-  if (Number.isNaN(then)) return "";
-  const seconds = Math.max(0, Math.floor((Date.now() - then) / 1000));
-  if (seconds < 60) return "just now";
-  const minutes = Math.floor(seconds / 60);
-  if (minutes < 60) return `${minutes}m ago`;
-  const hours = Math.floor(minutes / 60);
-  if (hours < 24) return `${hours}h ago`;
-  const days = Math.floor(hours / 24);
-  if (days < 30) return `${days}d ago`;
-  return new Date(iso).toLocaleDateString("en-IN", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  });
 }

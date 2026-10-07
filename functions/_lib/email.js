@@ -82,10 +82,10 @@ export function welcomeEmailHtml(artist) {
       paragraph("Here's what happens next:") +
       list([
         "Our curators shortlist entries against the audition slate.",
-        "Audition slots, venue and call time are shared by email and in the on-site Notification Center.",
+        "If you're shortlisted, our team reaches out on the phone number and email you registered with.",
         "Shortlisted performers move to the live showcase round.",
       ]) +
-      button("https://kalakaarstudios.co.in/notifications", "Open Notification Center") +
+      button("https://kalakaarstudios.co.in/events/bihar-got-talent", "About Bihar Got Talent") +
       paragraph(
         `Keep building your profile — reply with an updated portfolio link any time at Kalakaarstudios@ssociopro.com.`
       ),
@@ -109,7 +109,7 @@ export function studioAlertHtml(artist) {
         `<strong>Registration ID:</strong> ${artist.id}`,
       ]) +
       paragraph(`<strong>Bio / past achievements</strong><br/>${artist.bio}`) +
-      button("https://kalakaarstudios.co.in/notifications", "View in Notification Center"),
+      paragraph("Review and shortlist at your end — the artist expects a call or email if they make the cut."),
   });
 }
 

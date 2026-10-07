@@ -1,5 +1,5 @@
 /**
- * Storage layer for the Bihar Got Talent registration + notification APIs.
+ * Storage layer for the Bihar Got Talent artist registration + admin export.
  *
  * Primary store: a Cloudflare KV namespace bound as `KS_KV` on the Pages
  * project (Settings → Functions → KV namespace binding). Every value is
@@ -9,7 +9,6 @@
  *   artist:email:{email}          → full artist record (dedupe index)
  *   artist:phone:{digits}         → the email it belongs to (dedupe index)
  *   artist:id:{id}                → full artist record
- *   artist:notifications:{email}  → NotificationItem[] (newest first)
  *
  * Without the binding (local `wrangler pages dev`, or a project that has not
  * wired KV up yet) the helpers fall back to one process-wide in-memory Map so
@@ -110,51 +109,17 @@ export async function getArtist(env, email) {
   return get(env, `artist:email:${normalizeEmail(email)}`);
 }
 
-export async function listArtistEmails(env) {
+/**
+ * All roster records, keyed by `artist:email:…`. The dedupe index stores the
+ * full artist object, so this is complete without a second lookup.
+ */
+export async function listArtists(env) {
   const prefix = "artist:email:";
   const keys = await keysWithPrefix(env, prefix);
-  return keys.map((k) => k.slice(prefix.length)).filter(Boolean);
-}
-
-/* ─── Notifications ────────────────────────────────────────────────── */
-
-/** Older entries beyond this count are trimmed on write. */
-const NOTIFICATION_LIMIT = 50;
-
-function notificationsKey(email) {
-  return `artist:notifications:${normalizeEmail(email)}`;
-}
-
-export async function getNotifications(env, email) {
-  const items = await get(env, notificationsKey(email));
-  return Array.isArray(items) ? items : [];
-}
-
-/** Prepends new items (newest-first list) and trims the tail. */
-export async function addNotifications(env, email, items) {
-  const existing = await getNotifications(env, email);
-  const merged = [...items, ...existing].slice(0, NOTIFICATION_LIMIT);
-  await set(env, notificationsKey(email), merged);
-  return merged;
-}
-
-export async function markNotificationRead(env, email, id) {
-  const items = await getNotifications(env, email);
-  const next = items.map((item) => (item.id === id ? { ...item, read: true } : item));
-  await set(env, notificationsKey(email), next);
-  return next;
-}
-
-export async function markAllNotificationsRead(env, email) {
-  const items = await getNotifications(env, email);
-  const next = items.map((item) => ({ ...item, read: true }));
-  await set(env, notificationsKey(email), next);
-  return next;
-}
-
-/** Fan-out used by the admin `broadcast` action. */
-export async function notifyAllArtists(env, item) {
-  const emails = await listArtistEmails(env);
-  await Promise.all(emails.map((email) => addNotifications(env, email, [item])));
-  return emails.length;
+  const artists = [];
+  for (const key of keys) {
+    const record = await get(env, key);
+    if (record && typeof record === "object") artists.push(record);
+  }
+  return artists;
 }

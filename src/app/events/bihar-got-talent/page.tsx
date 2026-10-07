@@ -3,7 +3,6 @@ import Link from "next/link";
 import { Oswald } from "next/font/google";
 import {
   ArrowRight,
-  BellRing,
   CalendarCheck,
   MapPin,
   Mic2,
@@ -134,13 +133,6 @@ export default function BiharGotTalentPage() {
                   className="h-4 w-4 transition-transform group-hover:translate-x-1"
                   strokeWidth={2.5}
                 />
-              </Link>
-              <Link
-                href="/notifications"
-                className="inline-flex items-center justify-center gap-2 rounded-full border-2 border-ink bg-white px-7 py-3.5 text-sm font-bold uppercase tracking-wide transition-colors hover:bg-sun/50"
-              >
-                <BellRing className="h-4 w-4" strokeWidth={2.5} />
-                Notification Center
               </Link>
             </div>
 
@@ -318,16 +310,10 @@ export default function BiharGotTalentPage() {
                   Already registered?
                 </p>
                 <p className="mt-1.5 text-sm font-medium leading-relaxed text-ink/70">
-                  Audition slots and shortlist updates land in your Notification
-                  Center first.
+                  We review every entry after the deadline. If you&apos;re
+                  shortlisted for auditions, we&apos;ll reach out on the phone
+                  number and email you registered with.
                 </p>
-                <Link
-                  href="/notifications"
-                  className="mt-4 inline-flex items-center gap-2 border-2 border-ink bg-white px-4 py-2 text-xs font-bold uppercase tracking-wide shadow-[3px_3px_0px_0px_var(--color-ink)] transition-all hover:-translate-y-0.5 hover:bg-sun"
-                >
-                  <BellRing className="h-3.5 w-3.5" strokeWidth={2.5} />
-                  Open Notification Center
-                </Link>
               </div>
             </div>
           </div>

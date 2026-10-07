@@ -2,9 +2,10 @@
  * POST /api/register/artist — Bihar Got Talent artist registration.
  *
  * Validates the payload, refuses duplicate email/phone entries, stores the
- * artist on the roster (source tagged "Bihar Got Talent"), inserts the
- * Notification Center records, mirrors the row to the CRM when
- * `ARTIST_CRM_URL` is configured, and fires the Resend confirmation mail.
+ * artist on the roster (source tagged "Bihar Got Talent"), pushes the row to
+ * the team's Google Sheet when `GOOGLE_SHEET_WEBHOOK_URL` is configured,
+ * mirrors the row to the CRM when `ARTIST_CRM_URL` is configured, and fires
+ * the Resend confirmation mail.
  *
  * Runs as a Cloudflare Pages Function (the site is a static export, so Next
  * route handlers cannot serve dynamic POSTs here).
@@ -17,8 +18,8 @@ import {
   newId,
   findConflictingArtist,
   saveArtist,
-  addNotifications,
 } from "../../_lib/store.js";
+import { pushRowToSheet } from "../../_lib/sheet.js";
 import { sendRegistrationEmails } from "../../_lib/email.js";
 
 const SOURCE = "Bihar Got Talent";
@@ -142,18 +143,18 @@ export async function onRequestPost({ request, env }) {
     phone: value.phone,
   });
   if (conflict) {
-    return Response.json(
-      {
-        ok: false,
-        duplicate: conflict,
-        message:
-          conflict === "email"
-            ? "This email is already registered for Bihar Got Talent. Check your inbox and the Notification Center for updates."
-            : "This phone number is already registered for Bihar Got Talent. Use your registered email to see updates.",
-      },
-      { status: 409 }
-    );
-  }
+return Response.json(
+    {
+      ok: false,
+      duplicate: conflict,
+      message:
+        conflict === "email"
+          ? "This email is already registered for Bihar Got Talent. We'll be in touch by phone or email if you're shortlisted."
+          : "This phone number is already registered for Bihar Got Talent. We'll be in touch by phone or email if you're shortlisted.",
+    },
+    { status: 409 }
+  );
+}
 
   const artist = {
     id: newId(),
@@ -165,28 +166,7 @@ export async function onRequestPost({ request, env }) {
 
   await saveArtist(env, artist);
 
-  // Notification Center records created alongside the registration.
-  await addNotifications(env, artist.email, [
-    {
-      id: newId(),
-      type: "audition_updates",
-      title: "Audition updates for Bihar Got Talent",
-      body: "Shortlisting is underway. Your audition slot, venue and call time will appear here and land in your inbox — keep the bell handy.",
-      link: "/events/bihar-got-talent",
-      read: false,
-      createdAt: new Date().toISOString(),
-    },
-    {
-      id: newId(),
-      type: "registration_confirmed",
-      title: "Registration confirmed — Bihar Got Talent",
-      body: `Welcome to the Kalakaar Studios Artist Network, ${artist.fullName}. Your entry under ${artist.genre} from ${artist.city} is on the roster.`,
-      link: "/notifications",
-      read: false,
-      createdAt: new Date().toISOString(),
-    },
-  ]);
-
+  await pushRowToSheet(env, artist);
   await mirrorToCrm(env, artist);
   const emailResult = await sendRegistrationEmails(env, artist);
 
@@ -195,7 +175,6 @@ export async function onRequestPost({ request, env }) {
       ok: true,
       artistId: artist.id,
       emailSent: emailResult.sent,
-      notifications: 2,
     },
     { status: 201 }
   );

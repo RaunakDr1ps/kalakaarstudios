@@ -3,7 +3,6 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
-import NotificationBell from "@/components/notifications/NotificationBell";
 
 const links = [
   { label: "Events", href: "/events" },
@@ -45,7 +44,6 @@ export default function Header() {
         </nav>
 
         <div className="hidden items-center gap-3 md:flex">
-          <NotificationBell />
           <a
             href="/admin/blogs"
             className="inline-flex items-center justify-center rounded-md border-2 border-ink bg-sun px-5 py-2 text-sm font-semibold tracking-wide text-ink shadow-[3px_3px_0px_0px_#000000] transition-all hover:-translate-y-0.5 hover:shadow-[4px_4px_0px_0px_#000000]"
@@ -55,7 +53,6 @@ export default function Header() {
         </div>
 
         <div className="flex items-center gap-3 md:hidden">
-          <NotificationBell />
           <button
             type="button"
             onClick={() => setOpen(!open)}

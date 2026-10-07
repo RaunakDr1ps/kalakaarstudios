@@ -7,7 +7,6 @@ import { useEffect, useState } from "react";
 import RandomBlogCards from "@/components/blog/RandomBlogCards";
 import EventsPreview from "@/components/events/EventsPreview";
 import BiharGotTalentSection from "@/components/events/BiharGotTalentSection";
-import NotificationBell from "@/components/notifications/NotificationBell";
 import GalleryPreview from "@/components/GalleryPreview";
 import {
   ArrowRight,
@@ -271,7 +270,6 @@ export default function Home() {
                 <span className="absolute -bottom-1 left-0 h-[3px] w-0 bg-sun transition-all group-hover:w-full" />
               </a>
             ))}
-            <NotificationBell />
             <a
               href="#contact"
               className={`${pillBase} bg-red px-5 py-2.5 text-sm`}
@@ -282,7 +280,6 @@ export default function Home() {
           </nav>
 
           <div className="flex items-center gap-3 lg:hidden">
-            <NotificationBell />
             <button
               type="button"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}

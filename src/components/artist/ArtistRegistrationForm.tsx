@@ -1,22 +1,12 @@
 "use client";
 
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
-import {
-  AtSign,
-  CheckCircle2,
-  Copy,
-  Loader2,
-  Megaphone,
-  Send,
-  Sparkles,
-  UserPlus,
-} from "lucide-react";
+import { Loader2, Megaphone, UserPlus } from "lucide-react";
 import {
   BIHAR_CITIES,
   GENRES,
   registerArtist,
-  saveArtistSession,
   validateRegistration,
   type ArtistRegistration,
 } from "@/lib/artist";
@@ -47,19 +37,12 @@ function FieldError({ message }: { message?: string }) {
   );
 }
 
-type SuccessState = {
-  artistId?: string;
-  emailSent?: boolean;
-  fallback?: boolean;
-};
-
 export default function ArtistRegistrationForm() {
+  const router = useRouter();
   const [form, setForm] = useState<ArtistRegistration>(emptyForm);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [banner, setBanner] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
-  const [done, setDone] = useState<SuccessState | null>(null);
-  const [copied, setCopied] = useState(false);
 
   function update<K extends keyof ArtistRegistration>(
     key: K,
@@ -91,18 +74,7 @@ export default function ArtistRegistrationForm() {
     try {
       const res = await registerArtist(form);
       if (res.ok) {
-        saveArtistSession({
-          email: form.email.trim().toLowerCase(),
-          name: form.fullName.trim(),
-          genre: form.genre,
-          city: form.city.trim(),
-          registeredAt: new Date().toISOString(),
-        });
-        setDone({
-          artistId: res.artistId,
-          emailSent: res.emailSent,
-          fallback: res.fallback,
-        });
+        router.push("/register/artist/thank-you");
         return;
       }
       if (res.errors && Object.keys(res.errors).length > 0) {
@@ -119,14 +91,6 @@ export default function ArtistRegistrationForm() {
     } finally {
       setSubmitting(false);
     }
-  }
-
-  if (done) {
-    return <SuccessPanel state={done} onReset={() => {
-      setDone(null);
-      setForm(emptyForm);
-      setCopied(false);
-    }} copied={copied} setCopied={setCopied} />;
   }
 
   return (
@@ -340,143 +304,9 @@ export default function ArtistRegistrationForm() {
       </button>
 
       <p className="text-xs font-medium leading-relaxed text-ink/50">
-        Already registered? Your updates live in the{" "}
-        <Link
-          href="/notifications"
-          className="font-bold underline decoration-sun decoration-[3px] underline-offset-4 hover:text-ink"
-        >
-          Notification Center
-        </Link>
-        .
+        No entry fee — ever. We only use your details for Bihar Got Talent
+        audition communications.
       </p>
     </form>
-  );
-}
-
-/* ─── Success state ─────────────────────────────────────────────────── */
-
-const SHARE_URL = "https://kalakaarstudios.co.in/events/bihar-got-talent";
-const SHARE_TEXT =
-  "I just registered for Bihar Got Talent with Kalakaar Studios — Perform, Partner & Showcase. If you've got talent from Bihar, join in!";
-
-function SuccessPanel({
-  state,
-  onReset,
-  copied,
-  setCopied,
-}: {
-  state: SuccessState;
-  onReset: () => void;
-  copied: boolean;
-  setCopied: (v: boolean) => void;
-}) {
-  async function copyLink() {
-    try {
-      await navigator.clipboard.writeText(SHARE_URL);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    } catch {
-      setCopied(false);
-    }
-  }
-
-  const shares = [
-    {
-      label: "WhatsApp",
-      href: `https://wa.me/?text=${encodeURIComponent(`${SHARE_TEXT} ${SHARE_URL}`)}`,
-    },
-    {
-      label: "X / Twitter",
-      href: `https://twitter.com/intent/tweet?text=${encodeURIComponent(SHARE_TEXT)}&url=${encodeURIComponent(SHARE_URL)}`,
-    },
-    {
-      label: "LinkedIn",
-      href: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(SHARE_URL)}`,
-    },
-  ];
-
-  return (
-    <div className="flex flex-col items-center gap-5 py-6 text-center">
-      <span className="flex h-16 w-16 items-center justify-center rounded-full border-2 border-ink bg-sun shadow-[4px_4px_0px_0px_var(--color-ink)]">
-        <CheckCircle2 className="h-8 w-8" strokeWidth={2.5} />
-      </span>
-
-      <div>
-        <h3 className="font-blocky text-2xl font-bold uppercase tracking-tight text-ink">
-          You&apos;re on the roster!
-        </h3>
-        <p className="mx-auto mt-2 max-w-md text-sm font-medium leading-relaxed text-ink/70">
-          Welcome to the Kalakaar Studios Artist Network. Your Bihar Got Talent
-          registration is confirmed
-          {state.emailSent
-            ? " and the confirmation email is on its way to your inbox."
-            : state.fallback
-              ? " — we'll follow up by email shortly."
-              : "."}
-        </p>
-        {state.artistId && (
-          <p className="mt-3 inline-block border-2 border-ink bg-cream px-3 py-1 text-[11px] font-bold uppercase tracking-widest text-ink shadow-[2px_2px_0px_0px_var(--color-ink)]">
-            Reg. ID · {state.artistId.slice(0, 8)}
-          </p>
-        )}
-      </div>
-
-      <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row sm:justify-center">
-        <Link
-          href="/notifications"
-          className="inline-flex items-center justify-center gap-2 rounded-full border-2 border-ink bg-sun px-6 py-3 text-sm font-bold uppercase tracking-wide text-ink shadow-[4px_4px_0px_0px_var(--color-ink)] transition-all hover:-translate-y-0.5 hover:shadow-[6px_6px_0px_0px_var(--color-ink)]"
-        >
-          <Sparkles className="h-4 w-4" strokeWidth={2.5} />
-          Open Notification Center
-        </Link>
-        <button
-          type="button"
-          onClick={onReset}
-          className="inline-flex items-center justify-center gap-2 rounded-full border-2 border-ink bg-white px-6 py-3 text-sm font-bold uppercase tracking-wide text-ink transition-colors hover:bg-sun/40"
-        >
-          <UserPlus className="h-4 w-4" strokeWidth={2.5} />
-          Register another artist
-        </button>
-      </div>
-
-      <div className="w-full border-2 border-ink bg-sun/25 px-4 py-4">
-        <p className="text-xs font-bold uppercase tracking-widest text-ink">
-          Spread the word — talent travels fast
-        </p>
-        <div className="mt-3 flex flex-wrap items-center justify-center gap-2.5">
-          {shares.map((share) => (
-            <a
-              key={share.label}
-              href={share.href}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 border-2 border-ink bg-white px-3 py-1.5 text-xs font-bold uppercase tracking-wide text-ink shadow-[2px_2px_0px_0px_var(--color-ink)] transition-all hover:-translate-y-0.5 hover:bg-sun"
-            >
-              <Send className="h-3.5 w-3.5" strokeWidth={2.5} />
-              {share.label}
-            </a>
-          ))}
-          <button
-            type="button"
-            onClick={copyLink}
-            className="inline-flex items-center gap-1.5 border-2 border-ink bg-white px-3 py-1.5 text-xs font-bold uppercase tracking-wide text-ink shadow-[2px_2px_0px_0px_var(--color-ink)] transition-all hover:-translate-y-0.5 hover:bg-sun"
-          >
-            {copied ? (
-              <CheckCircle2 className="h-3.5 w-3.5" strokeWidth={2.5} />
-            ) : (
-              <Copy className="h-3.5 w-3.5" strokeWidth={2.5} />
-            )}
-            {copied ? "Copied!" : "Copy link"}
-          </button>
-          <a
-            href={`mailto:?subject=${encodeURIComponent("Bihar Got Talent — Kalakaar Studios")}&body=${encodeURIComponent(`${SHARE_TEXT} ${SHARE_URL}`)}`}
-            className="inline-flex items-center gap-1.5 border-2 border-ink bg-white px-3 py-1.5 text-xs font-bold uppercase tracking-wide text-ink shadow-[2px_2px_0px_0px_var(--color-ink)] transition-all hover:-translate-y-0.5 hover:bg-sun"
-          >
-            <AtSign className="h-3.5 w-3.5" strokeWidth={2.5} />
-            Email
-          </a>
-        </div>
-      </div>
-    </div>
   );
 }
