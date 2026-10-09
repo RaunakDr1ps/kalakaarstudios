@@ -424,7 +424,7 @@ export default function Home() {
         {/* Hero visual */}
         <div className="relative">
           <Image
-            src="/hero-event-art.png"
+            src="/hero-event-art-v2.png"
             alt="Kalakaar Studios Live Event Roster"
             width={1376}
             height={768}
