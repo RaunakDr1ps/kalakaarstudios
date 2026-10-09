@@ -23,14 +23,11 @@ import {
   Mail,
   MapPin,
   Menu,
-  Music4,
   PartyPopper,
   PenTool,
   Play,
   Send,
   Sparkles,
-  Speaker,
-  Spotlight,
   Star,
   X,
 } from "lucide-react";
@@ -424,55 +421,19 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Hero visual placeholder */}
+        {/* Hero visual */}
         <div className="relative">
-          <div
-            className="relative flex aspect-[4/3] items-center justify-center overflow-hidden border-2 border-dashed border-ink bg-white shadow-[8px_8px_0px_0px_var(--color-ink)]"
-            style={{
-              backgroundImage:
-                "radial-gradient(circle, rgba(17,24,39,0.1) 1.5px, transparent 1.5px)",
-              backgroundSize: "20px 20px",
-            }}
-          >
-            <Sparkles className="absolute left-6 top-6 h-6 w-6 rotate-12 text-ink/30" />
-            <Music4 className="absolute right-8 top-8 h-7 w-7 -rotate-6 text-ink/25" />
-            <Star className="absolute bottom-24 right-5 h-4 w-4 fill-sun text-ink/40" />
+          <Image
+            src="/hero-event-art.png"
+            alt="Kalakaar Studios Live Event Roster"
+            width={1200}
+            height={675}
+            priority
+            className="h-auto w-full rounded-lg shadow-[8px_8px_0px_0px_var(--color-ink)]"
+          />
 
-            <Spotlight
-              className="absolute -left-2 top-8 h-16 w-16 text-sun"
-              strokeWidth={1.5}
-            />
-            <Spotlight
-              className="absolute -right-2 top-8 h-16 w-16 scale-x-[-1] text-sun"
-              strokeWidth={1.5}
-            />
-
-            <div className="relative z-10 flex flex-col items-center gap-3">
-              <span className="flex h-20 w-20 items-center justify-center overflow-hidden border-2 border-ink bg-cream shadow-[4px_4px_0px_0px_var(--color-ink)]">
-                <Image
-                  src="/logo.png"
-                  alt="Kalakaar Studios logo"
-                  width={1024}
-                  height={1024}
-                  className="h-full w-full object-cover"
-                />
-              </span>
-              <span className="border-2 border-ink bg-sun px-3 py-1 text-[10px] font-bold uppercase tracking-[0.2em] text-ink">
-                Your Event Art Here
-              </span>
-            </div>
-
-            <Speaker
-              className="absolute bottom-16 left-8 h-9 w-9 rotate-6 text-ink/50"
-              strokeWidth={1.75}
-            />
-            <AudioLines
-              className="absolute bottom-10 right-10 h-8 w-8 -rotate-3 text-ink/45"
-              strokeWidth={1.75}
-            />
-
-            <div className="absolute inset-x-0 bottom-0 h-8 bg-ink" />
-            <span className="absolute bottom-2 left-1/2 -translate-x-1/2 text-[10px] font-bold uppercase tracking-[0.25em] text-cream">
+          <div className="flex h-8 items-center justify-center rounded-b-lg border-x-2 border-b-2 border-ink bg-ink">
+            <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-cream">
               Stage / Build / Run
             </span>
           </div>
