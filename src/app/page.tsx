@@ -426,8 +426,8 @@ export default function Home() {
           <Image
             src="/hero-event-art.png"
             alt="Kalakaar Studios Live Event Roster"
-            width={1200}
-            height={675}
+            width={1376}
+            height={768}
             priority
             className="h-auto w-full rounded-lg shadow-[8px_8px_0px_0px_var(--color-ink)]"
           />
