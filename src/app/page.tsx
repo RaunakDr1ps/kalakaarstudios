@@ -781,10 +781,10 @@ export default function Home() {
                   <Mail className="h-4.5 w-4.5" strokeWidth={2.5} />
                 </span>
                 <a
-                  href="mailto:Kalakaarstudios@ssociopro.com"
+                  href="mailto:Kstudios1311@gmail.com"
                   className="hover:text-ink/70"
                 >
-                  Kalakaarstudios@ssociopro.com
+                  Kstudios1311@gmail.com
                 </a>
               </div>
               <div className="flex items-start gap-3">
@@ -826,7 +826,7 @@ export default function Home() {
                 {formError && (
                   <div className="border-2 border-ink bg-[#fecaca] px-4 py-3 text-sm font-bold text-ink">
                     Oops — that didn&apos;t go through. Email us directly at
-                    Kalakaarstudios@ssociopro.com
+                    Kstudios1311@gmail.com
                   </div>
                 )}
 
@@ -1012,7 +1012,7 @@ export default function Home() {
               Book a Call
             </a>
             <a
-              href="mailto:Kalakaarstudios@ssociopro.com"
+              href="mailto:Kstudios1311@gmail.com"
               className={`${pillBase} bg-sun px-7 py-3.5 text-sm`}
             >
               <Mail className="h-4 w-4" strokeWidth={2.5} />

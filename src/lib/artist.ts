@@ -143,7 +143,7 @@ async function formSpreeFallback(
   if (!id) {
     return {
       ok: false,
-      message: `${reason} Email us at Kalakaarstudios@ssociopro.com and we'll add you manually.`,
+      message: `${reason} Email us at Kstudios1311@gmail.com and we'll add you manually.`,
     };
   }
   try {

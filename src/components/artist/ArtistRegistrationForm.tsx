@@ -83,7 +83,7 @@ export default function ArtistRegistrationForm() {
       } else {
         setBanner(
           res.message ??
-            "Registration failed. Email Kalakaarstudios@ssociopro.com and we'll add you."
+            "Registration failed. Email Kstudios1311@gmail.com and we'll add you."
         );
       }
     } catch {

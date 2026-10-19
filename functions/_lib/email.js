@@ -87,7 +87,7 @@ export function welcomeEmailHtml(artist) {
       ]) +
       button("https://kalakaarstudios.co.in/events/bihar-got-talent", "About Bihar Got Talent") +
       paragraph(
-        `Keep building your profile — reply with an updated portfolio link any time at Kalakaarstudios@ssociopro.com.`
+        `Keep building your profile — reply with an updated portfolio link any time at Kstudios1311@gmail.com.`
       ),
   });
 }
@@ -150,7 +150,7 @@ async function sendOne(env, { from, to, subject, html, replyTo }) {
  */
 export async function sendRegistrationEmails(env, artist) {
   const from = env.RESEND_FROM || "Kalakaar Studios <onboarding@resend.dev>";
-  const inbox = env.ARTIST_INBOX || "Kalakaarstudios@ssociopro.com";
+  const inbox = env.ARTIST_INBOX || "Kstudios1311@gmail.com";
 
   const [artistResult, studioResult] = await Promise.all([
     sendOne(env, {

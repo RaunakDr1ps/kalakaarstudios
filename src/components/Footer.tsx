@@ -24,7 +24,7 @@ export default function Footer() {
           <div className="text-sm">
             <p className="kicker font-semibold text-ink">Contact</p>
             <ul className="mt-4 space-y-3 text-smoke">
-              <li>Kalakaarstudios@ssociopro.com</li>
+              <li>Kstudios1311@gmail.com</li>
               <li>Bhub, Maurya Lok, Block A</li>
               <li>Fifth Floor, Patna, Bihar</li>
               <li>

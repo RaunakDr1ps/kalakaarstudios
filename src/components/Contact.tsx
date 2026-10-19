@@ -68,7 +68,7 @@ export default function Contact() {
               <div>
                 <dt className="kicker font-semibold text-smoke">Email</dt>
                 <dd className="mt-1.5 text-graphite">
-                  Kalakaarstudios@ssociopro.com
+                  Kstudios1311@gmail.com
                 </dd>
               </div>
               <div>
@@ -107,7 +107,7 @@ export default function Contact() {
                 {error && (
                   <div className="rounded-sm border border-red-300 bg-red-50 px-5 py-3 text-sm text-red-800">
                     Something went wrong. Please email us directly at{" "}
-                    <span className="font-medium">Kalakaarstudios@ssociopro.com</span>
+                    <span className="font-medium">Kstudios1311@gmail.com</span>
                   </div>
                 )}
                 <div className="grid gap-6 sm:grid-cols-2">

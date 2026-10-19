@@ -46,7 +46,7 @@ export default function PrivacyPage() {
           },
           {
             title: "6. Your rights",
-            body: "Individuals may request access to, correction of, or deletion of their personal data by writing to Kalakaarstudios@ssociopro.com. Requests are actioned within thirty days. Where a request relates to data supplied by a client on their behalf, we coordinate with that client.",
+            body: "Individuals may request access to, correction of, or deletion of their personal data by writing to Kstudios1311@gmail.com. Requests are actioned within thirty days. Where a request relates to data supplied by a client on their behalf, we coordinate with that client.",
           },
           {
             title: "7. Website analytics",
@@ -70,7 +70,7 @@ export default function PrivacyPage() {
 
       <p className="mt-14 border-t border-line pt-6 text-sm text-smoke">
         Privacy questions:{" "}
-        <span className="text-graphite">Kalakaarstudios@ssociopro.com</span>
+        <span className="text-graphite">Kstudios1311@gmail.com</span>
       </p>
     </main>
       <Footer />

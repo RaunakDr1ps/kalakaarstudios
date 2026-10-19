@@ -158,7 +158,7 @@ export default function ArtistRegisterPage() {
               <p className="kicker text-ink/60">Need help?</p>
               <p className="mt-3 flex items-start gap-2 text-sm font-semibold text-ink">
                 <Mail className="mt-0.5 h-4 w-4 shrink-0" strokeWidth={2.5} />
-                Kalakaarstudios@ssociopro.com
+                Kstudios1311@gmail.com
               </p>
               <p className="mt-3 flex items-start gap-2 text-sm font-medium text-ink/70">
                 <Sparkles className="mt-0.5 h-4 w-4 shrink-0" strokeWidth={2.5} />

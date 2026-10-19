@@ -70,7 +70,7 @@ export default function TermsPage() {
 
       <p className="mt-14 border-t border-line pt-6 text-sm text-smoke">
         For questions about these terms, write to{" "}
-        <span className="text-graphite">Kalakaarstudios@ssociopro.com</span>.
+        <span className="text-graphite">Kstudios1311@gmail.com</span>.
       </p>
     </main>
       <Footer />
