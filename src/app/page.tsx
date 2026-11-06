@@ -682,14 +682,13 @@ export default function Home() {
 
         <div className="relative mt-8 aspect-video overflow-hidden border-2 border-ink bg-ink shadow-[8px_8px_0px_0px_var(--color-ink)]">
           <video
-            className="h-full w-full object-cover"
+            src="/showreel.mp4"
+            className="w-full h-full object-cover rounded-2xl shadow-2xl"
             controls
             playsInline
             preload="metadata"
             poster="/logo.png"
-          >
-            <source src="/showreel.mp4" type="video/mp4" />
-          </video>
+          />
         </div>
       </section>
 
